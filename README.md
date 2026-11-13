@@ -111,3 +111,8 @@ English is the source language. Bundled gettext catalogs provide French (`fr_FR`
 ## Status
 
 **v0.3.0 is a development build**, not a stable public release. Initial isolated tests and syntax checks are not substitutes for real WordPress integration testing.
+
+## Quality assurance
+
+- [v0.3.0 audit evidence](docs/QA-0.3.0.md) distinguishes checks performed from pending WordPress integration tests.
+- [Pre-release QA checklist](https://github.com/aminostudio/amino-orbit/issues/1) tracks the remaining release gates.
