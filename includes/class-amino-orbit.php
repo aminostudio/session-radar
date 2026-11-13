@@ -110,7 +110,7 @@ final class Amino_Orbit {
 		return array(
 			'viewer_roles' => $viewer_roles,
 			'inactive_minutes' => in_array( $inactivity, array( 5, 10, 15, 30 ), true ) ? $inactivity : 5,
-			'refresh_seconds' => in_array( $refresh, array( 60, 120, 180 ), true ) ? $refresh : 60,
+			'refresh_seconds' => in_array( $refresh, array( 30, 60, 120, 180 ), true ) ? $refresh : 60,
 			'show_ip' => empty( $input['show_ip'] ) ? 0 : 1,
 		);
 	}
@@ -412,7 +412,7 @@ final class Amino_Orbit {
 					</select>
 					<p><label for="amino-orbit-refresh"><?php esc_html_e( 'Rafraîchissement du widget', 'amino-orbit' ); ?></label></p>
 					<select id="amino-orbit-refresh" name="<?php echo esc_attr( self::OPTION ); ?>[refresh_seconds]">
-						<?php foreach ( array( 60, 120, 180 ) as $second ) : ?><option value="<?php echo esc_attr( (string) $second ); ?>" <?php selected( (int) $options['refresh_seconds'], $second ); ?>><?php echo esc_html( sprintf( /* translators: %d: number of seconds. */ __( '%d secondes', 'amino-orbit' ), $second ) ); ?></option><?php endforeach; ?>
+						<?php foreach ( array( 30, 60, 120, 180 ) as $second ) : ?><option value="<?php echo esc_attr( (string) $second ); ?>" <?php selected( (int) $options['refresh_seconds'], $second ); ?>><?php echo esc_html( sprintf( /* translators: %d: number of seconds. */ __( '%d secondes', 'amino-orbit' ), $second ) ); ?></option><?php endforeach; ?>
 					</select>
 				</div>
 				<div class="amino-orbit-settings__card">

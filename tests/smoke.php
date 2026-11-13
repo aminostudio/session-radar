@@ -52,6 +52,8 @@ WP_Session_Tokens::$sessions=[$session];
 $s=Amino_Orbit::sanitize_settings(['viewer_roles'=>['editor','administrator','INVALID'], 'inactive_minutes'=>'9999','refresh_seconds'=>'7', 'show_ip'=>'1']);
 assert_true($s['viewer_roles']===['editor'], 'Role configuration restricted to known non-admin roles');
 assert_true($s['inactive_minutes']===5 && $s['refresh_seconds']===60, 'Numeric settings constrained to safe values');
+$s30=Amino_Orbit::sanitize_settings(['refresh_seconds'=>30]);
+assert_true($s30['refresh_seconds']===30, 'Accepts optional 30-second refresh interval');
 function panel(){ob_start();Amino_Orbit::render_widget();return ob_get_clean();}
 $html=panel();
 assert_true(str_contains($html,'Amino <em>ORBIT</em>'), 'Renders orbit branding');

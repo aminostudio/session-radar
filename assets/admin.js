@@ -65,5 +65,5 @@
       .catch(() => { /* Keep the previous panel when offline. */ })
       .finally(() => { refreshing = false; });
   }
-  window.setInterval(refresh, Math.max(60000, Number(config.refreshMs) || 60000));
+  window.setInterval(refresh, Math.max(30000, Number(config.refreshMs) || 60000));
 })();

@@ -69,6 +69,10 @@ amino-orbit/
 
 ## Changelog
 
+### v0.2.1 (development)
+- Optional 30-second dashboard refresh (60 seconds remains the default), without increasing the activity ping frequency.
+- Dashboard polling is skipped when the browser tab is hidden; overlapping refreshes are prevented.
+
 ### v0.2.0 (development)
 - Improved contrast, typography and small-screen layout.
 - Changed “Live” to “Auto” to avoid implying real-time presence.
@@ -91,4 +95,4 @@ amino-orbit/
 
 ## Status
 
-**v0.2.0 is a development build**, not a stable public release. Initial isolated tests and syntax checks are not substitutes for real WordPress integration testing.
+**v0.2.1 is a development build**, not a stable public release. Initial isolated tests and syntax checks are not substitutes for real WordPress integration testing.
