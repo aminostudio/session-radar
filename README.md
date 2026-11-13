@@ -1,2 +1,84 @@
-# amino-orbit
-Lightweight, privacy-first WordPress dashboard widget for monitoring authenticated user sessions and activity.
+# Amino Orbit 🪐
+
+**A lightweight WordPress dashboard presence monitor, designed by Amino Studio.**
+
+Amino Orbit is a GPL-2.0-or-later WordPress plugin that distinguishes **valid authentication sessions** from **recent activity in wp-admin**. It adds an elegant, responsive widget to the WordPress Dashboard with sessions, users, roles, login times, device labels, and configurable viewer permissions.
+
+## Presence status
+
+- 🟢 **Active:** an interaction was observed recently in the admin area.
+- 🟠 **Inactive:** admin interaction was observed previously but is older than the configured threshold.
+- ⚪ **Session open:** WordPress considers the authentication session valid, but no admin interaction was observed in the previous 24 hours.
+
+A valid WordPress session is **not proof that someone is at their keyboard**. The plugin does not claim otherwise.
+
+## Installation
+
+1. Install the plugin ZIP via **Plugins → Add New → Upload Plugin**, or place the `amino-orbit` directory under `wp-content/plugins/`.
+2. Activate **Amino Orbit**.
+3. Visit **Dashboard → Home** to see the widget.
+4. Configure viewer roles, status threshold and refresh interval in **Settings → Amino Orbit**.
+
+**Requirements:** WordPress 6.4+, PHP 8.0+.
+
+## Features
+
+- Dashboard widget showing active, inactive and open sessions.
+- Displays the account name, WordPress roles, login time and browser/OS labels.
+- Activity beacons from authenticated admin pages, throttled to minimize requests.
+- Refreshes the dashboard widget every 60, 120 or 180 seconds.
+- Configurable read-only visibility for non-administrator roles.
+- IP addresses hidden by default, optionally visible to administrators only.
+- Responsive, scoped CSS and dependency-free vanilla JavaScript.
+- No telemetry, external APIs, or anonymous visitor tracking.
+
+## Privacy and security
+
+- Reads WordPress native `WP_Session_Tokens` data. It does **not** store raw authentication tokens.
+- Last observed admin interaction is stored in short-lived user metadata keyed by an HMAC-derived session fingerprint.
+- Presence records expire logically after 24 hours and are pruned via WP-Cron and subsequent interactions.
+- Native WordPress session IP information is hidden unless an administrator opts in.
+- Only administrators can modify settings; authorized roles can receive read-only widget access.
+- Nonces and server-side capability checks protect authenticated AJAX routes.
+- No frontend tracking or external data transfers.
+
+> **Privacy notice:** This feature processes information about authenticated users' activity. Inform your team and review applicable workplace privacy and data-protection obligations.
+
+## Repository layout
+
+~~~text
+amino-orbit/
+├── amino-orbit.php
+├── includes/class-amino-orbit.php
+├── assets/admin.css
+├── assets/admin.js
+├── uninstall.php
+├── readme.txt
+├── README.md
+└── LICENSE
+~~~
+
+## Development limitations
+
+- Tracks activity inside `wp-admin`, not public-facing browsing.
+- Scans up to 200 users with native session metadata and renders up to 40 session rows.
+- Certain application-password or custom authentication methods do not expose a native browser session token.
+- Sessions with identical login time, expiry, IP and user agent can share one derived presence identity.
+- Background browser throttling can delay activity reports; this is not a WebSocket/live-presence system.
+- Actual scheduled cleanup depends on WP-Cron execution.
+
+## Roadmap
+
+- [ ] Runtime integration tests with multiple users and roles on Amino #LAB.
+- [ ] Add portable automated PHP/JavaScript tests and an accessibility audit.
+- [ ] Translate user-facing strings (French, English, Spanish).
+- [ ] Plugin Check, security review, performance measurements.
+- [ ] Publish a stable v1.0 release after validation.
+
+## License
+
+**GPL-2.0-or-later**, © Amino Studio. See [LICENSE](LICENSE).
+
+## Status
+
+**v0.1.0 is a development build**, not a stable public release. Initial isolated tests and syntax checks are not substitutes for real WordPress integration testing.
