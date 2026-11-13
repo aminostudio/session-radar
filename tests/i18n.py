@@ -5,7 +5,7 @@ import re
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 CODE = (ROOT / 'includes/class-amino-orbit.php').read_text(encoding='utf-8')
-PATTERN = r"(?:__|esc_html_e|esc_attr__|esc_html__)\\(\\s*'((?:[^'\\\\]|\\\\.)*)'\\s*,\\s*'amino-orbit'"
+PATTERN = r"(?:__|esc_html_e|esc_attr__|esc_html__)\(\s*'((?:[^'\\]|\\.)*)'\s*,\s*'amino-orbit'"
 source = set(re.findall(PATTERN, CODE))
 assert len(source) >= 36, f'Insufficient translated messages: {len(source)}'
 for locale in ('fr_FR', 'es_ES'):
