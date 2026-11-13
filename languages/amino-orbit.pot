@@ -1,0 +1,111 @@
+msgid ""
+msgstr "Project-Id-Version: Amino Orbit 0.3.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "%d minutes"
+msgstr ""
+
+msgid "%d seconds"
+msgstr ""
+
+msgid "Active"
+msgstr ""
+
+msgid "Active means recent activity in wp-admin. An open session does not mean the user is at their screen."
+msgstr ""
+
+msgid "Active sessions"
+msgstr ""
+
+msgid "Activity timestamps expire after 24 hours and are cleaned daily by WP-Cron. Anonymous visitors are not tracked."
+msgstr ""
+
+msgid "Additional roles allowed to see the widget"
+msgstr ""
+
+msgid "Administrators always have access. Optionally grant access to additional roles."
+msgstr ""
+
+msgid "Amino Orbit"
+msgstr ""
+
+msgid "Amino Orbit · Presence"
+msgstr ""
+
+msgid "Authenticated WordPress sessions"
+msgstr ""
+
+msgid "Auto"
+msgstr ""
+
+msgid "Automatic refresh, not real-time presence"
+msgstr ""
+
+msgid "Browser"
+msgstr ""
+
+msgid "Disabled by default. Amino Orbit does not collect additional IP addresses; it reads data already associated with WordPress sessions."
+msgstr ""
+
+msgid "Inactive"
+msgstr ""
+
+msgid "Inactivity threshold"
+msgstr ""
+
+msgid "Last activity detected in WordPress admin"
+msgstr ""
+
+msgid "Logged in: %s"
+msgstr ""
+
+msgid "No open WordPress sessions detected."
+msgstr ""
+
+msgid "Presence and refresh"
+msgstr ""
+
+msgid "PRESENCE MONITOR"
+msgstr ""
+
+msgid "Privacy"
+msgstr ""
+
+msgid "Refresh: %d s"
+msgstr ""
+
+msgid "Save settings"
+msgstr ""
+
+msgid "Seen %s ago"
+msgstr ""
+
+msgid "Session open"
+msgstr ""
+
+msgid "Sessions"
+msgstr ""
+
+msgid "Settings"
+msgstr ""
+
+msgid "Show session IP addresses to administrators only"
+msgstr ""
+
+msgid "Showing up to %d sessions."
+msgstr ""
+
+msgid "Unknown device"
+msgstr ""
+
+msgid "Users"
+msgstr ""
+
+msgid "Who can see the widget?"
+msgstr ""
+
+msgid "Widget refresh interval"
+msgstr ""
+
+msgid "WordPress sessions and recent admin activity, without tracking public-site browsing."
+msgstr ""
+

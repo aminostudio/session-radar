@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: ['8.2', '8.4']
+        php: ['8.0', '8.2', '8.4']
     steps:
       - uses: actions/checkout@v4
       - name: Set up PHP
@@ -25,5 +25,7 @@ jobs:
           php -l uninstall.php
       - name: PHP isolated smoke checks
         run: php tests/smoke.php
+      - name: Compiled translation catalog tests
+        run: python3 tests/i18n.py
       - name: JavaScript syntax check
         run: node --check assets/admin.js

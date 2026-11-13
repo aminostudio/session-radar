@@ -1,30 +1,35 @@
-# Amino Orbit manual integration QA
+# Amino Orbit v0.3.0 · Integration and accessibility checklist
 
-Development checklist for Amino #LAB. No production accounts should be created solely for testing.
+The isolated smoke tests do not replace actual WordPress/browser testing.
 
-## Two independent authenticated users
+## Amino #LAB
 
-1. Keep an administrator logged into one browser (e.g. Firefox).
-2. Log in with an existing editor account using another browser or browser profile.
-3. Under Settings > Amino Orbit, explicitly allow the editor role.
-4. Open Dashboard > Home in both profiles. Confirm each session is listed.
-5. Interact with WordPress admin in each browser, then wait one widget refresh (60 seconds by default).
-6. Leave one browser idle beyond the configured threshold while keeping the other active. Verify statuses diverge without claiming the inactive user has logged out.
-7. Sign out of the editor profile. Verify the session disappears from the dashboard on refresh.
-8. Open a second independent session for the same account. Verify session count may exceed unique user count.
+1. Install the v0.3.0 ZIP by replacing the existing plugin.
+2. Confirm settings persist: refresh **30 seconds**, inactivity **5 minutes**, admin-only access, IP addresses hidden.
+3. Keep two sessions (normal and private Firefox) of the same account. Verify sessions 2, users 1, active 2 when both are interacting.
+4. Leave one browser inactive for over 5 minutes. Verify its status becomes Inactive while the native session remains valid.
+5. Explicitly log out of one browser. Verify its session disappears after refresh. Closing a window does not log out.
+6. If an existing editor account is available, enable read-only visibility and then revoke it. Verify permissions and IP redaction.
 
-## Access and privacy
+## Language
 
-- Disable editor visibility. The editor must lose access to both the widget and the data refresh endpoint.
-- Enable display of WordPress-native IP addresses for administrators. The editor must never see those IPs.
-- Verify that an unauthorized AJAX data refresh is rejected.
-- Confirm that public-facing pages receive no tracking scripts.
+- WordPress user profile language English (United States): plugin displays English.
+- Français: bundled French translation loads.
+- Español: bundled Spanish translation loads.
+- Date formats and interpolated counts remain correct; WordPress timezone is Europe/Paris on #LAB.
 
-## Usability
+## Keyboard, reader and layout
 
-- Check widths of 320, 375 and 450 CSS pixels for layout overflow and text clipping.
-- Verify keyboard focus for settings controls and the widget settings link.
-- Verify automatic refresh is not presented as real-time user presence.
-- Verify dates use the WordPress timezone (Europe/Paris on Amino #LAB).
+- Keyboard focus survives a timed refresh while focused inside the widget.
+- Labels for session list and role fieldset are announced by a screen reader.
+- Status labels remain readable without color cues.
+- Validate at 320, 375 and 450 CSS pixels, text zoom to 200%, and forced-colors mode.
+- Hidden browser tabs must not poll; returning to a visible tab should refresh.
 
-This checklist requires real browser testing. The PHP smoke tests are isolated and cannot replace it.
+## Privacy and performance
+
+- No admin tracking JS on the public frontend and no third-party telemetry.
+- Unauthorized AJAX refresh and invalid nonce are denied.
+- User names are escaped; non-administrators cannot see IPs.
+- Test admin-ajax request cost with concurrent sessions at the optional 30-second interval.
+- Run WordPress Plugin Check and a real WCAG audit before the first public stable release.

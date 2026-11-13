@@ -52,6 +52,8 @@
     if (refreshing || document.visibilityState !== 'visible') return;
     const current = document.getElementById('amino-orbit-panel');
     if (!current) return;
+    // Preserve keyboard focus: replacing a focused Settings link would move focus.
+    if (current.contains(document.activeElement)) return;
     refreshing = true;
     post('amino_orbit_refresh')
       .then((result) => {
@@ -65,5 +67,12 @@
       .catch(() => { /* Keep the previous panel when offline. */ })
       .finally(() => { refreshing = false; });
   }
+  // Refresh promptly when returning to a backgrounded tab, without polling hidden tabs.
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      ping();
+      refresh();
+    }
+  });
   window.setInterval(refresh, Math.max(30000, Number(config.refreshMs) || 60000));
 })();

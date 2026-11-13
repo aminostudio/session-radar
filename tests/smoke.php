@@ -3,6 +3,7 @@
 define('ABSPATH', '/tmp/');
 define('DAY_IN_SECONDS', 86400);
 define('MINUTE_IN_SECONDS', 60);
+define('AMINO_ORBIT_FILE', '/test/plugins/amino-orbit/amino-orbit.php');
 $state = [ 'admin'=>true, 'roles'=>['administrator'], 'options'=>[], 'meta'=>[], 'users'=>[] ];
 class WP_User { public int $ID; public string $display_name; public array $roles; public function __construct($id,$name,$roles){$this->ID=$id;$this->display_name=$name;$this->roles=$roles;} }
 class Test_Roles {public array $roles=['administrator'=>['name'=>'Administrator'],'editor'=>['name'=>'Editor'],'author'=>['name'=>'Author']];}
@@ -44,12 +45,16 @@ function checked($value,$match=null){if($value===$match)echo ' checked';}
 function selected($value,$match=null){if($value===$match)echo ' selected';}
 function settings_fields($a){}
 function submit_button($a){}
+function plugin_basename($f){return 'amino-orbit/amino-orbit.php';}
+function load_plugin_textdomain($domain,$unused,$path){$GLOBALS['state']['textdomain']=$path;return true;}
 function assert_true($condition,$message){if(!$condition){fwrite(STDERR,"FAIL: $message\n");exit(1);} echo "PASS: $message\n";}
 require dirname( __DIR__ ) . '/includes/class-amino-orbit.php';
+Amino_Orbit::load_translations();
+assert_true($state['textdomain']==='amino-orbit/languages','Localized catalog load path is correct');
 $state['users']=[new WP_User(1,'Amino Test',['administrator'])];
 $session=['login'=>time()-120,'expiration'=>time()+3600,'ua'=>'Mozilla/5.0 Firefox/159 Windows NT 10.0','ip'=>'192.0.2.10'];
 WP_Session_Tokens::$sessions=[$session];
-$s=Amino_Orbit::sanitize_settings(['viewer_roles'=>['editor','administrator','INVALID'], 'inactive_minutes'=>'9999','refresh_seconds'=>'7', 'show_ip'=>'1']);
+$s=Amino_Orbit::sanitize_settings(['viewer_roles'=>['editor','administrator',['nested'], 'INVALID'], 'inactive_minutes'=>'9999','refresh_seconds'=>'7', 'show_ip'=>'1']);
 assert_true($s['viewer_roles']===['editor'], 'Role configuration restricted to known non-admin roles');
 assert_true($s['inactive_minutes']===5 && $s['refresh_seconds']===60, 'Numeric settings constrained to safe values');
 $s30=Amino_Orbit::sanitize_settings(['refresh_seconds'=>30]);
@@ -57,14 +62,15 @@ assert_true($s30['refresh_seconds']===30, 'Accepts optional 30-second refresh in
 function panel(){ob_start();Amino_Orbit::render_widget();return ob_get_clean();}
 $html=panel();
 assert_true(str_contains($html,'Amino <em>ORBIT</em>'), 'Renders orbit branding');
-assert_true(str_contains($html,'Amino Test') && str_contains($html,'Session ouverte'), 'Shows native session without falsely marking active');
+assert_true(str_contains($html,'Amino Test') && str_contains($html,'Session open'), 'Shows native session without falsely marking active');
 assert_true(!str_contains($html,'192.0.2.10'), 'IP hidden by default');
+assert_true(str_contains($html,'aria-label="Authenticated WordPress sessions"'),'Session list has accessible name');
 $method=(new ReflectionClass('Amino_Orbit'))->getMethod('fingerprint');
 $key=$method->invoke(null,$session);
 $state['meta'][1]=[$key=>time()];
-assert_true(str_contains(panel(),'Actif'), 'Marks recent admin interaction as active');
+assert_true(str_contains(panel(),'amino-orbit__status--active'), 'Marks recent admin interaction as active');
 $state['meta'][1]=[$key=>time()-1000];
-assert_true(str_contains(panel(),'Inactif'), 'Marks stale interaction as inactive, without logging the user out');
+assert_true(str_contains(panel(),'amino-orbit__status--idle'), 'Marks stale interaction as inactive, without logging the user out');
 $state['options']=['show_ip'=>1];
 assert_true(str_contains(panel(),'192.0.2.10'), 'Optional IP visible to administrator');
 $state['admin']=false;
@@ -101,7 +107,7 @@ $html=panel();
 assert_true(substr_count($html,'class="amino-orbit__user"')===3,'Three valid sessions displayed, expired session ignored');
 assert_true(str_contains($html,'Morgan &lt;script&gt;alert(1)&lt;/script&gt;') && !str_contains($html,'<script>alert(1)</script>'),'Display names are HTML-escaped');
 assert_true(str_contains($html,'Firefox · Windows') && str_contains($html,'Chrome · Android'),'Device labels derived from user agents');
-assert_true(str_contains($html,'Connexion : ') && str_contains($html,'title="Rafraîchissement automatique'),'Login times clarified and auto-refresh identified without live claim');
+assert_true(str_contains($html,'Logged in: ') && str_contains($html,'title="Automatic refresh'),'Login times clarified and auto-refresh identified without live claim');
 assert_true(substr_count($html,'amino-orbit__status--active')===2 && substr_count($html,'amino-orbit__status--idle')===1,'Mixed sessions correctly classified by recent activity');
 $state['admin']=false;
 $state['roles']=['author'];

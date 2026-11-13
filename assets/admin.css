@@ -1,4 +1,4 @@
-/* Amino Orbit 0.2: scoped widget and settings UI, accessible typographic scale. */
+/* Amino Orbit 0.3: scoped widget and settings UI, accessible typographic scale. */
 #amino_orbit_widget .inside { margin: 0; padding: 0; }
 #amino_orbit_widget .postbox-header { border-bottom-color: #e9e5f0; }
 .amino-orbit { --ao-violet: #ca9eff; --ao-ink: #292432; color: var(--ao-ink); font: 400 13px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
@@ -43,7 +43,7 @@
 .amino-orbit-settings__card { background: #fff; border: 1px solid #e5e0ec; box-shadow: 0 2px 9px #2924320b; border-radius: 10px; padding: 19px 23px; margin: 17px 0; }
 .amino-orbit-settings__card h2 { margin-top: 0; }
 .amino-orbit-settings__card p { color: #575260; }
-.amino-orbit-settings__roles { display: flex; flex-wrap: wrap; gap: 12px 22px; margin-top: 17px; }
+.amino-orbit-settings__roles { border: 0; padding: 0; min-width: 0; display: flex; flex-wrap: wrap; gap: 12px 22px; margin-top: 17px; }
 .amino-orbit-settings__roles label { min-width: 135px; }
 .amino-orbit-settings select { min-width: 190px; }
 .amino-orbit-settings input:focus-visible, .amino-orbit-settings select:focus-visible { outline: 2px solid #9461ce; outline-offset: 2px; }
@@ -67,3 +67,23 @@
   .amino-orbit__timing small { margin-top: 0; }
 }
 @media (prefers-reduced-motion: reduce) { .amino-orbit *, .amino-orbit *::before, .amino-orbit *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
+
+/* Keyboard users and forced-colors/high-contrast modes. */
+#amino_orbit_widget .amino-orbit__footer a:focus-visible {
+  outline: 2px solid #6e3da8;
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+.amino-orbit-settings input[type="checkbox"]:focus-visible,
+.amino-orbit-settings select:focus-visible,
+.amino-orbit-settings input[type="submit"]:focus-visible {
+  outline: 2px solid #6e3da8;
+  outline-offset: 3px;
+}
+@media (forced-colors: active) {
+  .amino-orbit__header, .amino-orbit__stats > div,
+  .amino-orbit__live, .amino-orbit__status,
+  .amino-orbit__avatar { border: 1px solid CanvasText; forced-color-adjust: auto; }
+  .amino-orbit__symbol::before { border-color: CanvasText; }
+  .amino-orbit__symbol span, .amino-orbit__live i { background: CanvasText; }
+}

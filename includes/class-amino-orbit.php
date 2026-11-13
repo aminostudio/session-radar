@@ -23,6 +23,7 @@ final class Amino_Orbit {
 
 	/** Register WordPress hooks. */
 	public static function init(): void {
+		add_action( 'init', array( __CLASS__, 'load_translations' ) );
 		add_action( 'wp_dashboard_setup', array( __CLASS__, 'register_widget' ) );
 		add_action( 'admin_menu', array( __CLASS__, 'register_settings_page' ) );
 		add_action( 'admin_init', array( __CLASS__, 'register_settings' ) );
@@ -30,6 +31,11 @@ final class Amino_Orbit {
 		add_action( 'wp_ajax_amino_orbit_ping', array( __CLASS__, 'ajax_ping' ) );
 		add_action( 'wp_ajax_amino_orbit_refresh', array( __CLASS__, 'ajax_refresh' ) );
 		add_action( self::CLEANUP_HOOK, array( __CLASS__, 'cleanup_presence' ) );
+	}
+
+	/** Register bundled locale files at init, never before. */
+	public static function load_translations(): void {
+		load_plugin_textdomain( 'amino-orbit', false, dirname( plugin_basename( AMINO_ORBIT_FILE ) ) . '/languages' );
 	}
 
 	/** Set up the WordPress cron cleanup without modifying existing settings. */
@@ -102,7 +108,9 @@ final class Amino_Orbit {
 	public static function sanitize_settings( $input ): array {
 		$input = is_array( $input ) ? $input : array();
 		$roles = array_keys( wp_roles()->roles );
-		$submitted = isset( $input['viewer_roles'] ) && is_array( $input['viewer_roles'] ) ? array_map( 'sanitize_key', $input['viewer_roles'] ) : array();
+		$submitted = isset( $input['viewer_roles'] ) && is_array( $input['viewer_roles'] )
+			? array_map( 'sanitize_key', array_filter( $input['viewer_roles'], 'is_string' ) )
+			: array();
 		$viewer_roles = array_values( array_intersect( $submitted, $roles ) );
 		$viewer_roles = array_values( array_diff( $viewer_roles, array( 'administrator' ) ) );
 		$inactivity = isset( $input['inactive_minutes'] ) ? absint( $input['inactive_minutes'] ) : 5;
@@ -122,7 +130,7 @@ final class Amino_Orbit {
 		}
 		wp_add_dashboard_widget(
 			'amino_orbit_widget',
-			__( 'Amino Orbit · Présence', 'amino-orbit' ),
+			__( 'Amino Orbit · Presence', 'amino-orbit' ),
 			array( __CLASS__, 'render_widget' )
 		);
 	}
@@ -218,9 +226,9 @@ final class Amino_Orbit {
 	/** Normalize user agent to simple labels, not a fingerprinting library. */
 	private static function device( string $ua ): string {
 		if ( '' === $ua ) {
-			return __( 'Appareil inconnu', 'amino-orbit' );
+			return __( 'Unknown device', 'amino-orbit' );
 		}
-		$browser = __( 'Navigateur', 'amino-orbit' );
+		$browser = __( 'Browser', 'amino-orbit' );
 		if ( false !== stripos( $ua, 'Edg/' ) ) {
 			$browser = 'Edge';
 		} elseif ( false !== stripos( $ua, 'Firefox/' ) || false !== stripos( $ua, 'FxiOS/' ) ) {
@@ -253,6 +261,7 @@ final class Amino_Orbit {
 			array(
 				'meta_key' => 'session_tokens',
 				'fields' => 'all',
+				'count_total' => false,
 				'number' => self::MAX_USERS,
 				'orderby' => 'ID',
 				'order' => 'ASC',
@@ -316,18 +325,18 @@ final class Amino_Orbit {
 					<div class="amino-orbit__symbol" aria-hidden="true"><span></span></div>
 					<div><strong>Amino <em>ORBIT</em></strong><small><?php esc_html_e( 'PRESENCE MONITOR', 'amino-orbit' ); ?></small></div>
 				</div>
-				<span class="amino-orbit__live" title="<?php echo esc_attr__( 'Rafraîchissement automatique, pas de connexion en temps réel', 'amino-orbit' ); ?>"><i aria-hidden="true"></i><?php esc_html_e( 'Auto', 'amino-orbit' ); ?></span>
+				<span class="amino-orbit__live" aria-label="<?php echo esc_attr__( 'Automatic refresh, not real-time presence', 'amino-orbit' ); ?>" title="<?php echo esc_attr__( 'Automatic refresh, not real-time presence', 'amino-orbit' ); ?>"><i aria-hidden="true"></i><?php esc_html_e( 'Auto', 'amino-orbit' ); ?></span>
 				<div class="amino-orbit__stats">
 					<div><strong><?php echo esc_html( (string) $total ); ?></strong><small><?php esc_html_e( 'Sessions', 'amino-orbit' ); ?></small></div>
-					<div><strong><?php echo esc_html( (string) $active ); ?></strong><small><?php esc_html_e( 'Actives', 'amino-orbit' ); ?></small></div>
-					<div><strong><?php echo esc_html( (string) count( $user_ids ) ); ?></strong><small><?php esc_html_e( 'Utilisateurs', 'amino-orbit' ); ?></small></div>
+					<div><strong><?php echo esc_html( (string) $active ); ?></strong><small><?php esc_html_e( 'Active sessions', 'amino-orbit' ); ?></small></div>
+					<div><strong><?php echo esc_html( (string) count( $user_ids ) ); ?></strong><small><?php esc_html_e( 'Users', 'amino-orbit' ); ?></small></div>
 				</div>
 			</div>
 			<div class="amino-orbit__body">
 				<?php if ( ! $rows ) : ?>
-					<p class="amino-orbit__empty"><?php esc_html_e( 'Aucune session WordPress ouverte détectée.', 'amino-orbit' ); ?></p>
+					<p class="amino-orbit__empty"><?php esc_html_e( 'No open WordPress sessions detected.', 'amino-orbit' ); ?></p>
 				<?php else : ?>
-					<ul class="amino-orbit__list">
+					<ul class="amino-orbit__list" aria-label="<?php echo esc_attr__( 'Authenticated WordPress sessions', 'amino-orbit' ); ?>">
 						<?php foreach ( array_slice( $rows, 0, self::MAX_ROWS ) as $row ) : ?>
 							<?php
 							$user = $row['user'];
@@ -337,9 +346,9 @@ final class Amino_Orbit {
 								$role_labels[] = is_array( $role_definition ) ? translate_user_role( $role_definition['name'] ) : $role;
 							}
 							$label = array(
-								'active' => __( 'Actif', 'amino-orbit' ),
-								'idle' => __( 'Inactif', 'amino-orbit' ),
-								'session' => __( 'Session ouverte', 'amino-orbit' ),
+								'active' => __( 'Active', 'amino-orbit' ),
+								'idle' => __( 'Inactive', 'amino-orbit' ),
+								'session' => __( 'Session open', 'amino-orbit' ),
 							);
 							$initials = function_exists( 'mb_substr' ) ? mb_strtoupper( mb_substr( (string) $user->display_name, 0, 2 ) ) : strtoupper( substr( (string) $user->display_name, 0, 2 ) );
 							?>
@@ -356,10 +365,10 @@ final class Amino_Orbit {
 								<div class="amino-orbit__timing">
 									<span class="amino-orbit__status amino-orbit__status--<?php echo esc_attr( $row['status'] ); ?>"><?php echo esc_html( $label[ $row['status'] ] ); ?></span>
 									<?php if ( $row['login'] ) : ?>
-										<small title="<?php echo esc_attr( wp_date( 'd/m/Y H:i:s T', $row['login'] ) ); ?>"><?php echo esc_html( sprintf( /* translators: %s: WordPress login time in site timezone. */ __( 'Connexion : %s', 'amino-orbit' ), wp_date( 'd/m H:i', $row['login'] ) ) ); ?></small>
+										<small title="<?php echo esc_attr( wp_date( 'd/m/Y H:i:s T', $row['login'] ) ); ?>"><?php echo esc_html( sprintf( /* translators: %s: WordPress login time in site timezone. */ __( 'Logged in: %s', 'amino-orbit' ), wp_date( 'd/m H:i', $row['login'] ) ) ); ?></small>
 									<?php endif; ?>
 									<?php if ( $row['last_seen'] ) : ?>
-										<small title="<?php echo esc_attr__( 'Dernière activité détectée dans l’administration WordPress', 'amino-orbit' ); ?>"><?php echo esc_html( sprintf( /* translators: %s: human-readable time difference. */ __( 'Vu il y a %s', 'amino-orbit' ), human_time_diff( $row['last_seen'], time() ) ) ); ?></small>
+										<small title="<?php echo esc_attr__( 'Last activity detected in WordPress admin', 'amino-orbit' ); ?>"><?php echo esc_html( sprintf( /* translators: %s: human-readable time difference. */ __( 'Seen %s ago', 'amino-orbit' ), human_time_diff( $row['last_seen'], time() ) ) ); ?></small>
 									<?php endif; ?>
 								</div>
 							</li>
@@ -367,16 +376,16 @@ final class Amino_Orbit {
 					</ul>
 				<?php endif; ?>
 				<?php if ( $total > self::MAX_ROWS ) : ?>
-					<p class="amino-orbit__note"><?php echo esc_html( sprintf( /* translators: %d: maximum number of displayed sessions. */ __( 'Affichage limité à %d sessions.', 'amino-orbit' ), self::MAX_ROWS ) ); ?></p>
+					<p class="amino-orbit__note"><?php echo esc_html( sprintf( /* translators: %d: maximum number of displayed sessions. */ __( 'Showing up to %d sessions.', 'amino-orbit' ), self::MAX_ROWS ) ); ?></p>
 				<?php endif; ?>
 			</div>
 			<div class="amino-orbit__footer">
-				<span><?php echo esc_html( sprintf( /* translators: %d: refresh interval in seconds. */ __( 'Actualisation : %d s', 'amino-orbit' ), (int) $options['refresh_seconds'] ) ); ?></span>
+				<span><?php echo esc_html( sprintf( /* translators: %d: refresh interval in seconds. */ __( 'Refresh: %d s', 'amino-orbit' ), (int) $options['refresh_seconds'] ) ); ?></span>
 				<?php if ( current_user_can( 'manage_options' ) ) : ?>
-					<a href="<?php echo esc_url( admin_url( 'options-general.php?page=amino-orbit' ) ); ?>"><?php esc_html_e( 'Réglages', 'amino-orbit' ); ?> <span aria-hidden="true">↗</span></a>
+					<a href="<?php echo esc_url( admin_url( 'options-general.php?page=amino-orbit' ) ); ?>"><?php esc_html_e( 'Settings', 'amino-orbit' ); ?> <span aria-hidden="true">↗</span></a>
 				<?php endif; ?>
 			</div>
-			<p class="amino-orbit__disclaimer"><?php esc_html_e( 'Actif = activité récente dans wp-admin. Une session ouverte ne signifie pas que la personne est devant son écran.', 'amino-orbit' ); ?></p>
+			<p class="amino-orbit__disclaimer"><?php esc_html_e( 'Active means recent activity in wp-admin. An open session does not mean the user is at their screen.', 'amino-orbit' ); ?></p>
 		</div>
 		<?php
 	}
@@ -390,38 +399,38 @@ final class Amino_Orbit {
 		?>
 		<div class="wrap amino-orbit-settings">
 			<h1><?php esc_html_e( 'Amino Orbit', 'amino-orbit' ); ?></h1>
-			<p><?php esc_html_e( 'Sessions WordPress et activité récente dans l’administration, sans suivi de la navigation publique.', 'amino-orbit' ); ?></p>
+			<p><?php esc_html_e( 'WordPress sessions and recent admin activity, without tracking public-site browsing.', 'amino-orbit' ); ?></p>
 			<form method="post" action="options.php">
 				<?php settings_fields( 'amino_orbit_settings' ); ?>
 				<div class="amino-orbit-settings__card">
-					<h2><?php esc_html_e( 'Qui peut voir le widget ?', 'amino-orbit' ); ?></h2>
-					<p><?php esc_html_e( 'Les administrateurs ont toujours accès. Autorisez, si besoin, des rôles supplémentaires.', 'amino-orbit' ); ?></p>
-					<div class="amino-orbit-settings__roles">
+					<h2><?php esc_html_e( 'Who can see the widget?', 'amino-orbit' ); ?></h2>
+					<p><?php esc_html_e( 'Administrators always have access. Optionally grant access to additional roles.', 'amino-orbit' ); ?></p>
+					<fieldset class="amino-orbit-settings__roles"><legend class="screen-reader-text"><?php esc_html_e( 'Additional roles allowed to see the widget', 'amino-orbit' ); ?></legend>
 						<?php foreach ( wp_roles()->roles as $slug => $details ) : ?>
 							<?php if ( 'administrator' !== $slug ) : ?>
 								<label><input type="checkbox" name="<?php echo esc_attr( self::OPTION ); ?>[viewer_roles][]" value="<?php echo esc_attr( $slug ); ?>" <?php checked( in_array( $slug, (array) $options['viewer_roles'], true ) ); ?> /> <?php echo esc_html( translate_user_role( $details['name'] ) ); ?></label>
 							<?php endif; ?>
 						<?php endforeach; ?>
-					</div>
+					</fieldset>
 				</div>
 				<div class="amino-orbit-settings__card">
-					<h2><?php esc_html_e( 'Présence et actualisation', 'amino-orbit' ); ?></h2>
-					<p><label for="amino-orbit-inactive"><?php esc_html_e( 'Seuil d’inactivité', 'amino-orbit' ); ?></label></p>
+					<h2><?php esc_html_e( 'Presence and refresh', 'amino-orbit' ); ?></h2>
+					<p><label for="amino-orbit-inactive"><?php esc_html_e( 'Inactivity threshold', 'amino-orbit' ); ?></label></p>
 					<select id="amino-orbit-inactive" name="<?php echo esc_attr( self::OPTION ); ?>[inactive_minutes]">
 						<?php foreach ( array( 5, 10, 15, 30 ) as $minute ) : ?><option value="<?php echo esc_attr( (string) $minute ); ?>" <?php selected( (int) $options['inactive_minutes'], $minute ); ?>><?php echo esc_html( sprintf( /* translators: %d: number of minutes. */ __( '%d minutes', 'amino-orbit' ), $minute ) ); ?></option><?php endforeach; ?>
 					</select>
-					<p><label for="amino-orbit-refresh"><?php esc_html_e( 'Rafraîchissement du widget', 'amino-orbit' ); ?></label></p>
+					<p><label for="amino-orbit-refresh"><?php esc_html_e( 'Widget refresh interval', 'amino-orbit' ); ?></label></p>
 					<select id="amino-orbit-refresh" name="<?php echo esc_attr( self::OPTION ); ?>[refresh_seconds]">
-						<?php foreach ( array( 30, 60, 120, 180 ) as $second ) : ?><option value="<?php echo esc_attr( (string) $second ); ?>" <?php selected( (int) $options['refresh_seconds'], $second ); ?>><?php echo esc_html( sprintf( /* translators: %d: number of seconds. */ __( '%d secondes', 'amino-orbit' ), $second ) ); ?></option><?php endforeach; ?>
+						<?php foreach ( array( 30, 60, 120, 180 ) as $second ) : ?><option value="<?php echo esc_attr( (string) $second ); ?>" <?php selected( (int) $options['refresh_seconds'], $second ); ?>><?php echo esc_html( sprintf( /* translators: %d: number of seconds. */ __( '%d seconds', 'amino-orbit' ), $second ) ); ?></option><?php endforeach; ?>
 					</select>
 				</div>
 				<div class="amino-orbit-settings__card">
-					<h2><?php esc_html_e( 'Confidentialité', 'amino-orbit' ); ?></h2>
-					<label><input type="checkbox" name="<?php echo esc_attr( self::OPTION ); ?>[show_ip]" value="1" <?php checked( ! empty( $options['show_ip'] ) ); ?> /> <?php esc_html_e( 'Afficher les IP des sessions aux administrateurs uniquement', 'amino-orbit' ); ?></label>
-					<p class="description"><?php esc_html_e( 'Désactivé par défaut. Amino Orbit ne collecte pas d’IP supplémentaires ; il lit les informations déjà associées aux sessions WordPress.', 'amino-orbit' ); ?></p>
-					<p class="description"><?php esc_html_e( 'Les horodatages d’activité expirent au bout de 24 heures et sont purgés quotidiennement via WP-Cron. Aucune activité des visiteurs anonymes n’est suivie.', 'amino-orbit' ); ?></p>
+					<h2><?php esc_html_e( 'Privacy', 'amino-orbit' ); ?></h2>
+					<label><input type="checkbox" name="<?php echo esc_attr( self::OPTION ); ?>[show_ip]" value="1" <?php checked( ! empty( $options['show_ip'] ) ); ?> /> <?php esc_html_e( 'Show session IP addresses to administrators only', 'amino-orbit' ); ?></label>
+					<p class="description"><?php esc_html_e( 'Disabled by default. Amino Orbit does not collect additional IP addresses; it reads data already associated with WordPress sessions.', 'amino-orbit' ); ?></p>
+					<p class="description"><?php esc_html_e( 'Activity timestamps expire after 24 hours and are cleaned daily by WP-Cron. Anonymous visitors are not tracked.', 'amino-orbit' ); ?></p>
 				</div>
-				<?php submit_button( __( 'Enregistrer les réglages', 'amino-orbit' ) ); ?>
+				<?php submit_button( __( 'Save settings', 'amino-orbit' ) ); ?>
 			</form>
 		</div>
 		<?php

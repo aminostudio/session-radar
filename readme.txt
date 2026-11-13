@@ -4,7 +4,7 @@ Tags: dashboard, users, sessions, activity, privacy
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.2.1
+Stable tag: 0.3.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -22,6 +22,10 @@ It distinguishes between:
 "Session open" does not mean the user is online. Orbit does not follow anonymous visitors or frontend behavior. It stores no extra IP address or raw authentication token. An administrator can optionally display the IP recorded by WordPress in each session.
 
 The dashboard widget is visible to administrators by default. Under Settings > Amino Orbit, administrators can permit other roles to see it, adjust the inactivity threshold, change the refresh interval (30/60/120/180s), and show IP addresses to administrators only.
+
+== Languages ==
+
+The plugin follows the WordPress user locale in wp-admin. English is the default source language; the bundled translations cover fr_FR and es_ES.
 
 == Installation ==
 
@@ -46,6 +50,13 @@ Data retention of native WordPress session information is managed by WordPress, 
 * Activity pings are best-effort, not a live socket. Browser background throttling can delay updates.
 
 == Changelog ==
+
+= 0.3.0 =
+* Adds bundled French and Spanish gettext translations; English is the source language.
+* Improves keyboard focus, role checkbox semantics and localized accessibility labels.
+* Ignores malformed role arrays in settings and skips an unnecessary WordPress user-count query.
+* Preserves all v0.2.1 settings, including the optional 30-second widget refresh.
+
 
 = 0.2.1 =
 * Adds an optional 30-second dashboard refresh; retains 60 seconds as the default.

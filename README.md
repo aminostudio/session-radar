@@ -26,7 +26,7 @@ A valid WordPress session is **not proof that someone is at their keyboard**. Th
 - Dashboard widget showing active, inactive and open sessions.
 - Displays the account name, WordPress roles, login time and browser/OS labels.
 - Activity beacons from authenticated admin pages, throttled to minimize requests.
-- Refreshes the dashboard widget every 60, 120 or 180 seconds.
+- Refreshes the dashboard widget every 30, 60, 120 or 180 seconds (60 seconds by default).
 - Configurable read-only visibility for non-administrator roles.
 - IP addresses hidden by default, optionally visible to administrators only.
 - Responsive, scoped CSS and dependency-free vanilla JavaScript.
@@ -54,6 +54,8 @@ amino-orbit/
 ├── assets/admin.js
 ├── uninstall.php
 ├── readme.txt
+├── languages/ (gettext POT, French and Spanish PO/MO)
+├── tests/ (isolated smoke checks, gettext and manual QA)
 ├── README.md
 └── LICENSE
 ~~~
@@ -67,7 +69,19 @@ amino-orbit/
 - Background browser throttling can delay activity reports; this is not a WebSocket/live-presence system.
 - Actual scheduled cleanup depends on WP-Cron execution.
 
+## Internationalization
+
+English is the source language. Bundled gettext catalogs provide French (`fr_FR`) and Spanish (`es_ES`) translations. The plugin follows the WordPress admin user locale; it does not force the site language. `.po` files can be edited by translators; `.mo` files are compiled for WordPress. A `.pot` template is included.
+
 ## Changelog
+
+### v0.3.0 (development)
+- Internationalized all admin labels and settings (English source, French and Spanish catalogs).
+- Hardened role-setting sanitization against nested-array submissions.
+- Added keyboard-focus protection during live widget refresh, high-contrast rules and semantic role-group markup.
+- Optimized native session scans by skipping the unneeded total-user count.
+- Kept the default 60-second refresh and the configured 30-second option.
+
 
 ### v0.2.1 (development)
 - Optional 30-second dashboard refresh (60 seconds remains the default), without increasing the activity ping frequency.
@@ -82,10 +96,11 @@ amino-orbit/
 
 ## Roadmap
 
-- [ ] Runtime integration tests with multiple users and roles on Amino #LAB.
-- [x] Add isolated PHP tests and JavaScript syntax checks (20 assertions).
+- [x] Verify two concurrent sessions of one account on Amino #LAB.
+- [ ] Verify permissions with a separate editor account and actual logout/idle transitions.
+- [x] Add isolated PHP tests, gettext catalog tests and JavaScript syntax checks.
 - [ ] Complete real-browser integration tests and accessibility audit.
-- [ ] Translate user-facing strings (French, English, Spanish).
+- [x] Translate user-facing strings (French, English, Spanish).
 - [ ] Plugin Check, security review, performance measurements.
 - [ ] Publish a stable v1.0 release after validation.
 
@@ -95,4 +110,4 @@ amino-orbit/
 
 ## Status
 
-**v0.2.1 is a development build**, not a stable public release. Initial isolated tests and syntax checks are not substitutes for real WordPress integration testing.
+**v0.3.0 is a development build**, not a stable public release. Initial isolated tests and syntax checks are not substitutes for real WordPress integration testing.

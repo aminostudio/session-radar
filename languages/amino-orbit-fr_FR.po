@@ -1,0 +1,118 @@
+msgid ""
+msgstr "Project-Id-Version: Amino Orbit 0.3.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=2; plural=(n != 1);\n"
+
+
+#, php-format
+msgid "%d minutes"
+msgstr "%d minutes"
+
+#, php-format
+msgid "%d seconds"
+msgstr "%d secondes"
+
+msgid "Active"
+msgstr "Actif"
+
+msgid "Active means recent activity in wp-admin. An open session does not mean the user is at their screen."
+msgstr "Actif = activité récente dans wp-admin. Une session ouverte ne signifie pas que la personne est devant son écran."
+
+msgid "Active sessions"
+msgstr "Actives"
+
+msgid "Activity timestamps expire after 24 hours and are cleaned daily by WP-Cron. Anonymous visitors are not tracked."
+msgstr "Les horodatages d’activité expirent au bout de 24 heures et sont purgés quotidiennement via WP-Cron. Aucune activité des visiteurs anonymes n’est suivie."
+
+msgid "Additional roles allowed to see the widget"
+msgstr "Rôles supplémentaires autorisés à voir le widget"
+
+msgid "Administrators always have access. Optionally grant access to additional roles."
+msgstr "Les administrateurs ont toujours accès. Autorisez, si besoin, des rôles supplémentaires."
+
+msgid "Amino Orbit"
+msgstr "Amino Orbit"
+
+msgid "Amino Orbit · Presence"
+msgstr "Amino Orbit · Présence"
+
+msgid "Authenticated WordPress sessions"
+msgstr "Sessions WordPress authentifiées"
+
+msgid "Auto"
+msgstr "Auto"
+
+msgid "Automatic refresh, not real-time presence"
+msgstr "Rafraîchissement automatique, pas de connexion en temps réel"
+
+msgid "Browser"
+msgstr "Navigateur"
+
+msgid "Disabled by default. Amino Orbit does not collect additional IP addresses; it reads data already associated with WordPress sessions."
+msgstr "Désactivé par défaut. Amino Orbit ne collecte pas d’IP supplémentaires ; il lit les informations déjà associées aux sessions WordPress."
+
+msgid "Inactive"
+msgstr "Inactif"
+
+msgid "Inactivity threshold"
+msgstr "Seuil d’inactivité"
+
+msgid "Last activity detected in WordPress admin"
+msgstr "Dernière activité détectée dans l’administration WordPress"
+
+#, php-format
+msgid "Logged in: %s"
+msgstr "Connexion : %s"
+
+msgid "No open WordPress sessions detected."
+msgstr "Aucune session WordPress ouverte détectée."
+
+msgid "Presence and refresh"
+msgstr "Présence et actualisation"
+
+msgid "PRESENCE MONITOR"
+msgstr "PRESENCE MONITOR"
+
+msgid "Privacy"
+msgstr "Confidentialité"
+
+#, php-format
+msgid "Refresh: %d s"
+msgstr "Actualisation : %d s"
+
+msgid "Save settings"
+msgstr "Enregistrer les réglages"
+
+#, php-format
+msgid "Seen %s ago"
+msgstr "Vu il y a %s"
+
+msgid "Session open"
+msgstr "Session ouverte"
+
+msgid "Sessions"
+msgstr "Sessions"
+
+msgid "Settings"
+msgstr "Réglages"
+
+msgid "Show session IP addresses to administrators only"
+msgstr "Afficher les IP des sessions aux administrateurs uniquement"
+
+#, php-format
+msgid "Showing up to %d sessions."
+msgstr "Affichage limité à %d sessions."
+
+msgid "Unknown device"
+msgstr "Appareil inconnu"
+
+msgid "Users"
+msgstr "Utilisateurs"
+
+msgid "Who can see the widget?"
+msgstr "Qui peut voir le widget ?"
+
+msgid "Widget refresh interval"
+msgstr "Rafraîchissement du widget"
+
+msgid "WordPress sessions and recent admin activity, without tracking public-site browsing."
+msgstr "Sessions WordPress et activité récente dans l’administration, sans suivi de la navigation publique."
+
