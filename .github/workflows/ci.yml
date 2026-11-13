@@ -1,0 +1,29 @@
+name: Amino Orbit checks
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+      - name: PHP syntax checks
+        run: |
+          php -l amino-orbit.php
+          php -l includes/class-amino-orbit.php
+          php -l uninstall.php
+      - name: PHP isolated smoke checks
+        run: php tests/smoke.php
+      - name: JavaScript syntax check
+        run: node --check assets/admin.js
