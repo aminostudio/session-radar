@@ -33,8 +33,9 @@
     // Avoid turning a forgotten browser tab into a false "active" presence.
     if (lastInteraction <= lastReported || Date.now() - lastInteraction > 5 * 60 * 1000) return;
     sending = true;
+    const interactionAtSend = lastInteraction;
     post('amino_orbit_ping')
-      .then((result) => { if (result.success) lastReported = lastInteraction; })
+      .then((result) => { if (result.success) lastReported = interactionAtSend; })
       .catch(() => { /* Non-critical telemetry: fail silently. */ })
       .finally(() => { sending = false; });
   }

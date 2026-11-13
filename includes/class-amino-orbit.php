@@ -316,7 +316,7 @@ final class Amino_Orbit {
 					<div class="amino-orbit__symbol" aria-hidden="true"><span></span></div>
 					<div><strong>Amino <em>ORBIT</em></strong><small><?php esc_html_e( 'PRESENCE MONITOR', 'amino-orbit' ); ?></small></div>
 				</div>
-				<span class="amino-orbit__live"><i aria-hidden="true"></i><?php esc_html_e( 'Live', 'amino-orbit' ); ?></span>
+				<span class="amino-orbit__live" title="<?php echo esc_attr__( 'Rafraîchissement automatique, pas de connexion en temps réel', 'amino-orbit' ); ?>"><i aria-hidden="true"></i><?php esc_html_e( 'Auto', 'amino-orbit' ); ?></span>
 				<div class="amino-orbit__stats">
 					<div><strong><?php echo esc_html( (string) $total ); ?></strong><small><?php esc_html_e( 'Sessions', 'amino-orbit' ); ?></small></div>
 					<div><strong><?php echo esc_html( (string) $active ); ?></strong><small><?php esc_html_e( 'Actives', 'amino-orbit' ); ?></small></div>
@@ -356,10 +356,10 @@ final class Amino_Orbit {
 								<div class="amino-orbit__timing">
 									<span class="amino-orbit__status amino-orbit__status--<?php echo esc_attr( $row['status'] ); ?>"><?php echo esc_html( $label[ $row['status'] ] ); ?></span>
 									<?php if ( $row['login'] ) : ?>
-										<small title="<?php echo esc_attr( wp_date( 'd/m/Y H:i:s T', $row['login'] ) ); ?>"><?php echo esc_html( sprintf( /* translators: %s: WordPress login time in site timezone. */ __( 'Depuis %s', 'amino-orbit' ), wp_date( 'd/m H:i', $row['login'] ) ) ); ?></small>
+										<small title="<?php echo esc_attr( wp_date( 'd/m/Y H:i:s T', $row['login'] ) ); ?>"><?php echo esc_html( sprintf( /* translators: %s: WordPress login time in site timezone. */ __( 'Connexion : %s', 'amino-orbit' ), wp_date( 'd/m H:i', $row['login'] ) ) ); ?></small>
 									<?php endif; ?>
 									<?php if ( $row['last_seen'] ) : ?>
-										<small><?php echo esc_html( sprintf( /* translators: %s: human-readable time difference. */ __( 'Vu il y a %s', 'amino-orbit' ), human_time_diff( $row['last_seen'], time() ) ) ); ?></small>
+										<small title="<?php echo esc_attr__( 'Dernière activité détectée dans l’administration WordPress', 'amino-orbit' ); ?>"><?php echo esc_html( sprintf( /* translators: %s: human-readable time difference. */ __( 'Vu il y a %s', 'amino-orbit' ), human_time_diff( $row['last_seen'], time() ) ) ); ?></small>
 									<?php endif; ?>
 								</div>
 							</li>
@@ -390,7 +390,7 @@ final class Amino_Orbit {
 		?>
 		<div class="wrap amino-orbit-settings">
 			<h1><?php esc_html_e( 'Amino Orbit', 'amino-orbit' ); ?></h1>
-			<p><?php esc_html_e( 'Présence WordPress sans espionnage : sessions natives, activité récente dans l’administration et visibilité maîtrisée.', 'amino-orbit' ); ?></p>
+			<p><?php esc_html_e( 'Sessions WordPress et activité récente dans l’administration, sans suivi de la navigation publique.', 'amino-orbit' ); ?></p>
 			<form method="post" action="options.php">
 				<?php settings_fields( 'amino_orbit_settings' ); ?>
 				<div class="amino-orbit-settings__card">

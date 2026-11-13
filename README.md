@@ -67,10 +67,20 @@ amino-orbit/
 - Background browser throttling can delay activity reports; this is not a WebSocket/live-presence system.
 - Actual scheduled cleanup depends on WP-Cron execution.
 
+## Changelog
+
+### v0.2.0 (development)
+- Improved contrast, typography and small-screen layout.
+- Changed “Live” to “Auto” to avoid implying real-time presence.
+- Clarified login times and last activity descriptions.
+- Fixed a request race for recent user interaction.
+- Added multi-user and role smoke tests and a manual QA checklist.
+
 ## Roadmap
 
 - [ ] Runtime integration tests with multiple users and roles on Amino #LAB.
-- [ ] Add portable automated PHP/JavaScript tests and an accessibility audit.
+- [x] Add isolated PHP tests and JavaScript syntax checks (20 assertions).
+- [ ] Complete real-browser integration tests and accessibility audit.
 - [ ] Translate user-facing strings (French, English, Spanish).
 - [ ] Plugin Check, security review, performance measurements.
 - [ ] Publish a stable v1.0 release after validation.
@@ -81,4 +91,4 @@ amino-orbit/
 
 ## Status
 
-**v0.1.0 is a development build**, not a stable public release. Initial isolated tests and syntax checks are not substitutes for real WordPress integration testing.
+**v0.2.0 is a development build**, not a stable public release. Initial isolated tests and syntax checks are not substitutes for real WordPress integration testing.
