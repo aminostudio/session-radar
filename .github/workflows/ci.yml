@@ -92,6 +92,20 @@ jobs:
             sleep 1
           done
           node tests/browser-e2e.cjs
+      - name: Concurrent authenticated AJAX polling (eight administrators)
+        run: |
+          set -euo pipefail
+          wp eval-file "$GITHUB_WORKSPACE/tests/concurrent-fixture.php" --path="$WP_ROOT"
+          # Eight worker processes are essential. A single-worker PHP -S
+          # would serialize requests and invalidate the concurrency probe.
+          PHP_CLI_SERVER_WORKERS=8 php -S 127.0.0.1:8080 -t "$WP_ROOT" > /tmp/orbit-concurrent-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true; tail -n 20 /tmp/orbit-concurrent-server.log || true' EXIT
+          for attempt in {1..30}; do
+            if curl --silent --fail http://127.0.0.1:8080/wp-login.php > /dev/null; then break; fi
+            sleep 1
+          done
+          node tests/concurrent-ajax.cjs
       - name: Scale and bounded-query benchmarks (disposable database)
         run: wp eval-file "$GITHUB_WORKSPACE/tests/scaling.php" --path="$WP_ROOT"
       - name: Official WordPress Plugin Check (static and runtime)
