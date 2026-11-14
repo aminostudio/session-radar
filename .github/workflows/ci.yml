@@ -1,8 +1,16 @@
 name: Amino Orbit checks
 
 on:
+  # Run on main merges and PR updates, not twice for every feature push.
   push:
+    branches: [main]
   pull_request:
+  workflow_dispatch:
+
+# Replace obsolete in-progress checks when the same PR receives new commits.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   smoke:
