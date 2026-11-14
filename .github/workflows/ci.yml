@@ -70,7 +70,7 @@ jobs:
           wp config create --path="$WP_ROOT" --dbname=orbit_ci --dbuser=orbit_ci --dbpass=orbit_ci_password --dbhost=127.0.0.1 --skip-check
           wp core install --path="$WP_ROOT" --url=http://127.0.0.1:8080 --title="Amino Orbit CI" --admin_user=orbit_ci_admin --admin_password="temporary-ci-password-not-reused" --admin_email=admin@orbit-ci.invalid --skip-email
           mkdir -p "$WP_ROOT/wp-content/plugins/amino-orbit"
-          cp amino-orbit.php uninstall.php "$WP_ROOT/wp-content/plugins/amino-orbit/"
+          cp amino-orbit.php uninstall.php readme.txt README.md LICENSE "$WP_ROOT/wp-content/plugins/amino-orbit/"
           cp -R assets includes languages "$WP_ROOT/wp-content/plugins/amino-orbit/"
           wp plugin activate amino-orbit --path="$WP_ROOT"
           wp language core install fr_FR es_ES --path="$WP_ROOT"
@@ -112,16 +112,35 @@ jobs:
           cat /tmp/orbit-pcp-runtime.json
           python3 - <<'PY'
           import json
+          import pathlib
+          import sys
+
+          # PCP 2.2.0 emits FILE: headings and one JSON array per source file,
+          # not one top-level JSON document. Parse every file section.
+          errors = 0
           for kind in ("static", "runtime"):
-              with open(f"/tmp/orbit-pcp-{kind}.json", encoding="utf-8") as fh:
-                  result = json.load(fh)
-              if isinstance(result, list):
-                  findings = result
-              elif isinstance(result, dict):
-                  findings = result.get("issues", result.get("results", []))
-              else:
-                  raise RuntimeError(f"Unexpected {kind} PCP data type")
-              print(f"PCP {kind}: {len(findings)} machine-readable findings")
+              raw = pathlib.Path(f"/tmp/orbit-pcp-{kind}.json").read_text(encoding="utf-8")
+              findings = []
+              sections = 0
+              for line in raw.splitlines():
+                  line = line.strip()
+                  if line.startswith("["):
+                      rows = json.loads(line)
+                      if not isinstance(rows, list):
+                          raise RuntimeError(f"Expected PCP array for {kind}")
+                      findings.extend(rows)
+                      sections += 1
+              if "FILE:" in raw and sections == 0:
+                  raise RuntimeError(f"No machine-readable PCP findings could be parsed for {kind}")
+              counts = {"ERROR": 0, "WARNING": 0}
+              for result in findings:
+                  severity = str(result.get("type", "")).upper()
+                  counts[severity] = counts.get(severity, 0) + 1
+                  print(f"PCP {kind}: {severity} {result.get('code')} line {result.get('line')}")
+              errors += counts["ERROR"]
+              print(f"PCP {kind}: {len(findings)} findings, {counts['ERROR']} errors and {counts['WARNING']} warnings across {sections} file sections")
+          if errors:
+              sys.exit(f"Plugin Check found {errors} error(s) across static/runtime checks")
           PY
       - name: Upload Plugin Check JSON findings
         if: always()
