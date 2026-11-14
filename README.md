@@ -130,3 +130,4 @@ English is the source language. Bundled gettext catalogs provide French (`fr_FR`
 - [Pre-release QA checklist](https://github.com/aminostudio/amino-orbit/issues/1) tracks the remaining release gates.
 
 - [Plugin Check 0.3.1 findings](docs/PLUGIN-CHECK-0.3.1.md) records all three warnings and their technical disposition.
+- [Amino #LAB v0.3.2 performance baseline](docs/PERF-BASELINE-0.3.2.md) records aggregate query counts, observed timings, and remaining measurement gaps.
