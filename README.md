@@ -134,7 +134,7 @@ English is the source language. Bundled gettext catalogs provide French (`fr_FR`
 
 ## Status
 
-**v0.3.4 is a development build**, not a stable public release. Initial isolated tests and syntax checks are not substitutes for real WordPress integration testing.
+**v0.3.4 remains a private development build.** Real WordPress, Chromium, accessibility automation and official Plugin Check are now integrated into CI. Manual assistive-technology and representative concurrent-load checks remain before public release.
 
 ## Quality assurance
 
@@ -145,4 +145,5 @@ English is the source language. Bundled gettext catalogs provide French (`fr_FR`
 - [Plugin Check 0.3.1 findings](docs/PLUGIN-CHECK-0.3.1.md) records all three warnings and their technical disposition.
 - [Amino #LAB v0.3.2 performance baseline](docs/PERF-BASELINE-0.3.2.md) records aggregate query counts, observed timings, and remaining measurement gaps.
 - [Real WordPress integration results for v0.3.3](docs/WORDPRESS-INTEGRATION-0.3.3.md) document 24 successful assertions, the fixed session collision and the remaining gates.
-- [Real browser and accessibility QA for v0.3.4](docs/BROWSER-QA-0.3.4.md) documents 32 successful Chromium assertions and the corrected in-flight keyboard-focus race.
+- [Real browser and accessibility QA for v0.3.4](docs/BROWSER-QA-0.3.4.md) documents 32 earlier Chromium assertions and the corrected in-flight keyboard-focus race.
+- [v0.3.4 final automated QA baseline](docs/QA-AUTOMATED-0.3.4.md) records **36 browser checks**, 200%/400% simulated reflow, 205-user/510-session limits, warm/cold query measurements, and automated official Plugin Check (0 errors, 3 known warnings).
