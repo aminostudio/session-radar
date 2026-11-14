@@ -222,4 +222,34 @@ orbit_integration_assert(
     'After erasure, a second export contains no Orbit activity'
 );
 
+// Emulate a legacy pre-opt-in option payload on genuine WordPress. The
+// first browser bootstrap has already occurred, so trigger the migration
+// explicitly here with its original settings preserved.
+$before = get_option( 'amino_orbit_settings', array() );
+$before['activity_enabled'] = 0;
+update_option( 'amino_orbit_settings', $before );
+unset( $before['activity_enabled'] );
+update_option( 'amino_orbit_settings', $before );
+update_user_meta( $admin_id, '_amino_orbit_presence', array( 'legacy-stale' => time() - 20 ) );
+Amino_Orbit::migrate_legacy_privacy();
+$after = get_option( 'amino_orbit_settings', array() );
+orbit_integration_assert(
+    0 === $after['activity_enabled'] &&
+    $before['viewer_roles'] === $after['viewer_roles'] &&
+    $before['refresh_seconds'] === $after['refresh_seconds'],
+    'Legacy privacy migration records OFF while preserving settings'
+);
+orbit_integration_assert(
+    ! get_user_meta( $admin_id, '_amino_orbit_presence', true ) &&
+    is_array( $admin_manager->get( $token_one ) ),
+    'Legacy activity purged without ending native WordPress login session'
+);
+update_user_meta( $admin_id, '_amino_orbit_presence', array( 'fresh-mark' => time() ) );
+Amino_Orbit::migrate_legacy_privacy();
+orbit_integration_assert(
+    (bool) get_user_meta( $admin_id, '_amino_orbit_presence', true ),
+    'Migration is idempotent and does not erase data on each request'
+);
+delete_user_meta( $admin_id, '_amino_orbit_presence' );
+
 WP_CLI::success( 'Real WordPress integration checks passed; all data is confined to CI.' );

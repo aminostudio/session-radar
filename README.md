@@ -32,7 +32,9 @@ A valid WordPress session is **not proof that someone is at their keyboard**. Th
 - Responsive, scoped CSS and dependency-free vanilla JavaScript.
 - No telemetry, external APIs, or anonymous visitor tracking.
 
-## Site-wide activity opt-in (under review)
+## Site-wide activity opt-in
+
+**Upgrading from pre-opt-in versions:** v0.3.8 removes existing Orbit-only activity records once when no explicit monitoring choice was ever saved, then records monitoring as OFF. Existing session visibility and dashboard settings are preserved.
 
 On this development branch, **recent activity signals are disabled by default** until a site administrator explicitly enables them in **Settings → Amino Orbit → Privacy**. The widget can still list native WordPress sessions without tracking activity. Disabling previously enabled monitoring immediately removes plugin-only activity metadata and prevents future server writes.
 
@@ -82,6 +84,12 @@ amino-orbit/
 English is the source language. Bundled gettext catalogs provide French (`fr_FR`) and Spanish (`es_ES`) translations. The plugin follows the WordPress admin user locale; it does not force the site language. `.po` files can be edited by translators; `.mo` files are compiled for WordPress. A `.pot` template is included.
 
 ## Changelog
+
+### v0.3.8 (private release candidate)
+- One-time privacy migration: an existing installation without the explicit monitoring preference purges old Orbit-only activity and saves `activity_enabled=0`.
+- Keeps existing viewer roles, IP display choice, inactivity threshold and refresh interval; never deletes native WordPress authentication sessions.
+- Additional isolated and genuine WordPress regression tests check first boot, idempotence and consent already enabled.
+
 
 ### v0.3.7 (private development)
 - Adds WordPress core privacy exporter and eraser callbacks for Orbit-specific, per-user activity metadata.

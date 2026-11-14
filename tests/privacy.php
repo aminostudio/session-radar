@@ -7,6 +7,7 @@ define( 'ABSPATH', '/tmp/' );
 $GLOBALS['orbit_privacy'] = array(
     'settings' => array(),
     'deletions' => array(),
+    'updates' => array(),
     'policy' => array(),
 );
 class Orbit_Privacy_Roles {
@@ -17,6 +18,11 @@ class Orbit_Privacy_Roles {
 }
 function wp_roles() { return new Orbit_Privacy_Roles(); }
 function get_option( $name, $default = array() ) { return $GLOBALS['orbit_privacy']['settings']; }
+function update_option( $name, $value ) {
+    $GLOBALS['orbit_privacy']['settings'] = $value;
+    $GLOBALS['orbit_privacy']['updates'][] = array( $name, $value );
+    return true;
+}
 function wp_parse_args( $data, $defaults ) { return array_merge( $defaults, $data ); }
 function sanitize_key( $value ) { return strtolower( preg_replace( '/[^a-z0-9_-]/', '', (string) $value ) ); }
 function absint( $value ) { return abs( (int) $value ); }
@@ -65,6 +71,37 @@ check(
 Amino_Orbit::clear_presence_on_disable( array( 'activity_enabled' => 0 ), array( 'activity_enabled' => 1 ) );
 Amino_Orbit::clear_presence_on_disable( array( 'activity_enabled' => 0 ), array( 'activity_enabled' => 0 ) );
 check( 1 === count( $GLOBALS['orbit_privacy']['deletions'] ), 'Enabling or saving disabled settings never purges' );
+
+// Upgrade from v0.3.5: there was no consent checkbox and old presence may
+// remain in usermeta even though v0.3.7 renders it as Session open.
+$GLOBALS['orbit_privacy']['settings'] = array(
+    'viewer_roles' => array( 'editor' ),
+    'refresh_seconds' => 30,
+    'inactive_minutes' => 5,
+    'show_ip' => 0,
+);
+$GLOBALS['orbit_privacy']['deletions'] = array();
+Amino_Orbit::migrate_legacy_privacy();
+check( 1 === count( $GLOBALS['orbit_privacy']['deletions'] ),
+    'First legacy migration purges existing Orbit activity' );
+check( 1 === count( $GLOBALS['orbit_privacy']['updates'] ),
+    'Migration persists its completed state once' );
+check(
+    0 === $GLOBALS['orbit_privacy']['settings']['activity_enabled'] &&
+    array( 'editor' ) === $GLOBALS['orbit_privacy']['settings']['viewer_roles'] &&
+    30 === $GLOBALS['orbit_privacy']['settings']['refresh_seconds'],
+    'Legacy migration preserves prior viewer and refresh settings while opting out'
+);
+Amino_Orbit::migrate_legacy_privacy();
+check( 1 === count( $GLOBALS['orbit_privacy']['deletions'] ) &&
+    1 === count( $GLOBALS['orbit_privacy']['updates'] ),
+    'Repeated page requests do not repeat deletion or option writes'
+);
+$GLOBALS['orbit_privacy']['settings']['activity_enabled'] = 1;
+Amino_Orbit::migrate_legacy_privacy();
+check( 1 === count( $GLOBALS['orbit_privacy']['deletions'] ),
+    'Explicitly enabled activity is never purged by migration'
+);
 
 Amino_Orbit::register_privacy_policy_text();
 check( 1 === count( $GLOBALS['orbit_privacy']['policy'] ), 'A WordPress privacy policy guide entry is registered' );
