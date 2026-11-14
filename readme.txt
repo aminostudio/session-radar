@@ -4,7 +4,7 @@ Tags: dashboard, users, sessions, activity, privacy
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.3.7
+Stable tag: 0.3.8
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -54,6 +54,12 @@ Use **Tools > Export Personal Data** or **Tools > Erase Personal Data** to proce
 * Activity pings are best-effort, not a live socket. Browser background throttling can delay updates.
 
 == Changelog ==
+
+= 0.3.8 =
+* Performs a one-time privacy migration for installations upgraded from versions before the explicit activity opt-in.
+* Removes previously saved Orbit activity metadata when no explicit monitoring preference exists, while preserving WordPress login sessions and other site settings.
+* Runs once per legacy installation and includes isolated PHP and real WordPress migration regression tests.
+
 
 = 0.3.7 =
 * Integrates WordPress's native Export Personal Data and Erase Personal Data tools for Orbit-specific session activity.
