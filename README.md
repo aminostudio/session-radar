@@ -34,9 +34,7 @@ A valid WordPress session is **not proof that someone is at their keyboard**. Th
 
 ## Site-wide activity opt-in
 
-**Upgrading from pre-opt-in versions:** v0.3.8 also removes existing Orbit-only activity records once when no explicit monitoring choice was ever saved, then records monitoring as OFF. Existing session visibility and dashboard settings are preserved.
-
-## Site-wide activity opt-in
+**Upgrading from pre-opt-in versions:** v0.3.8 removes existing Orbit-only activity records once when no explicit monitoring choice was ever saved, then records monitoring as OFF. Existing session visibility and dashboard settings are preserved.
 
 On this development branch, **recent activity signals are disabled by default** until a site administrator explicitly enables them in **Settings → Amino Orbit → Privacy**. The widget can still list native WordPress sessions without tracking activity. Disabling previously enabled monitoring immediately removes plugin-only activity metadata and prevents future server writes.
 
