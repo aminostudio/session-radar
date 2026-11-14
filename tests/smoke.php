@@ -54,7 +54,7 @@ assert_true($state['textdomain']==='amino-orbit/languages','Localized catalog lo
 $state['users']=[new WP_User(1,'Amino Test',['administrator'])];
 $session=['login'=>time()-120,'expiration'=>time()+3600,'ua'=>'Mozilla/5.0 Firefox/159 Windows NT 10.0','ip'=>'192.0.2.10'];
 WP_Session_Tokens::$sessions=[$session];
-$s=Amino_Orbit::sanitize_settings(['viewer_roles'=>['editor','administrator',['nested'], 'INVALID'], 'inactive_minutes'=>'9999','refresh_seconds'=>'7', 'activity_enabled'=>1, 'show_ip'=>'1', 'activity_enabled'=>'1']);
+$s=Amino_Orbit::sanitize_settings(['viewer_roles'=>['editor','administrator',['nested'], 'INVALID'], 'inactive_minutes'=>'9999','refresh_seconds'=>'7', 'show_ip'=>'1', 'activity_enabled'=>'1']);
 assert_true($s['viewer_roles']===['editor'], 'Role configuration restricted to known non-admin roles');
 assert_true($s['inactive_minutes']===5 && $s['refresh_seconds']===60, 'Numeric settings constrained to safe values');
 $s30=Amino_Orbit::sanitize_settings(['refresh_seconds'=>30]);
