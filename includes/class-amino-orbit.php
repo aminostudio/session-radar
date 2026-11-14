@@ -125,7 +125,7 @@ final class Amino_Orbit {
 			'inactive_minutes' => in_array( $inactivity, array( 5, 10, 15, 30 ), true ) ? $inactivity : 5,
 			'refresh_seconds' => in_array( $refresh, array( 30, 60, 120, 180 ), true ) ? $refresh : 60,
 			'show_ip' => empty( $input['show_ip'] ) ? 0 : 1,
-			'activity_enabled' => empty( $input['activity_enabled'] ) ? 0 : 1,
+			'activity_enabled' => isset( $input['activity_enabled'] ) && ( 1 === $input['activity_enabled'] || '1' === $input['activity_enabled'] ) ? 1 : 0,
 		);
 	}
 
