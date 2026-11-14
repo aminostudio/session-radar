@@ -149,7 +149,7 @@ final class Amino_Orbit {
 		}
 		$paragraphs = array(
 			__( 'If enabled, Amino Orbit records the time of recent interactions in the WordPress administration area for authenticated user sessions. It does not record public-site visits or send data to external services.', 'amino-orbit' ),
-			__( 'Activity records use HMAC-derived session identifiers and are removed after 24 hours, on scheduled cleanup, or when monitoring is disabled. WordPress separately manages its own login session details.', 'amino-orbit' ),
+			__( 'Activity older than 24 hours is no longer shown. Stored records are deleted on later interactions or during WordPress scheduled cleanup, which may run later. Turning monitoring off deletes Orbit activity records immediately. WordPress manages login sessions separately.', 'amino-orbit' ),
 		);
 		$html = '';
 		foreach ( $paragraphs as $paragraph ) {
