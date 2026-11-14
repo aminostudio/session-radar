@@ -29,13 +29,25 @@
 - Daily `amino_orbit_daily_cleanup` WP-Cron event remains scheduled.
 - Earlier hands-on verification with two Firefox profiles: two active sessions of one account counted as **2 sessions / 1 user**.
 
+## Manual Plugin Check: Plugin Repo category (2026-11-14)
+
+- Source: user-exported Plugin Check 2.2.0 JSON, generated `2026-11-14 02:29:04`, on Amino #LAB.
+- Selection: **Plugin Repo** category only; **Errors** and **Warnings** included. The other categories were unchecked.
+- Result: **0 errors, 1 warning** in `includes/class-amino-orbit.php`, line **38**.
+- Warning code: `PluginCheck.CodeAnalysis.DiscouragedFunctions.load_plugin_textdomainFound`.
+- Current implementation: `load_plugin_textdomain()` runs on the WordPress `init` action with the relative `/languages` path. The plugin is presently distributed privately via ZIP and bundles the `fr_FR` and `es_ES` PO/MO files.
+- Disposition: **accepted/documented for development**, not ignored or marked resolved. WordPress Core guidance allows retaining this call when the plugin is **not hosted on WordPress.org**, provided it is deferred to `init`. Removing it merely to silence Plugin Check might break locally bundled translations without an alternative.
+- Re-evaluate when preparing a WordPress.org directory release; verify real French/Spanish translations before changing translation loading.
+
+Reference: https://make.wordpress.org/core/2024/10/21/i18n-improvements-6-7/
+
 ## Pending: must not be represented as passed
 
 - **Real WordPress administration UI localization** for `fr_FR` and `es_ES`. The authenticated WordPress user locale currently is `en_US`; no user language settings were changed for this audit.
 - **Real editor-role / unauthorized AJAX** permission tests. LAB currently has only one existing administrator; no extra users were created.
 - Explicit logout transition and five-minute idle transition in a real browser for v0.3.0.
 - Full keyboard, screen-reader, zoom, and forced-colors accessibility checks.
-- End-to-end **Plugin Check (PCP) 2.2.0**: PCP is installed on LAB but the current connected automation API exposes no ability or REST route to run its checks. No claim of a PCP pass.
+- **Remaining Plugin Check categories:** General, Security, Performance, and Accessibility have not yet been run. The earlier `Plugin Repo` category result does not establish full-plugin compliance.
 - CI run status for GitHub Actions on the private repository. Workflows are committed, but successful completion was not verified by this audit.
 - 30-second polling server cost at scale; do not infer benchmarks from PHP syntax tests.
 
