@@ -83,6 +83,13 @@ English is the source language. Bundled gettext catalogs provide French (`fr_FR`
 
 ## Changelog
 
+### v0.3.6 (private development)
+- Explicit, default-off site-level opt-in for recent WordPress admin activity while keeping session visibility.
+- Immediate purge of plugin-only presence data on deactivation of the setting; invalid/old AJAX pings cannot bypass the server gate.
+- Suggested native WordPress privacy-policy disclosure and multilingual labels, with tested legacy MO compatibility.
+- **Migration note:** monitoring will be OFF after upgrading from v0.3.5 until intentionally enabled by an administrator. Site-level opt-in does not itself establish consent by every monitored person.
+
+
 ### v0.3.5 (development)
 - Fixes the hash-table offset stored in the bundled French and Spanish MO file headers. The old WordPress 6.4 POMO reader rejects a zero offset even for an empty hash table.
 - Adds a binary-header regression to the gettext test suite and a real WordPress 6.4 + PHP 8.0 CI job.

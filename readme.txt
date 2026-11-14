@@ -4,7 +4,7 @@ Tags: dashboard, users, sessions, activity, privacy
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.3.5
+Stable tag: 0.3.6
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -52,6 +52,14 @@ Data retention of native WordPress session information is managed by WordPress, 
 * Activity pings are best-effort, not a live socket. Browser background throttling can delay updates.
 
 == Changelog ==
+
+= 0.3.6 =
+* Adds an administrator-controlled, default-off activity opt-in without hiding native WordPress login sessions.
+* Stops browser activity signals and server-side activity writes when monitoring is disabled.
+* Purges plugin-only presence data immediately when monitoring is turned off, without affecting login sessions.
+* Provides editable text for WordPress's Privacy Policy Guide, translated into English, French and Spanish.
+* Important when upgrading: activity reporting becomes disabled until an administrator enables it explicitly.
+
 
 = 0.3.5 =
 * Repairs bundled French and Spanish MO headers for compatibility with WordPress 6.4's original gettext/POMO reader.

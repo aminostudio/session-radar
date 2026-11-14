@@ -1,6 +1,6 @@
 # Amino Orbit · Explicit activity opt-in (feature branch)
 
-**Status:** code-review candidate, not an installed release.  
+**Status:** private v0.3.6 release candidate, pending GitHub CI and review; not installed on #LAB.  
 **Base:** stable private v0.3.5 on `main`, active on Amino #LAB.  
 **Branch:** `feature/privacy-opt-in`. **Do not merge or deploy until CI and privacy review are complete.**
 
@@ -47,7 +47,7 @@ All five new strings are included in the English source and bundled FR/ES PO + l
 - [x] Chromium: monitoring on/off, instant activity hiding, server rejection of authenticated ping after disabling, focus/zoom and axe-core.
 - [x] Eight-admin concurrent refresh and 500-session/200-account caps.
 - [x] Official Plugin Check 2.2.0: zero new errors; all warnings reviewed.
-- [ ] Design review for the default-off upgrade transition and administrator/staff notice wording.
+- [ ] Confirm wording, operator notice and legal basis for workplace usage before public WordPress.org release. Upgrading intentionally switches off prior activity monitoring by default.
 
 No new version number or installable ZIP should be produced before completing this review.
 
