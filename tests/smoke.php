@@ -66,6 +66,8 @@ assert_true(str_contains($html,'Amino Test') && str_contains($html,'Session open
 assert_true(!str_contains($html,'192.0.2.10'), 'IP hidden by default');
 assert_true(str_contains($html,'aria-label="Authenticated WordPress sessions"'),'Session list has accessible name');
 $method=(new ReflectionClass('Amino_Orbit'))->getMethod('fingerprint');
+// PHP 8.0 requires explicitly opening private methods; PHP 8.1+ ignores this call.
+$method->setAccessible(true);
 $key=$method->invoke(null,$session);
 $state['meta'][1]=[$key=>time()];
 assert_true(str_contains(panel(),'amino-orbit__status--active'), 'Marks recent admin interaction as active');
