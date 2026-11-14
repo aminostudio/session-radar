@@ -102,8 +102,8 @@ final class Amino_Orbit {
 					'viewer_roles' => array(),
 					'inactive_minutes' => 5,
 					'refresh_seconds' => 60,
-					'show_ip' => 0,
-			'activity_enabled' => 0,
+							'show_ip' => 0,
+					'activity_enabled' => 0,
 				),
 			)
 		);
@@ -170,15 +170,23 @@ final class Amino_Orbit {
 		);
 	}
 
-	/** Load presence tracking on wp-admin, and display assets only where needed. */
+	/** Enqueue activity beacons only after site opt-in; keep widget refresh independent. */
 	public static function enqueue_assets( $hook ): void {
 		if ( ! is_user_logged_in() ) {
 			return;
 		}
 		$dashboard = ( 'index.php' === $hook && self::can_view() );
-		$settings = ( 'settings_page_amino-orbit' === $hook );
-		$options = self::options();
-		// Settings only needs CSS; no JS is loaded on unmonitored admin pages.
+		$settings  = ( 'settings_page_amino-orbit' === $hook );
+		$options   = self::options();
+		if ( $dashboard || $settings ) {
+			wp_enqueue_style(
+				'amino-orbit-admin',
+				plugins_url( 'assets/admin.css', AMINO_ORBIT_FILE ),
+				array(),
+				AMINO_ORBIT_VERSION
+			);
+		}
+		// A visitor with no widget access never needs the script when opted out.
 		if ( ! $dashboard && empty( $options['activity_enabled'] ) ) {
 			return;
 		}
@@ -189,33 +197,17 @@ final class Amino_Orbit {
 			AMINO_ORBIT_VERSION,
 			true
 		);
-		if ( $dashboard || $settings ) {
-			wp_enqueue_style(
-				'amino-orbit-admin',
-				plugins_url( 'assets/admin.css', AMINO_ORBIT_FILE ),
-				array(),
-				AMINO_ORBIT_VERSION
-			);
-		}
 		wp_localize_script(
 			'amino-orbit-admin',
 			'aminoOrbitConfig',
 			array(
-				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-				'nonce' => wp_create_nonce( self::NONCE ),
-				'canView' => $dashboard,
-				'refreshMs' => $options['refresh_seconds'] * 1000,
+				'ajaxUrl'       => admin_url( 'admin-ajax.php' ),
+				'nonce'         => wp_create_nonce( self::NONCE ),
+				'canView'       => $dashboard,
+				'refreshMs'     => $options['refresh_seconds'] * 1000,
 				'trackActivity' => ! empty( $options['activity_enabled'] ),
 			)
 		);
-		if ( $dashboard || $settings ) {
-			wp_enqueue_style(
-				'amino-orbit-admin',
-				plugins_url( 'assets/admin.css', AMINO_ORBIT_FILE ),
-				array(),
-				AMINO_ORBIT_VERSION
-			);
-		}
 	}
 
 	/** An opaque identifier for a WordPress session, never the token itself. */
