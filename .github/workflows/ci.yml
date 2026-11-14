@@ -53,7 +53,7 @@ jobs:
           --health-timeout=5s
           --health-retries=10
     env:
-      WP_ROOT: ${{ runner.temp }}/orbit-wp
+      WP_ROOT: /tmp/orbit-wp
     steps:
       - uses: actions/checkout@v5
       - name: Set up PHP and WordPress CLI
