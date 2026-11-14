@@ -37,7 +37,9 @@ The plugin follows the WordPress user locale in wp-admin. English is the default
 
 Amino Orbit reads the existing WordPress session manager. The only plugin-specific user metadata is an HMAC-derived session fingerprint with the last observed admin interaction timestamp; it never stores raw session tokens. Activity pings are batched and limited. Data is logically expired after 24 hours and is pruned during the user's next interaction and through a daily WP-Cron event. Actual cleanup time depends on WP-Cron execution. All plugin-specific data is removed on uninstall.
 
-Only authenticated wp-admin sessions send activity updates. Nothing is sent to external providers. Viewer permissions are checked server-side on every data refresh.
+Activity signals are OFF by default until a site administrator explicitly enables them. Native WordPress authentication sessions remain visible to authorized viewers without activity tracking. When monitoring is enabled, only authenticated wp-admin sessions send updates. Disabling monitoring removes plugin-specific activity metadata and blocks further writes, without destroying WordPress authentication sessions. Site owners are responsible for informing affected users and determining an appropriate legal basis. WordPress's Privacy Policy Guide provides editable suggested disclosure text.
+
+Nothing is sent to external providers. Viewer permissions are checked server-side on every data refresh.
 
 Data retention of native WordPress session information is managed by WordPress, not Amino Orbit.
 

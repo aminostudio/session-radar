@@ -25,12 +25,20 @@ A valid WordPress session is **not proof that someone is at their keyboard**. Th
 
 - Dashboard widget showing active, inactive and open sessions.
 - Displays the account name, WordPress roles, login time and browser/OS labels.
-- Activity beacons from authenticated admin pages, throttled to minimize requests.
+- Optional activity beacons from authenticated admin pages, disabled until an administrator explicitly opts in.
 - Refreshes the dashboard widget every 30, 60, 120 or 180 seconds (60 seconds by default).
 - Configurable read-only visibility for non-administrator roles.
 - IP addresses hidden by default, optionally visible to administrators only.
 - Responsive, scoped CSS and dependency-free vanilla JavaScript.
 - No telemetry, external APIs, or anonymous visitor tracking.
+
+## Site-wide activity opt-in (under review)
+
+On this development branch, **recent activity signals are disabled by default** until a site administrator explicitly enables them in **Settings → Amino Orbit → Privacy**. The widget can still list native WordPress sessions without tracking activity. Disabling previously enabled monitoring immediately removes plugin-only activity metadata and prevents future server writes.
+
+This is site-owner authorization, **not a declaration of consent or legal compliance on behalf of every user**. The site operator must inform affected team members and establish an appropriate legal basis where required. The WordPress Privacy Policy Guide receives editable suggested disclosure text.
+
+[Implementation and release gates](docs/PRIVACY-OPT-IN-DESIGN.md).
 
 ## Privacy and security
 

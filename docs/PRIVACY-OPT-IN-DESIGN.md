@@ -41,12 +41,16 @@ All five new strings are included in the English source and bundled FR/ES PO + l
 
 ## Test gates
 
-- [ ] PHP 8.0/8.2/8.4: smoke, activity endpoint authorization and new privacy opt-in tests.
-- [ ] Real WordPress 6.4 + PHP 8.0: native session and fresh FR/ES gettext compatibility.
-- [ ] Real recent WordPress: administrator/editor sessions, actual login/logout, HTTP AJAX behavior, role restrictions.
-- [ ] Chromium: monitoring on/off, instant activity hiding, server rejection of authenticated ping after disabling, focus/zoom and axe-core.
-- [ ] Eight-admin concurrent refresh and 500-session/200-account caps.
-- [ ] Official Plugin Check 2.2.0: zero new errors; all warnings reviewed.
+- [x] PHP 8.0/8.2/8.4: smoke, activity endpoint authorization and new privacy opt-in tests.
+- [x] Real WordPress 6.4 + PHP 8.0: native session and fresh FR/ES gettext compatibility.
+- [x] Real recent WordPress: administrator/editor sessions, actual login/logout, HTTP AJAX behavior, role restrictions.
+- [x] Chromium: monitoring on/off, instant activity hiding, server rejection of authenticated ping after disabling, focus/zoom and axe-core.
+- [x] Eight-admin concurrent refresh and 500-session/200-account caps.
+- [x] Official Plugin Check 2.2.0: zero new errors; all warnings reviewed.
 - [ ] Design review for the default-off upgrade transition and administrator/staff notice wording.
 
 No new version number or installable ZIP should be produced before completing this review.
+
+## Automated QA evidence
+
+[GitHub Actions run #60](https://github.com/aminostudio/amino-orbit/actions/runs/43607613608) passed the PHP matrix, WordPress 6.4 + PHP 8.0, recent WordPress/Chromium, eight-admin polling and official Plugin Check. The Chromium fixture confirmed that disabling monitoring removes stored activity, changes all activity states to open session, disables the browser's activity signals and returns `tracked:false` to valid authenticated AJAX requests. Only the prior three Plugin Check warnings remain; none is an error. Manual accessibility and staff-notice/legal-basis design questions remain.
