@@ -65,7 +65,7 @@ amino-orbit/
 - Tracks activity inside `wp-admin`, not public-facing browsing.
 - Scans up to 200 users with native session metadata and renders up to 40 session rows.
 - Certain application-password or custom authentication methods do not expose a native browser session token.
-- Sessions with identical login time, expiry, IP and user agent can share one derived presence identity.
+- Alternative custom session managers without stable verifiers can still share a metadata-derived presence identity; default WordPress sessions cannot collide in that way.
 - Background browser throttling can delay activity reports; this is not a WebSocket/live-presence system.
 - Actual scheduled cleanup depends on WP-Cron execution.
 
@@ -74,6 +74,13 @@ amino-orbit/
 English is the source language. Bundled gettext catalogs provide French (`fr_FR`) and Spanish (`es_ES`) translations. The plugin follows the WordPress admin user locale; it does not force the site language. `.po` files can be edited by translators; `.mo` files are compiled for WordPress. A `.pot` template is included.
 
 ## Changelog
+
+### v0.3.3 (development)
+- Distinguishes native WordPress sessions even when browser/IP/login metadata are identical, by deriving a keyed HMAC from WordPress's hashed token verifier.
+- Preserves the metadata-derived fallback for alternative session managers.
+- Extends disposable WordPress CI to check native sessions, admin/editor visibility, logout and French/Spanish translations.
+- Existing v0.3.2 activity indicators may show "Session open" until the browser sends another activity ping. This does not affect logins.
+
 
 ### v0.3.2 (development)
 - Skips redundant user-meta writes during daily cleanup.
@@ -122,7 +129,7 @@ English is the source language. Bundled gettext catalogs provide French (`fr_FR`
 
 ## Status
 
-**v0.3.2 is a development build**, not a stable public release. Initial isolated tests and syntax checks are not substitutes for real WordPress integration testing.
+**v0.3.3 is a development build**, not a stable public release. Initial isolated tests and syntax checks are not substitutes for real WordPress integration testing.
 
 ## Quality assurance
 

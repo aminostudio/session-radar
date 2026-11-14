@@ -181,6 +181,17 @@ final class Amino_Orbit {
 		return hash_hmac( 'sha256', wp_json_encode( $parts ), wp_salt( 'auth' ) );
 	}
 
+	/**
+	 * Derive an opaque presence ID from WordPress's own hashed token verifier.
+	 *
+	 * The verifier is already a one-way SHA-256 digest in the native session
+	 * store. A second keyed digest keeps Orbit's metadata unrelated to it.
+	 * Even sessions created in the same second get distinct presence IDs.
+	 */
+	private static function verifier_fingerprint( string $verifier ): string {
+		return hash_hmac( 'sha256', $verifier, wp_salt( 'auth' ) );
+	}
+
 	/** Authenticated user's last observed admin interaction. */
 	public static function ajax_ping(): void {
 		if ( ! is_user_logged_in() || ! check_ajax_referer( self::NONCE, 'nonce', false ) ) {
@@ -191,12 +202,22 @@ final class Amino_Orbit {
 			wp_send_json_success( array( 'tracked' => false ) );
 		}
 		$user_id = get_current_user_id();
-		$session = WP_Session_Tokens::get_instance( $user_id )->get( $token );
+		$manager = WP_Session_Tokens::get_instance( $user_id );
+		$session = $manager->get( $token );
 		if ( ! is_array( $session ) || empty( $session['expiration'] ) || (int) $session['expiration'] <= time() ) {
 			wp_send_json_success( array( 'tracked' => false ) );
 		}
 		$now = time();
 		$key = self::fingerprint( $session );
+		// Only the built-in meta session manager exposes a stable verifier key.
+		// Leave alternative session managers on the metadata-based fallback.
+		if ( 'WP_User_Meta_Session_Tokens' === get_class( $manager ) ) {
+			$verifier = hash( 'sha256', $token );
+			$native = get_user_meta( $user_id, 'session_tokens', true );
+			if ( is_array( $native ) && array_key_exists( $verifier, $native ) ) {
+				$key = self::verifier_fingerprint( $verifier );
+			}
+		}
 		$presence = get_user_meta( $user_id, self::META, true );
 		$presence = is_array( $presence ) ? $presence : array();
 		$presence = array_filter(
@@ -279,11 +300,39 @@ final class Amino_Orbit {
 			}
 			$presence = get_user_meta( $user->ID, self::META, true );
 			$presence = is_array( $presence ) ? $presence : array();
-			foreach ( WP_Session_Tokens::get_instance( $user->ID )->get_all() as $session ) {
+			$manager = WP_Session_Tokens::get_instance( $user->ID );
+			$sessions = array();
+
+			if ( 'WP_User_Meta_Session_Tokens' === get_class( $manager ) ) {
+				// WordPress's public get_all() drops session-verifier keys.
+				// Read the same native usermeta without ever exposing token hashes.
+				$native = get_user_meta( $user->ID, 'session_tokens', true );
+				foreach ( is_array( $native ) ? $native : array() as $verifier => $session ) {
+					if ( ! is_string( $verifier ) || ! preg_match( '/^[a-f0-9]{64}$/D', $verifier ) ) {
+						continue;
+					}
+					$session = is_int( $session ) ? array( 'expiration' => $session ) : $session;
+					$sessions[] = array(
+						'data' => $session,
+						'key'  => self::verifier_fingerprint( $verifier ),
+					);
+				}
+			} else {
+				// Custom WordPress session managers have no guaranteed verifier API.
+				foreach ( $manager->get_all() as $session ) {
+					$sessions[] = array(
+						'data' => $session,
+						'key'  => is_array( $session ) ? self::fingerprint( $session ) : '',
+					);
+				}
+			}
+
+			foreach ( $sessions as $entry ) {
+				$session = $entry['data'];
 				if ( ! is_array( $session ) || (int) ( $session['expiration'] ?? 0 ) <= $now ) {
 					continue;
 				}
-				$key = self::fingerprint( $session );
+				$key = $entry['key'];
 				$seen = isset( $presence[ $key ] ) ? absint( $presence[ $key ] ) : 0;
 				$seen = $seen >= $now - DAY_IN_SECONDS ? $seen : 0;
 				$status = 'session';

@@ -4,7 +4,7 @@ Tags: dashboard, users, sessions, activity, privacy
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.3.2
+Stable tag: 0.3.3
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -46,10 +46,16 @@ Data retention of native WordPress session information is managed by WordPress, 
 * Presence monitoring covers `wp-admin` only, not the public frontend.
 * Displays a maximum of 40 sessions, scans at most 200 matching accounts and 500 valid sessions. When a scan reaches these limits, the widget explicitly warns that results are partial.
 * If a user logs in through an authentication method without a WordPress session token, no activity signal is recorded.
-* Multiple indistinguishable native sessions (same login second, expiry, IP and agent) may share one recent activity status. This does not affect authentication.
+* Native WordPress session tokens are identified separately even when login time, expiry, IP and browser match. Alternative custom session managers without stable verifier identifiers may still share a metadata-based activity status.
 * Activity pings are best-effort, not a live socket. Browser background throttling can delay updates.
 
 == Changelog ==
+
+= 0.3.3 =
+* Separately identifies native WordPress sessions by an HMAC of their stored one-way token verifiers, avoiding same-second browser/IP collisions.
+* Retains a metadata-based fallback for custom session-token managers.
+* Does not store raw token strings or add tracking data; existing activity markers may reset until the next interaction after upgrading.
+
 
 = 0.3.2 =
 * Avoids redundant user-meta writes during daily presence cleanup.

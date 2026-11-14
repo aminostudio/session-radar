@@ -48,14 +48,31 @@ $_SERVER['HTTP_USER_AGENT'] = 'Mozilla/5.0 Firefox/159.0 Windows NT 10.0';
 
 $admin_manager  = WP_Session_Tokens::get_instance( $admin_id );
 $editor_manager = WP_Session_Tokens::get_instance( $editor_id );
-$token_one = $admin_manager->create( time() + HOUR_IN_SECONDS );
-$token_two = $admin_manager->create( time() + HOUR_IN_SECONDS );
+$same_expiry = time() + HOUR_IN_SECONDS;
+$token_one = $admin_manager->create( $same_expiry );
+$token_two = $admin_manager->create( $same_expiry );
 $editor_token = $editor_manager->create( time() + HOUR_IN_SECONDS );
 orbit_integration_assert(
     is_string( $token_one ) && is_string( $token_two ) && $token_one !== $token_two,
     'Two independent real WordPress sessions for one account'
 );
 orbit_integration_assert( is_array( $admin_manager->get( $token_one ) ), 'WordPress stores native session metadata' );
+
+// Make the collision case deterministic: two different WordPress token
+// verifiers refer to identical login/expiry/IP/browser metadata.
+$native_sessions = get_user_meta( $admin_id, 'session_tokens', true );
+$verifier_one = hash( 'sha256', $token_one );
+$verifier_two = hash( 'sha256', $token_two );
+orbit_integration_assert(
+    isset( $native_sessions[ $verifier_one ], $native_sessions[ $verifier_two ] ),
+    'WordPress stores independent verifiers for both same-account sessions'
+);
+$native_sessions[ $verifier_two ] = $native_sessions[ $verifier_one ];
+update_user_meta( $admin_id, 'session_tokens', $native_sessions );
+orbit_integration_assert(
+    $admin_manager->get( $token_one ) === $admin_manager->get( $token_two ),
+    'Both live sessions deliberately share identical metadata'
+);
 
 wp_set_current_user( $admin_id );
 update_option(
@@ -90,9 +107,14 @@ orbit_integration_assert(
 WP_CLI::log( "INFO: Disposable three-session widget render: {$render_ms} ms; {$queries} WordPress DB queries (informational only)." );
 
 // One activity fingerprint must not mark other sessions as active.
-$private_fingerprint = ( new ReflectionClass( 'Amino_Orbit' ) )->getMethod( 'fingerprint' );
+$private_fingerprint = ( new ReflectionClass( 'Amino_Orbit' ) )->getMethod( 'verifier_fingerprint' );
 $private_fingerprint->setAccessible( true );
-$fingerprint = $private_fingerprint->invoke( null, $admin_manager->get( $token_one ) );
+$fingerprint = $private_fingerprint->invoke( null, $verifier_one );
+$second_fingerprint = $private_fingerprint->invoke( null, $verifier_two );
+orbit_integration_assert(
+    $fingerprint !== $second_fingerprint,
+    'Different WordPress token verifiers have distinct Orbit presence IDs'
+);
 update_user_meta( $admin_id, '_amino_orbit_presence', array( $fingerprint => time() ) );
 $activity_html = orbit_integration_render();
 orbit_integration_assert(

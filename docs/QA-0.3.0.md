@@ -92,3 +92,10 @@ This report records checks actually performed and intentionally distinguishes so
 - `tests/ajax-security.php` exercises authenticated and anonymous permission gates, valid/invalid nonce handling, IP redaction, hashed session fingerprints, ping throttling and missing/expired native sessions.
 - All three PHP matrix jobs in [run #16](https://github.com/aminostudio/amino-orbit/actions/runs/43555114386) passed, including the new AJAX security step.
 - This is isolated testing only. Real WordPress role/AJAX integration still requires a separate account and browser session.
+
+## Real WordPress integration regression (2026-11-14)
+
+- Disposable GitHub Actions fixture now installs the latest WordPress Core and the plugin against temporary MySQL, creates an admin/editor plus independent native sessions, and installs French and Spanish language packs. **No accounts are added to Amino #LAB.**
+- First real run confirmed 3 sessions and 2 users; it exposed a same-second fingerprint collision in v0.3.2.
+- v0.3.3 derives per-session HMAC identifiers from WordPress's stored SHA-256 session-token verifiers. Raw login tokens are never stored, and custom session managers retain metadata fallback.
+- Real integration CI must pass before the v0.3.3 archive is offered for installation.
