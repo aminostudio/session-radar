@@ -135,6 +135,34 @@ async function main() {
     await page.waitForFunction((node) => !node.isConnected, oldPanel, { timeout: 10000 });
     check(true, 'Unfocused widget is safely replaced by refreshed server HTML');
 
+    // Regression: the user may focus Settings while an AJAX response is in flight.
+    // The widget must not replace a newly focused link after the fetch resolves.
+    const racingPanel = await page.locator('#amino-orbit-panel').elementHandle();
+    const racingLink = page.locator('#amino-orbit-panel .amino-orbit__footer a');
+    await page.route('**/wp-admin/admin-ajax.php', async (route) => {
+      if ((route.request().postData() || '').includes('action=amino_orbit_refresh')) {
+        await new Promise((done) => setTimeout(done, 500));
+      }
+      return route.continue();
+    });
+    const racingRequest = page.waitForRequest(
+      (request) => request.url().includes('admin-ajax.php') &&
+        (request.postData() || '').includes('action=amino_orbit_refresh')
+    );
+    await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
+    await racingRequest;
+    await racingLink.focus();
+    await page.waitForResponse(
+      (response) => response.url().includes('admin-ajax.php') &&
+        (response.request().postData() || '').includes('action=amino_orbit_refresh')
+    );
+    await page.waitForTimeout(120);
+    check(await racingPanel.evaluate((node) =>
+      node.isConnected && node.contains(document.activeElement)
+    ), 'Keyboard focus survives an in-flight AJAX response');
+    await page.unroute('**/wp-admin/admin-ajax.php');
+    await page.evaluate(() => document.activeElement.blur());
+
     await axeScan(page, '#amino-orbit-panel');
 
     // The page can be viewed with simulated narrow viewport, 200% zoom,
