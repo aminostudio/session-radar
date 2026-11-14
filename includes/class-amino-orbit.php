@@ -28,6 +28,8 @@ final class Amino_Orbit {
 		add_action( 'wp_dashboard_setup', array( __CLASS__, 'register_widget' ) );
 		add_action( 'admin_menu', array( __CLASS__, 'register_settings_page' ) );
 		add_action( 'admin_init', array( __CLASS__, 'register_settings' ) );
+		add_action( 'admin_init', array( __CLASS__, 'register_privacy_policy_text' ) );
+		add_action( 'update_option_amino_orbit_settings', array( __CLASS__, 'clear_presence_on_disable' ), 10, 2 );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_assets' ) );
 		add_action( 'wp_ajax_amino_orbit_ping', array( __CLASS__, 'ajax_ping' ) );
 		add_action( 'wp_ajax_amino_orbit_refresh', array( __CLASS__, 'ajax_refresh' ) );
@@ -58,6 +60,7 @@ final class Amino_Orbit {
 			'inactive_minutes' => 5,
 			'refresh_seconds' => 60,
 			'show_ip' => 0,
+			'activity_enabled' => 0,
 		);
 		$stored = get_option( self::OPTION, array() );
 		return wp_parse_args( is_array( $stored ) ? $stored : array(), $defaults );
@@ -99,7 +102,8 @@ final class Amino_Orbit {
 					'viewer_roles' => array(),
 					'inactive_minutes' => 5,
 					'refresh_seconds' => 60,
-					'show_ip' => 0,
+							'show_ip' => 0,
+					'activity_enabled' => 0,
 				),
 			)
 		);
@@ -121,7 +125,37 @@ final class Amino_Orbit {
 			'inactive_minutes' => in_array( $inactivity, array( 5, 10, 15, 30 ), true ) ? $inactivity : 5,
 			'refresh_seconds' => in_array( $refresh, array( 30, 60, 120, 180 ), true ) ? $refresh : 60,
 			'show_ip' => empty( $input['show_ip'] ) ? 0 : 1,
+			'activity_enabled' => isset( $input['activity_enabled'] ) && ( 1 === $input['activity_enabled'] || '1' === $input['activity_enabled'] ) ? 1 : 0,
 		);
+	}
+
+	/**
+	 * Turning off monitoring immediately removes all plugin-only activity
+	 * timestamps. Native WordPress login sessions are never affected.
+	 */
+	public static function clear_presence_on_disable( $old, $new ): void {
+		if ( is_array( $old ) && is_array( $new ) && ! empty( $old['activity_enabled'] ) && empty( $new['activity_enabled'] ) ) {
+			delete_metadata( 'user', 0, self::META, '', true );
+		}
+	}
+
+	/**
+	 * Suggest transparent, editable privacy-policy text using WordPress Core.
+	 * This is not a claim that turning monitoring on establishes lawful consent.
+	 */
+	public static function register_privacy_policy_text(): void {
+		if ( ! function_exists( 'wp_add_privacy_policy_content' ) ) {
+			return;
+		}
+		$paragraphs = array(
+			__( 'If enabled, Amino Orbit records the time of recent interactions in the WordPress administration area for authenticated user sessions. It does not record public-site visits or send data to external services.', 'amino-orbit' ),
+			__( 'Activity older than 24 hours is no longer shown. Stored records are deleted on later interactions or during WordPress scheduled cleanup, which may run later. Turning monitoring off deletes Orbit activity records immediately. WordPress manages login sessions separately.', 'amino-orbit' ),
+		);
+		$html = '';
+		foreach ( $paragraphs as $paragraph ) {
+			$html .= '<p>' . esc_html( $paragraph ) . '</p>';
+		}
+		wp_add_privacy_policy_content( 'Amino Orbit', $html );
 	}
 
 	/** Register dashboard widget for permitted logged-in roles only. */
@@ -136,13 +170,26 @@ final class Amino_Orbit {
 		);
 	}
 
-	/** Load presence tracking on wp-admin, and display assets only where needed. */
+	/** Enqueue activity beacons only after site opt-in; keep widget refresh independent. */
 	public static function enqueue_assets( $hook ): void {
 		if ( ! is_user_logged_in() ) {
 			return;
 		}
 		$dashboard = ( 'index.php' === $hook && self::can_view() );
-		$settings = ( 'settings_page_amino-orbit' === $hook );
+		$settings  = ( 'settings_page_amino-orbit' === $hook );
+		$options   = self::options();
+		if ( $dashboard || $settings ) {
+			wp_enqueue_style(
+				'amino-orbit-admin',
+				plugins_url( 'assets/admin.css', AMINO_ORBIT_FILE ),
+				array(),
+				AMINO_ORBIT_VERSION
+			);
+		}
+		// A visitor with no widget access never needs the script when opted out.
+		if ( ! $dashboard && empty( $options['activity_enabled'] ) ) {
+			return;
+		}
 		wp_enqueue_script(
 			'amino-orbit-admin',
 			plugins_url( 'assets/admin.js', AMINO_ORBIT_FILE ),
@@ -154,20 +201,13 @@ final class Amino_Orbit {
 			'amino-orbit-admin',
 			'aminoOrbitConfig',
 			array(
-				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-				'nonce' => wp_create_nonce( self::NONCE ),
-				'canView' => $dashboard,
-				'refreshMs' => self::options()['refresh_seconds'] * 1000,
+				'ajaxUrl'       => admin_url( 'admin-ajax.php' ),
+				'nonce'         => wp_create_nonce( self::NONCE ),
+				'canView'       => $dashboard,
+				'refreshMs'     => $options['refresh_seconds'] * 1000,
+				'trackActivity' => ! empty( $options['activity_enabled'] ),
 			)
 		);
-		if ( $dashboard || $settings ) {
-			wp_enqueue_style(
-				'amino-orbit-admin',
-				plugins_url( 'assets/admin.css', AMINO_ORBIT_FILE ),
-				array(),
-				AMINO_ORBIT_VERSION
-			);
-		}
 	}
 
 	/** An opaque identifier for a WordPress session, never the token itself. */
@@ -196,6 +236,11 @@ final class Amino_Orbit {
 	public static function ajax_ping(): void {
 		if ( ! is_user_logged_in() || ! check_ajax_referer( self::NONCE, 'nonce', false ) ) {
 			wp_send_json_error( array( 'message' => 'Forbidden' ), 403 );
+		}
+		// Server-side guard: bypassed or old scripts cannot submit activity when disabled.
+		if ( empty( self::options()['activity_enabled'] ) ) {
+			wp_send_json_success( array( 'tracked' => false ) );
+			return;
 		}
 		$token = wp_get_session_token();
 		if ( '' === $token ) {
@@ -298,7 +343,8 @@ final class Amino_Orbit {
 			if ( ! $user instanceof WP_User ) {
 				continue;
 			}
-			$presence = get_user_meta( $user->ID, self::META, true );
+			// Do not disclose previously recorded activity after monitoring is off.
+			$presence = ! empty( $options['activity_enabled'] ) ? get_user_meta( $user->ID, self::META, true ) : array();
 			$presence = is_array( $presence ) ? $presence : array();
 			$manager = WP_Session_Tokens::get_instance( $user->ID );
 			$sessions = array();
@@ -488,6 +534,9 @@ final class Amino_Orbit {
 				</div>
 				<div class="amino-orbit-settings__card">
 					<h2><?php esc_html_e( 'Privacy', 'amino-orbit' ); ?></h2>
+					<label><input type="checkbox" name="<?php echo esc_attr( self::OPTION ); ?>[activity_enabled]" value="1" <?php checked( ! empty( $options['activity_enabled'] ) ); ?> /> <?php esc_html_e( 'Enable admin activity signals', 'amino-orbit' ); ?></label>
+					<p class="description"><?php esc_html_e( 'When enabled, this site stores a last-interaction timestamp for authenticated WordPress admin sessions. Inform affected users before activating this feature.', 'amino-orbit' ); ?></p>
+					<p class="description"><?php esc_html_e( 'Activity signals are disabled until an administrator explicitly enables them. Authentication sessions remain visible without activity tracking.', 'amino-orbit' ); ?></p>
 					<label><input type="checkbox" name="<?php echo esc_attr( self::OPTION ); ?>[show_ip]" value="1" <?php checked( ! empty( $options['show_ip'] ) ); ?> /> <?php esc_html_e( 'Show session IP addresses to administrators only', 'amino-orbit' ); ?></label>
 					<p class="description"><?php esc_html_e( 'Disabled by default. Amino Orbit does not collect additional IP addresses; it reads data already associated with WordPress sessions.', 'amino-orbit' ); ?></p>
 					<p class="description"><?php esc_html_e( 'Activity timestamps expire after 24 hours and are cleaned daily by WP-Cron. Anonymous visitors are not tracked.', 'amino-orbit' ); ?></p>

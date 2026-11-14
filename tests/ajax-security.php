@@ -57,7 +57,7 @@ $GLOBALS['orbit'] = array(
     'nonce'     => true,
     'roles'     => array( 'editor' ),
     'token'     => 'opaque-session-token',
-    'settings'  => array( 'viewer_roles' => array(), 'show_ip' => 1, 'refresh_seconds' => 30 ),
+    'settings'  => array( 'viewer_roles' => array(), 'show_ip' => 1, 'refresh_seconds' => 30, 'activity_enabled' => 1 ),
     'user'      => new WP_User( 7, 'Test Editor', array( 'editor' ) ),
     'sessions'  => array(
         7 => array(
@@ -177,5 +177,14 @@ $GLOBALS['orbit']['sessions'][7][0]['expiration'] = time() - 2;
 $r = response( 'ajax_ping' );
 verify( $r->success && false === $r->data['tracked'], 'Expired WordPress session is not tracked' );
 verify( 1 === $GLOBALS['orbit']['writes'], 'Expired session does not extend presence metadata' );
+
+// Explicit site-wide opt-out must be enforced on the server, including
+// malicious or outdated authenticated clients that still submit valid nonces.
+$GLOBALS['orbit']['sessions'][7][0]['expiration'] = time() + 3600;
+$GLOBALS['orbit']['settings']['activity_enabled'] = 0;
+$r = response( 'ajax_ping' );
+verify( $r->success && false === $r->data['tracked'], 'Disabled monitoring declines valid authenticated pings' );
+verify( 1 === $GLOBALS['orbit']['writes'], 'Disabled monitoring never writes presence metadata' );
+verify( str_contains( response( 'ajax_refresh' )->data['html'], 'Session open' ), 'Disabled monitoring shows open sessions without old activity status' );
 
 echo "All AJAX security checks passed.\n";

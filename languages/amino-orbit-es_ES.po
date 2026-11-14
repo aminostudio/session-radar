@@ -119,3 +119,19 @@ msgstr "Sesiones de WordPress y actividad reciente en la administración, sin ra
 
 msgid "Partial results: the session scan limit has been reached."
 msgstr "Resultados parciales: se ha alcanzado el límite de búsqueda de sesiones."
+
+msgid "Enable admin activity signals"
+msgstr "Activar señales de actividad en la administración"
+
+msgid "When enabled, this site stores a last-interaction timestamp for authenticated WordPress admin sessions. Inform affected users before activating this feature."
+msgstr "Al activar esta función, el sitio guarda la hora de la última interacción de las sesiones autenticadas en la administración de WordPress. Informa a las personas afectadas antes de activarla."
+
+msgid "Activity signals are disabled until an administrator explicitly enables them. Authentication sessions remain visible without activity tracking."
+msgstr "Las señales de actividad permanecen desactivadas hasta que un administrador las habilita expresamente. Las sesiones autenticadas siguen visibles sin seguimiento de actividad."
+
+msgid "If enabled, Amino Orbit records the time of recent interactions in the WordPress administration area for authenticated user sessions. It does not record public-site visits or send data to external services."
+msgstr "Si se activa, Amino Orbit registra la hora de las interacciones recientes en la administración de WordPress para las sesiones autenticadas. No rastrea las visitas al sitio público ni envía datos a servicios externos."
+
+msgid "Activity older than 24 hours is no longer shown. Stored records are deleted on later interactions or during WordPress scheduled cleanup, which may run later. Turning monitoring off deletes Orbit activity records immediately. WordPress manages login sessions separately."
+msgstr "La actividad de hace más de 24 horas deja de mostrarse. Los datos guardados se eliminan durante interacciones posteriores o la limpieza programada de WordPress, que puede ejecutarse más tarde. Al desactivar el seguimiento se eliminan inmediatamente los datos de actividad de Orbit. WordPress gestiona por separado las sesiones de inicio de sesión."
+

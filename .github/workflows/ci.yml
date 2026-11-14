@@ -29,6 +29,8 @@ jobs:
         run: php tests/cleanup.php
       - name: AJAX authorization and privacy regression tests
         run: php tests/ajax-security.php
+      - name: Site opt-in and policy guide regression tests
+        run: php tests/privacy.php
       - name: Compiled translation catalog tests
         run: python3 tests/i18n.py
       - name: JavaScript syntax check

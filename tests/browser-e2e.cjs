@@ -111,6 +111,8 @@ async function main() {
     const panel = page.locator('#amino-orbit-panel');
     await panel.waitFor({ state: 'visible', timeout: 12000 });
     check(await panel.count() === 1, 'Dashboard widget is visible to administrator');
+    check([true, 1, '1'].includes(await page.evaluate(() => window.aminoOrbitConfig.trackActivity)),
+      'Disposable site explicitly enables activity monitoring');
     check(Number(await page.evaluate(() => window.aminoOrbitConfig.refreshMs)) === 30000,
       'The installed browser config uses 30-second refresh');
     await page.waitForTimeout(500);
@@ -313,6 +315,33 @@ async function main() {
       check((await page.locator('.amino-orbit-settings').innerText()).includes(locale.heading),
         'WordPress settings page renders ' + locale.mode + ' locale in the real browser');
     }
+
+    // The fixture invokes the actual WordPress options-update hook. It fails
+    // if monitoring was previously active and existing activity is not purged.
+    fixture('monitoring-off');
+    await page.goto(URL + '/wp-admin/index.php', { waitUntil: 'domcontentloaded' });
+    await page.locator('#amino-orbit-panel').waitFor({ state: 'visible' });
+    const disabledConfig = await page.evaluate(() => window.aminoOrbitConfig);
+    check(![true, 1, '1'].includes(disabledConfig.trackActivity),
+      'Disabling monitoring removes all front-end activity beacons');
+    const disabledHtml = await page.locator('#amino-orbit-panel').innerHTML();
+    check(!disabledHtml.includes('amino-orbit__status--active') &&
+      !disabledHtml.includes('amino-orbit__status--idle'),
+      'Previously recorded activity statuses are hidden immediately');
+    const disabledPing = await page.evaluate(async () => {
+      const config = window.aminoOrbitConfig;
+      const response = await fetch(config.ajaxUrl, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ action: 'amino_orbit_ping', nonce: config.nonce })
+      });
+      return { status: response.status, payload: await response.json() };
+    });
+    check(disabledPing.status === 200 && disabledPing.payload.success === true &&
+      disabledPing.payload.data?.tracked === false,
+      'Valid authenticated pings cannot write activity after opt-out');
+    fixture('monitoring-on');
 
     // Logout must revoke access to the formerly authenticated AJAX endpoint.
     const logout = await page.locator('#wp-admin-bar-logout a').getAttribute('href');

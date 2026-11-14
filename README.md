@@ -25,12 +25,20 @@ A valid WordPress session is **not proof that someone is at their keyboard**. Th
 
 - Dashboard widget showing active, inactive and open sessions.
 - Displays the account name, WordPress roles, login time and browser/OS labels.
-- Activity beacons from authenticated admin pages, throttled to minimize requests.
+- Optional activity beacons from authenticated admin pages, disabled until an administrator explicitly opts in.
 - Refreshes the dashboard widget every 30, 60, 120 or 180 seconds (60 seconds by default).
 - Configurable read-only visibility for non-administrator roles.
 - IP addresses hidden by default, optionally visible to administrators only.
 - Responsive, scoped CSS and dependency-free vanilla JavaScript.
 - No telemetry, external APIs, or anonymous visitor tracking.
+
+## Site-wide activity opt-in (under review)
+
+On this development branch, **recent activity signals are disabled by default** until a site administrator explicitly enables them in **Settings → Amino Orbit → Privacy**. The widget can still list native WordPress sessions without tracking activity. Disabling previously enabled monitoring immediately removes plugin-only activity metadata and prevents future server writes.
+
+This is site-owner authorization, **not a declaration of consent or legal compliance on behalf of every user**. The site operator must inform affected team members and establish an appropriate legal basis where required. The WordPress Privacy Policy Guide receives editable suggested disclosure text.
+
+[Implementation and release gates](docs/PRIVACY-OPT-IN-DESIGN.md).
 
 ## Privacy and security
 
@@ -74,6 +82,13 @@ amino-orbit/
 English is the source language. Bundled gettext catalogs provide French (`fr_FR`) and Spanish (`es_ES`) translations. The plugin follows the WordPress admin user locale; it does not force the site language. `.po` files can be edited by translators; `.mo` files are compiled for WordPress. A `.pot` template is included.
 
 ## Changelog
+
+### v0.3.6 (private development)
+- Explicit, default-off site-level opt-in for recent WordPress admin activity while keeping session visibility.
+- Immediate purge of plugin-only presence data on deactivation of the setting; invalid/old AJAX pings cannot bypass the server gate.
+- Suggested native WordPress privacy-policy disclosure and multilingual labels, with tested legacy MO compatibility.
+- **Migration note:** monitoring will be OFF after upgrading from v0.3.5 until intentionally enabled by an administrator. Site-level opt-in does not itself establish consent by every monitored person.
+
 
 ### v0.3.5 (development)
 - Fixes the hash-table offset stored in the bundled French and Spanish MO file headers. The old WordPress 6.4 POMO reader rejects a zero offset even for an empty hash table.

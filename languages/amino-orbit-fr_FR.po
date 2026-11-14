@@ -119,3 +119,19 @@ msgstr "Sessions WordPress et activité récente dans l’administration, sans s
 
 msgid "Partial results: the session scan limit has been reached."
 msgstr "Résultats partiels : la limite de recherche des sessions est atteinte."
+
+msgid "Enable admin activity signals"
+msgstr "Activer les signaux d’activité dans l’administration"
+
+msgid "When enabled, this site stores a last-interaction timestamp for authenticated WordPress admin sessions. Inform affected users before activating this feature."
+msgstr "Une fois activée, cette fonction enregistre l’heure de la dernière interaction des sessions WordPress authentifiées dans l’administration. Informez les personnes concernées avant de l’activer."
+
+msgid "Activity signals are disabled until an administrator explicitly enables them. Authentication sessions remain visible without activity tracking."
+msgstr "Les signaux d’activité restent désactivés tant qu’un administrateur ne les active pas explicitement. Les sessions authentifiées restent visibles sans suivi d’activité."
+
+msgid "If enabled, Amino Orbit records the time of recent interactions in the WordPress administration area for authenticated user sessions. It does not record public-site visits or send data to external services."
+msgstr "Lorsque cette fonction est activée, Amino Orbit enregistre l’heure des interactions récentes dans l’administration WordPress pour les sessions authentifiées. Il ne suit pas les visites du site public et n’envoie aucune donnée à des services externes."
+
+msgid "Activity older than 24 hours is no longer shown. Stored records are deleted on later interactions or during WordPress scheduled cleanup, which may run later. Turning monitoring off deletes Orbit activity records immediately. WordPress manages login sessions separately."
+msgstr "L’activité datant de plus de 24 heures n’est plus affichée. Les données stockées sont supprimées lors d’interactions ultérieures ou du nettoyage programmé de WordPress, qui peut s’exécuter plus tard. La désactivation du suivi supprime immédiatement les données d’activité d’Orbit. WordPress gère séparément les sessions de connexion."
+
