@@ -99,3 +99,9 @@ This report records checks actually performed and intentionally distinguishes so
 - First real run confirmed 3 sessions and 2 users; it exposed a same-second fingerprint collision in v0.3.2.
 - v0.3.3 derives per-session HMAC identifiers from WordPress's stored SHA-256 session-token verifiers. Raw login tokens are never stored, and custom session managers retain metadata fallback.
 - Real integration CI must pass before the v0.3.3 archive is offered for installation.
+
+## v0.3.3 integration result confirmed (2026-11-14)
+
+- [Run #21](https://github.com/aminostudio/amino-orbit/actions/runs/43555917728) succeeded: full PHP 8.0/8.2/8.4 matrix and **24 genuine WordPress 7.1.4 integration assertions** on PHP 8.2/MySQL 8.0.
+- Verified three native sessions/two real users, same-second collision isolation, roles, WordPress IP privacy, real logout, and bundled FR/ES gettext loading.
+- See [WORDPRESS-INTEGRATION-0.3.3.md](WORDPRESS-INTEGRATION-0.3.3.md). No additional #LAB users created. Only CI ephemeral accounts were used.
