@@ -1,15 +1,20 @@
-# Amino Orbit · Development builds
+# Amino Orbit · Development ZIP packages
 
-Installable WordPress plugin packages for **Amino #LAB**. Official source and tests are in [main](https://github.com/aminostudio/amino-orbit/tree/main).
+Installable WordPress packages for **Amino #LAB**, built from our [main source branch](https://github.com/aminostudio/amino-orbit/tree/main).
 
-## WordPress plugin ZIPs
+## Available builds
 
-- **[amino-orbit-0.3.2.zip](amino-orbit-0.3.2.zip)** · optimized daily cleanup: skips unchanged metadata writes and uses previous-value guards; all three Plugin Check warnings documented.
-- [amino-orbit-0.3.1.zip](amino-orbit-0.3.1.zip) · bounded session scans and partial-results warning.
-- [amino-orbit-0.3.0.zip](amino-orbit-0.3.0.zip) · French/Spanish and accessibility enhancements.
+- **[amino-orbit-0.3.3.zip](amino-orbit-0.3.3.zip)** · fixes identical-metadata session collisions. 24 real WordPress integration assertions passed, including permissions, logout and French/Spanish translations.
+- [amino-orbit-0.3.2.zip](amino-orbit-0.3.2.zip) · safer daily activity cleanup.
+- [amino-orbit-0.3.1.zip](amino-orbit-0.3.1.zip) · bounded session scans.
+- [amino-orbit-0.3.0.zip](amino-orbit-0.3.0.zip) · localization and accessibility.
 - [amino-orbit-0.2.1.zip](amino-orbit-0.2.1.zip) · optional 30-second refresh.
-- [amino-orbit-0.2.0.zip](amino-orbit-0.2.0.zip) · dashboard refinements.
+- [amino-orbit-0.2.0.zip](amino-orbit-0.2.0.zip) · early dashboard refinements.
 
-To install: WordPress **Plugins → Add New → Upload Plugin**, then replace the existing version. Each ZIP contains one top-level `amino-orbit/` directory.
+Install via WordPress **Plugins → Add New → Upload Plugin**, then choose to replace the previous version. Each archive has one top-level `amino-orbit/` directory.
 
-**Development only.** The existing `load_plugin_textdomain()` and `meta_key` Plugin Check warnings remain under review, not suppressed. See [Plugin Check review](https://github.com/aminostudio/amino-orbit/blob/main/docs/PLUGIN-CHECK-0.3.1.md).
+**v0.3.3 migration note:** Existing native WordPress sessions remain logged in. A session may temporarily display `Session open` instead of `Active` until its next back-office interaction, because Orbit now uses a distinct HMAC-derived session key.
+
+[Real WordPress CI evidence](https://github.com/aminostudio/amino-orbit/blob/main/docs/WORDPRESS-INTEGRATION-0.3.3.md) | [QA gates](https://github.com/aminostudio/amino-orbit/issues/1)
+
+All builds are **private development versions**, not stable WordPress.org releases.
