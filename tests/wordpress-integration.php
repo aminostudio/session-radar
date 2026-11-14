@@ -147,6 +147,13 @@ orbit_integration_assert(
     'Native WordPress logout immediately removes the destroyed session'
 );
 
+// Dynamic locale switching in the same CLI bootstrap varies across old
+// WordPress Core versions. For 6.4, the CI pipeline instead boots a *fresh*
+// WordPress process under each installed locale and checks real gettext and
+// widget HTML using tests/minimum-locale.php.
+if ( '1' === getenv( 'ORBIT_CHECK_LOCALE_IN_FRESH_BOOT' ) ) {
+    WP_CLI::log( 'INFO: Dynamic locale switch assertions replaced by independent FR/ES WordPress bootstrap tests in CI.' );
+} else {
 // WordPress locale switching exercises actual bundled .mo files, not mocks.
 orbit_integration_assert( switch_to_locale( 'fr_FR' ), 'WordPress switches to the installed French locale' );
 orbit_integration_assert(
@@ -169,6 +176,7 @@ orbit_integration_assert(
     'Spanish session widget renders the configured refresh label'
 );
 restore_previous_locale();
+}
 
 orbit_integration_assert(
     false === has_action( 'wp_ajax_nopriv_amino_orbit_refresh' ) &&
