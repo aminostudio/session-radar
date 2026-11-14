@@ -165,6 +165,27 @@ async function main() {
 
     await axeScan(page, '#amino-orbit-panel');
 
+    // Layout reflow checks at CSS-equivalent 200% and 400% zoom.
+    // CSS zoom is an automated approximation, not a manual browser zoom audit.
+    for (const zoom of ['2', '4']) {
+      const result = await page.evaluate((factor) => {
+        document.documentElement.style.zoom = factor;
+        const widget = document.querySelector('#amino-orbit-panel');
+        const link = widget?.querySelector('.amino-orbit__footer a');
+        return {
+          panelPresent: Boolean(widget),
+          hasOverflow: widget ? widget.scrollWidth > widget.clientWidth + 2 : true,
+          linkVisible: Boolean(link && link.getClientRects().length),
+          viewportWidth: document.documentElement.clientWidth
+        };
+      }, zoom);
+      check(result.panelPresent && !result.hasOverflow && result.linkVisible,
+        'Widget reflows without internal horizontal overflow at simulated ' +
+        (Number(zoom) * 100) + '% CSS zoom');
+    }
+    await page.evaluate(() => { document.documentElement.style.zoom = ''; });
+
+
     // The page can be viewed with simulated narrow viewport, 200% zoom,
     // high-contrast colors and reduced motion. Axe does not replace manual QA.
     await page.setViewportSize({ width: 375, height: 812 });
@@ -218,6 +239,18 @@ async function main() {
     check(await page.locator('.amino-orbit-settings fieldset legend').count() > 0,
       'Settings roles use a real fieldset and legend');
     await axeScan(page, '.amino-orbit-settings');
+
+    for (const zoom of ['2', '4']) {
+      const result = await page.evaluate((factor) => {
+        document.documentElement.style.zoom = factor;
+        const settings = document.querySelector('.amino-orbit-settings');
+        return settings && settings.scrollWidth <= settings.clientWidth + 2;
+      }, zoom);
+      check(Boolean(result), 'Settings panel reflows at simulated ' +
+        (Number(zoom) * 100) + '% CSS zoom');
+    }
+    await page.evaluate(() => { document.documentElement.style.zoom = ''; });
+
 
     // WordPress user roles are checked over real HTTP authentication.
     const editorContext = await browser.newContext();
