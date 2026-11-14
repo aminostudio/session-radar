@@ -12,6 +12,18 @@ if ( 'Amino Orbit CI' !== get_option( 'blogname' ) ||
     WP_CLI::error( 'Refusing to create load-test users outside disposable CI WordPress.' );
 }
 
+// The preceding browser suite explicitly enabled IP display for a privacy
+// test. Restore the production-like privacy defaults before load testing.
+update_option(
+    'amino_orbit_settings',
+    array(
+        'viewer_roles'     => array(),
+        'inactive_minutes' => 5,
+        'refresh_seconds'  => 30,
+        'show_ip'          => 0,
+    )
+);
+
 $created = 0;
 for ( $i = 1; $i <= 8; $i++ ) {
     $login = sprintf( 'orbit_load_admin_%02d', $i );
