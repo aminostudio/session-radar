@@ -128,6 +128,7 @@ English is the source language. Bundled gettext catalogs provide French (`fr_FR`
 
 - [v0.3.0 audit evidence](docs/QA-0.3.0.md) distinguishes checks performed from pending WordPress integration tests.
 - [Pre-release QA checklist](https://github.com/aminostudio/amino-orbit/issues/1) tracks the remaining release gates.
+- [GitHub Actions CI verification](docs/CI-0.3.2.md) confirms all test stages passed on PHP 8.0, 8.2 and 8.4.
 
 - [Plugin Check 0.3.1 findings](docs/PLUGIN-CHECK-0.3.1.md) records all three warnings and their technical disposition.
 - [Amino #LAB v0.3.2 performance baseline](docs/PERF-BASELINE-0.3.2.md) records aggregate query counts, observed timings, and remaining measurement gaps.

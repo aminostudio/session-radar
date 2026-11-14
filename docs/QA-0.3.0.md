@@ -79,3 +79,10 @@ This report records checks actually performed and intentionally distinguishes so
 - Source report and disposition: [PLUGIN-CHECK-0.3.1.md](PLUGIN-CHECK-0.3.1.md).
 - GitHub tests now include independent daily cleanup regression assertions.
 - Warning counts may persist and are not represented as a clean or successful release gate.
+
+## GitHub Actions CI verified (2026-11-14)
+
+- Run #12 failed under PHP 8.0 because the smoke test invoked a private method through reflection without `setAccessible(true)`.
+- The isolated test harness was corrected. **No installed plugin PHP was changed.**
+- [Run #13](https://github.com/aminostudio/amino-orbit/actions/runs/43554813610) then passed the full PHP 8.0 / 8.2 / 8.4 job matrix, including syntax, smoke tests, daily cleanup regression, gettext catalogs and JS syntax.
+- See [CI-0.3.2.md](CI-0.3.2.md). Real-browser access controls and performance measurements remain outstanding.
