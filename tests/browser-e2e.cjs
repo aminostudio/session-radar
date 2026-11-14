@@ -279,6 +279,41 @@ async function main() {
       'Non-admin editor never sees stored WordPress IP addresses');
     await editorContext.close();
 
+    // These are real WordPress admin page requests with the logged-in
+    // administrator's locale, not mocked gettext or isolated PHP output.
+    const localeCases = [
+      {
+        mode: 'locale-fr',
+        refresh: 'Actualisation : 30 s',
+        heading: 'Qui peut voir le widget ?'
+      },
+      {
+        mode: 'locale-es',
+        refresh: 'Actualización: 30 s',
+        heading: '¿Quién puede ver el widget?'
+      },
+      {
+        mode: 'locale-en',
+        refresh: 'Refresh: 30 s',
+        heading: 'Who can see the widget?'
+      }
+    ];
+    for (const locale of localeCases) {
+      fixture(locale.mode);
+      await page.goto(URL + '/wp-admin/index.php', {
+        waitUntil: 'domcontentloaded'
+      });
+      await page.locator('#amino-orbit-panel').waitFor({ state: 'visible' });
+      check((await page.locator('#amino-orbit-panel').innerText()).includes(locale.refresh),
+        'WordPress dashboard renders ' + locale.mode + ' locale in the real browser');
+      await page.goto(URL + '/wp-admin/options-general.php?page=amino-orbit', {
+        waitUntil: 'domcontentloaded'
+      });
+      await page.locator('.amino-orbit-settings').waitFor({ state: 'visible' });
+      check((await page.locator('.amino-orbit-settings').innerText()).includes(locale.heading),
+        'WordPress settings page renders ' + locale.mode + ' locale in the real browser');
+    }
+
     // Logout must revoke access to the formerly authenticated AJAX endpoint.
     const logout = await page.locator('#wp-admin-bar-logout a').getAttribute('href');
     check(!!logout, 'WordPress provides a logout URL');
