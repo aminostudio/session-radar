@@ -92,6 +92,8 @@ jobs:
             sleep 1
           done
           node tests/browser-e2e.cjs
+      - name: Scale and bounded-query benchmarks (disposable database)
+        run: wp eval-file "$GITHUB_WORKSPACE/tests/scaling.php" --path="$WP_ROOT"
       - name: Upload browser failure screenshot
         if: failure()
         uses: actions/upload-artifact@v4
