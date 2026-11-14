@@ -94,6 +94,42 @@ jobs:
           node tests/browser-e2e.cjs
       - name: Scale and bounded-query benchmarks (disposable database)
         run: wp eval-file "$GITHUB_WORKSPACE/tests/scaling.php" --path="$WP_ROOT"
+      - name: Official WordPress Plugin Check (static and runtime)
+        run: |
+          set -euo pipefail
+          wp plugin install plugin-check --activate --path="$WP_ROOT"
+          set +e
+          wp plugin check amino-orbit --format=json --path="$WP_ROOT" > /tmp/orbit-pcp-static.json 2>/tmp/orbit-pcp-static.err
+          STATIC_EXIT=$?
+          wp plugin check amino-orbit --format=json --require="$WP_ROOT/wp-content/plugins/plugin-check/cli.php" --path="$WP_ROOT" > /tmp/orbit-pcp-runtime.json 2>/tmp/orbit-pcp-runtime.err
+          RUNTIME_EXIT=$?
+          set -e
+          echo "PLUGIN CHECK STATIC EXIT: $STATIC_EXIT"
+          cat /tmp/orbit-pcp-static.err || true
+          cat /tmp/orbit-pcp-static.json
+          echo "PLUGIN CHECK RUNTIME EXIT: $RUNTIME_EXIT"
+          cat /tmp/orbit-pcp-runtime.err || true
+          cat /tmp/orbit-pcp-runtime.json
+          python3 - <<'PY'
+          import json
+          for kind in ("static", "runtime"):
+              with open(f"/tmp/orbit-pcp-{kind}.json", encoding="utf-8") as fh:
+                  result = json.load(fh)
+              if isinstance(result, list):
+                  findings = result
+              elif isinstance(result, dict):
+                  findings = result.get("issues", result.get("results", []))
+              else:
+                  raise RuntimeError(f"Unexpected {kind} PCP data type")
+              print(f"PCP {kind}: {len(findings)} machine-readable findings")
+          PY
+      - name: Upload Plugin Check JSON findings
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: amino-orbit-plugin-check-json
+          path: /tmp/orbit-pcp-*.json
+          if-no-files-found: ignore
       - name: Upload browser failure screenshot
         if: failure()
         uses: actions/upload-artifact@v4
