@@ -57,7 +57,20 @@ final class Amino_Orbit {
 		if ( array_key_exists( 'activity_enabled', $stored ) ) {
 			return;
 		}
-		delete_metadata( 'user', 0, self::META, '', true );
+		// A failed deletion must not permanently mark the migration complete.
+		// WordPress also returns false when there are simply no rows to delete.
+		if ( ! delete_metadata( 'user', 0, self::META, '', true ) ) {
+			global $wpdb;
+			$remaining = $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT umeta_id FROM {$wpdb->usermeta} WHERE meta_key = %s LIMIT 1",
+					self::META
+				)
+			);
+			if ( null !== $remaining || $wpdb->last_error ) {
+				return; // Keep the missing-key sentinel so the next request retries.
+			}
+		}
 		$stored['activity_enabled'] = 0;
 		update_option( self::OPTION, $stored );
 	}
