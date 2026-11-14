@@ -22,11 +22,14 @@
     });
   }
 
+  const trackActivity = config.trackActivity === true || config.trackActivity === 1 || config.trackActivity === '1';
   const markInteraction = () => { lastInteraction = Date.now(); };
-  ['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach((name) => {
-    document.addEventListener(name, markInteraction, { passive: true });
-  });
-  window.addEventListener('focus', markInteraction, { passive: true });
+  if (trackActivity) {
+    ['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach((name) => {
+      document.addEventListener(name, markInteraction, { passive: true });
+    });
+    window.addEventListener('focus', markInteraction, { passive: true });
+  }
 
   function ping() {
     if (sending || document.visibilityState !== 'visible') return;
@@ -40,8 +43,10 @@
       .finally(() => { sending = false; });
   }
 
-  ping();
-  window.setInterval(ping, 60 * 1000);
+  if (trackActivity) {
+    ping();
+    window.setInterval(ping, 60 * 1000);
+  }
 
   if (!config.canView) return;
   const shell = document.getElementById('amino_orbit_widget');
@@ -73,7 +78,7 @@
   // Refresh promptly when returning to a backgrounded tab, without polling hidden tabs.
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') {
-      ping();
+      if (trackActivity) ping();
       refresh();
     }
   });

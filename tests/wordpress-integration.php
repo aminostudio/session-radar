@@ -82,6 +82,7 @@ update_option(
         'inactive_minutes' => 5,
         'refresh_seconds'  => 30,
         'show_ip'          => 0,
+        'activity_enabled' => 1,
     )
 );
 $start = microtime( true );

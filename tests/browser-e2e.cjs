@@ -111,6 +111,8 @@ async function main() {
     const panel = page.locator('#amino-orbit-panel');
     await panel.waitFor({ state: 'visible', timeout: 12000 });
     check(await panel.count() === 1, 'Dashboard widget is visible to administrator');
+    check(await page.evaluate(() => window.aminoOrbitConfig.trackActivity) === true,
+      'Disposable site explicitly enables activity monitoring');
     check(Number(await page.evaluate(() => window.aminoOrbitConfig.refreshMs)) === 30000,
       'The installed browser config uses 30-second refresh');
     await page.waitForTimeout(500);

@@ -4,7 +4,7 @@ define('ABSPATH', '/tmp/');
 define('DAY_IN_SECONDS', 86400);
 define('MINUTE_IN_SECONDS', 60);
 define('AMINO_ORBIT_FILE', '/test/plugins/amino-orbit/amino-orbit.php');
-$state = [ 'admin'=>true, 'roles'=>['administrator'], 'options'=>[], 'meta'=>[], 'users'=>[] ];
+$state = [ 'admin'=>true, 'roles'=>['administrator'], 'options'=>['activity_enabled'=>1], 'meta'=>[], 'users'=>[] ];
 class WP_User { public int $ID; public string $display_name; public array $roles; public function __construct($id,$name,$roles){$this->ID=$id;$this->display_name=$name;$this->roles=$roles;} }
 class Test_Roles {public array $roles=['administrator'=>['name'=>'Administrator'],'editor'=>['name'=>'Editor'],'author'=>['name'=>'Author']];}
 class WP_Session_Tokens {
@@ -54,7 +54,7 @@ assert_true($state['textdomain']==='amino-orbit/languages','Localized catalog lo
 $state['users']=[new WP_User(1,'Amino Test',['administrator'])];
 $session=['login'=>time()-120,'expiration'=>time()+3600,'ua'=>'Mozilla/5.0 Firefox/159 Windows NT 10.0','ip'=>'192.0.2.10'];
 WP_Session_Tokens::$sessions=[$session];
-$s=Amino_Orbit::sanitize_settings(['viewer_roles'=>['editor','administrator',['nested'], 'INVALID'], 'inactive_minutes'=>'9999','refresh_seconds'=>'7', 'show_ip'=>'1']);
+$s=Amino_Orbit::sanitize_settings(['viewer_roles'=>['editor','administrator',['nested'], 'INVALID'], 'inactive_minutes'=>'9999','refresh_seconds'=>'7', 'activity_enabled'=>1, 'show_ip'=>'1', 'activity_enabled'=>'1']);
 assert_true($s['viewer_roles']===['editor'], 'Role configuration restricted to known non-admin roles');
 assert_true($s['inactive_minutes']===5 && $s['refresh_seconds']===60, 'Numeric settings constrained to safe values');
 $s30=Amino_Orbit::sanitize_settings(['refresh_seconds'=>30]);
@@ -73,12 +73,12 @@ $state['meta'][1]=[$key=>time()];
 assert_true(str_contains(panel(),'amino-orbit__status--active'), 'Marks recent admin interaction as active');
 $state['meta'][1]=[$key=>time()-1000];
 assert_true(str_contains(panel(),'amino-orbit__status--idle'), 'Marks stale interaction as inactive, without logging the user out');
-$state['options']=['show_ip'=>1];
+$state['options']=['activity_enabled'=>1, 'show_ip'=>1];
 assert_true(str_contains(panel(),'192.0.2.10'), 'Optional IP visible to administrator');
 $state['admin']=false;
 $state['roles']=['editor'];
 assert_true(panel()==='', 'Non-admin is denied widget access by default');
-$state['options']=['viewer_roles'=>['editor'],'show_ip'=>1];
+$state['options']=['viewer_roles'=>['editor'],'activity_enabled'=>1, 'show_ip'=>1];
 assert_true(str_contains(panel(),'Amino Test'), 'Configured viewer role can see the widget');
 assert_true(!str_contains(panel(),'192.0.2.10'), 'Non-admin never sees IP even with IP setting enabled');
 $state['meta'][2]=['expired'=>time()-90000];
@@ -88,7 +88,7 @@ assert_true(isset($state['meta'][1]), 'Recent per-session data preserved on clea
 // v0.2: visual semantics and multi-user simulation without writing site accounts.
 $state['admin']=true;
 $state['roles']=['administrator'];
-$state['options']=['viewer_roles'=>[], 'show_ip'=>0];
+$state['options']=['viewer_roles'=>[], 'activity_enabled'=>1, 'show_ip'=>0];
 $state['users']=[
     new WP_User(1,'Amino Test',['administrator']),
     new WP_User(2,'Morgan <script>alert(1)</script>',['editor']),
@@ -113,14 +113,14 @@ assert_true(str_contains($html,'Logged in: ') && str_contains($html,'title="Auto
 assert_true(substr_count($html,'amino-orbit__status--active')===2 && substr_count($html,'amino-orbit__status--idle')===1,'Mixed sessions correctly classified by recent activity');
 $state['admin']=false;
 $state['roles']=['author'];
-$state['options']=['viewer_roles'=>['editor'], 'show_ip'=>1];
+$state['options']=['viewer_roles'=>['editor'], 'activity_enabled'=>1, 'show_ip'=>1];
 assert_true(panel()==='', 'Unapproved author role denied despite allowed editor role');
 $state['roles']=['editor'];
 assert_true(!str_contains(panel(),'192.0.2.'),'Authorized editor cannot see native IP addresses');
 WP_Session_Tokens::$sessionsByUser=[];
 $state['admin']=true;
 $state['roles']=['administrator'];
-$state['options']=[];
+$state['options']=['activity_enabled'=>1];
 $state['users']=[];
 for($id=1;$id<=201;$id++) $state['users'][]=new WP_User($id,'Test User '.$id,['subscriber']);
 $html=panel();

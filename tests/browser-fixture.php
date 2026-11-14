@@ -31,6 +31,7 @@ if ( 'setup' === $mode ) {
             'inactive_minutes' => 5,
             'refresh_seconds'  => 30,
             'show_ip'          => 0,
+            'activity_enabled' => 1,
         )
     );
     delete_user_meta( $admin->ID, '_amino_orbit_presence' );
@@ -43,6 +44,7 @@ if ( 'setup' === $mode ) {
             'inactive_minutes' => 5,
             'refresh_seconds'  => 30,
             'show_ip'          => 1,
+            'activity_enabled' => 1,
         )
     );
     WP_CLI::success( 'Editor widget access enabled in disposable CI only.' );
