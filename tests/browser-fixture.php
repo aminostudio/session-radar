@@ -2,7 +2,7 @@
 /**
  * Browser QA fixture. Only permitted inside the GitHub Actions disposable WP.
  *
- * ORBIT_BROWSER_FIXTURE_MODE=setup|idle|allow-editor|locale-fr|locale-es|locale-en wp eval-file tests/browser-fixture.php
+ * ORBIT_BROWSER_FIXTURE_MODE=setup|idle|allow-editor|locale-fr|locale-es|locale-en|monitoring-off|monitoring-on wp eval-file tests/browser-fixture.php
  *
  * This file MUST NOT be run against Amino #LAB or any real WordPress site.
  */
@@ -62,6 +62,24 @@ if ( 'setup' === $mode ) {
         update_user_meta( $admin->ID, 'locale', $locale );
     }
     WP_CLI::success( 'Disposable administrator locale set to ' . ( $locale ?: 'default' ) . '.' );
+} elseif ( 'monitoring-off' === $mode ) {
+    $before = get_user_meta( $admin->ID, '_amino_orbit_presence', true );
+    if ( ! is_array( $before ) || ! $before ) {
+        WP_CLI::error( 'Expected real browser presence before opting out.' );
+    }
+    $options = get_option( 'amino_orbit_settings', array() );
+    $options['activity_enabled'] = 0;
+    update_option( 'amino_orbit_settings', $options );
+    $after = get_user_meta( $admin->ID, '_amino_orbit_presence', true );
+    if ( $after ) {
+        WP_CLI::error( 'Disabling monitoring did not remove existing activity.' );
+    }
+    WP_CLI::success( 'Monitoring disabled and all plugin activity metadata purged.' );
+} elseif ( 'monitoring-on' === $mode ) {
+    $options = get_option( 'amino_orbit_settings', array() );
+    $options['activity_enabled'] = 1;
+    update_option( 'amino_orbit_settings', $options );
+    WP_CLI::success( 'Explicit monitoring opt-in restored for disposable CI.' );
 } elseif ( 'idle' === $mode ) {
     $sessions = get_user_meta( $admin->ID, 'session_tokens', true );
     $presence = array();
