@@ -75,6 +75,12 @@ English is the source language. Bundled gettext catalogs provide French (`fr_FR`
 
 ## Changelog
 
+### v0.3.2 (development)
+- Skips redundant user-meta writes during daily cleanup.
+- Uses WordPress's prior-value guard on updates and deletions to avoid overwriting concurrent activity.
+- Documents the three Plugin Check warnings, retaining the indexed session and cleanup lookups.
+
+
 ### v0.3.1 (development)
 - Explicit notice when scanning 200 users or 500 sessions makes summary counts partial.
 - Improved upper bounds on database and session work.
@@ -106,7 +112,8 @@ English is the source language. Bundled gettext catalogs provide French (`fr_FR`
 - [x] Add isolated PHP tests, gettext catalog tests and JavaScript syntax checks.
 - [ ] Complete real-browser integration tests and accessibility audit.
 - [x] Translate user-facing strings (French, English, Spanish).
-- [ ] Plugin Check, security review, performance measurements.
+- [x] Run and triage the first full Plugin Check export (0 errors, 3 documented warnings).
+- [ ] Benchmark query cost, complete security and accessibility review.
 - [ ] Publish a stable v1.0 release after validation.
 
 ## License
@@ -115,9 +122,11 @@ English is the source language. Bundled gettext catalogs provide French (`fr_FR`
 
 ## Status
 
-**v0.3.1 is a development build**, not a stable public release. Initial isolated tests and syntax checks are not substitutes for real WordPress integration testing.
+**v0.3.2 is a development build**, not a stable public release. Initial isolated tests and syntax checks are not substitutes for real WordPress integration testing.
 
 ## Quality assurance
 
 - [v0.3.0 audit evidence](docs/QA-0.3.0.md) distinguishes checks performed from pending WordPress integration tests.
 - [Pre-release QA checklist](https://github.com/aminostudio/amino-orbit/issues/1) tracks the remaining release gates.
+
+- [Plugin Check 0.3.1 findings](docs/PLUGIN-CHECK-0.3.1.md) records all three warnings and their technical disposition.

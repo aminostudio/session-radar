@@ -25,6 +25,8 @@ jobs:
           php -l uninstall.php
       - name: PHP isolated smoke checks
         run: php tests/smoke.php
+      - name: Daily cleanup regression tests
+        run: php tests/cleanup.php
       - name: Compiled translation catalog tests
         run: python3 tests/i18n.py
       - name: JavaScript syntax check

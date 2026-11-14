@@ -4,7 +4,7 @@ Tags: dashboard, users, sessions, activity, privacy
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.3.1
+Stable tag: 0.3.2
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -50,6 +50,11 @@ Data retention of native WordPress session information is managed by WordPress, 
 * Activity pings are best-effort, not a live socket. Browser background throttling can delay updates.
 
 == Changelog ==
+
+= 0.3.2 =
+* Avoids redundant user-meta writes during daily presence cleanup.
+* Uses a previous-value check when pruning partially expired records to preserve newer concurrent activity.
+
 
 = 0.3.1 =
 * Discloses partial session statistics when the account or session scan limit is reached.

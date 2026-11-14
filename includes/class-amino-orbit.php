@@ -463,16 +463,17 @@ final class Amino_Orbit {
 			)
 		);
 		foreach ( $ids as $user_id ) {
-			$presence = get_user_meta( (int) $user_id, self::META, true );
-			$presence = is_array( $presence ) ? $presence : array();
+			$original = get_user_meta( (int) $user_id, self::META, true );
+			$original = is_array( $original ) ? $original : array();
 			$presence = array_filter(
-				$presence,
+				$original,
 				static fn( $seen ): bool => is_numeric( $seen ) && (int) $seen >= $now - DAY_IN_SECONDS
 			);
-			if ( $presence ) {
-				update_user_meta( (int) $user_id, self::META, $presence );
-			} else {
-				delete_user_meta( (int) $user_id, self::META );
+			if ( ! $presence ) {
+				delete_user_meta( (int) $user_id, self::META, $original );
+			} elseif ( $presence !== $original ) {
+				// Avoid redundant daily writes and avoid overwriting a newer ping.
+				update_user_meta( (int) $user_id, self::META, $presence, $original );
 			}
 		}
 	}

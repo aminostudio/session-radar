@@ -71,3 +71,11 @@ This report records checks actually performed and intentionally distinguishes so
 - All **37** gettext source messages are included in both bundled French and Spanish locale catalogs.
 - The private-bundle `load_plugin_textdomain()` Plugin Check warning remains documented, not silently suppressed.
 - This is a development patch, not a claim of complete live Plugin Check validation.
+
+## Plugin Check 0.3.1 and optimization in 0.3.2 (2026-11-14)
+
+- User-provided JSON export: 0 errors, 3 warnings: bundled translation loader and two `meta_key` lookup heuristics.
+- The cleanup write-amplification issue is addressed in v0.3.2; the indexed lookups are retained intentionally.
+- Source report and disposition: [PLUGIN-CHECK-0.3.1.md](PLUGIN-CHECK-0.3.1.md).
+- GitHub tests now include independent daily cleanup regression assertions.
+- Warning counts may persist and are not represented as a clean or successful release gate.
