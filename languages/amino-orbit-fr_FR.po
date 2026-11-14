@@ -132,6 +132,6 @@ msgstr "Les signaux d’activité restent désactivés tant qu’un administrate
 msgid "If enabled, Amino Orbit records the time of recent interactions in the WordPress administration area for authenticated user sessions. It does not record public-site visits or send data to external services."
 msgstr "Lorsque cette fonction est activée, Amino Orbit enregistre l’heure des interactions récentes dans l’administration WordPress pour les sessions authentifiées. Il ne suit pas les visites du site public et n’envoie aucune donnée à des services externes."
 
-msgid "Activity records use HMAC-derived session identifiers and are removed after 24 hours, on scheduled cleanup, or when monitoring is disabled. WordPress separately manages its own login session details."
+msgid "Activity older than 24 hours is no longer shown. Stored records are deleted on later interactions or during WordPress scheduled cleanup, which may run later. Turning monitoring off deletes Orbit activity records immediately. WordPress manages login sessions separately."
 msgstr "L’activité datant de plus de 24 heures n’est plus affichée. Les données stockées sont supprimées lors d’interactions ultérieures ou du nettoyage programmé de WordPress, qui peut s’exécuter plus tard. La désactivation du suivi supprime immédiatement les données d’activité d’Orbit. WordPress gère séparément les sessions de connexion."
 
