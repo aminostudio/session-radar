@@ -190,4 +190,36 @@ orbit_integration_assert(
     'Authenticated AJAX endpoints are registered'
 );
 
+// Test WordPress's genuine privacy hooks with the same real CI user/session.
+$exporters = apply_filters( 'wp_privacy_personal_data_exporters', array() );
+$erasers   = apply_filters( 'wp_privacy_personal_data_erasers', array() );
+orbit_integration_assert(
+    isset( $exporters['amino-orbit']['callback'], $erasers['amino-orbit']['callback'] ),
+    'WordPress registers the Orbit privacy exporter and eraser'
+);
+$exported = call_user_func( $exporters['amino-orbit']['callback'], 'admin@orbit-ci.invalid', 1 );
+orbit_integration_assert(
+    true === $exported['done'] && 1 === count( $exported['data'] ),
+    'Core privacy exporter finds exactly one active Orbit observation'
+);
+orbit_integration_assert(
+    ! str_contains( wp_json_encode( $exported ), $fingerprint ) &&
+    ! str_contains( wp_json_encode( $exported ), $token_one ),
+    'Core privacy exporter does not reveal fingerprints or native auth tokens'
+);
+$erased = call_user_func( $erasers['amino-orbit']['callback'], 'admin@orbit-ci.invalid', 1 );
+orbit_integration_assert(
+    $erased['items_removed'] && ! $erased['items_retained'] &&
+    ! get_user_meta( $admin_id, '_amino_orbit_presence', true ),
+    'Core privacy eraser deletes plugin-specific user activity'
+);
+orbit_integration_assert(
+    is_array( $admin_manager->get( $token_one ) ),
+    'WordPress authentication session survives personal-data erasure'
+);
+orbit_integration_assert(
+    array() === call_user_func( $exporters['amino-orbit']['callback'], 'admin@orbit-ci.invalid', 1 )['data'],
+    'After erasure, a second export contains no Orbit activity'
+);
+
 WP_CLI::success( 'Real WordPress integration checks passed; all data is confined to CI.' );
