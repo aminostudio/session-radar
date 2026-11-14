@@ -4,7 +4,7 @@ Tags: dashboard, users, sessions, activity, privacy
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.3.3
+Stable tag: 0.3.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -50,6 +50,11 @@ Data retention of native WordPress session information is managed by WordPress, 
 * Activity pings are best-effort, not a live socket. Browser background throttling can delay updates.
 
 == Changelog ==
+
+= 0.3.4 =
+* Preserves keyboard focus if a visitor enters the dashboard widget while an AJAX refresh request is in flight.
+* Adds real Chromium and axe-core accessibility regression checks to GitHub Actions.
+
 
 = 0.3.3 =
 * Separately identifies native WordPress sessions by an HMAC of their stored one-way token verifiers, avoiding same-second browser/IP collisions.

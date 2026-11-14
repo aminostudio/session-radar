@@ -75,6 +75,11 @@ English is the source language. Bundled gettext catalogs provide French (`fr_FR`
 
 ## Changelog
 
+### v0.3.4 (development)
+- Preserves keyboard focus even when an AJAX refresh response arrives after focus has moved into the widget.
+- Adds automated Chromium browser checks for activity transitions, role boundaries, focus preservation, mobile/high-contrast and axe-core WCAG 2.1 AA checks.
+
+
 ### v0.3.3 (development)
 - Distinguishes native WordPress sessions even when browser/IP/login metadata are identical, by deriving a keyed HMAC from WordPress's hashed token verifier.
 - Preserves the metadata-derived fallback for alternative session managers.
@@ -129,7 +134,7 @@ English is the source language. Bundled gettext catalogs provide French (`fr_FR`
 
 ## Status
 
-**v0.3.3 is a development build**, not a stable public release. Initial isolated tests and syntax checks are not substitutes for real WordPress integration testing.
+**v0.3.4 is a development build**, not a stable public release. Initial isolated tests and syntax checks are not substitutes for real WordPress integration testing.
 
 ## Quality assurance
 

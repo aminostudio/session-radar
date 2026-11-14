@@ -105,3 +105,10 @@ This report records checks actually performed and intentionally distinguishes so
 - [Run #21](https://github.com/aminostudio/amino-orbit/actions/runs/43555917728) succeeded: full PHP 8.0/8.2/8.4 matrix and **24 genuine WordPress 7.1.4 integration assertions** on PHP 8.2/MySQL 8.0.
 - Verified three native sessions/two real users, same-second collision isolation, roles, WordPress IP privacy, real logout, and bundled FR/ES gettext loading.
 - See [WORDPRESS-INTEGRATION-0.3.3.md](WORDPRESS-INTEGRATION-0.3.3.md). No additional #LAB users created. Only CI ephemeral accounts were used.
+
+## Browser focus race found and fixed (2026-11-14)
+
+- Real Chromium v0.3.3 passed a complete HTTP/browser role, login/logout, idle and axe-core audit in GitHub Actions run #27.
+- A follow-up regression test triggered a 500 ms delayed AJAX response while the Settings link gained keyboard focus. Run #28 failed on v0.3.3 because the DOM replacement checked focus only before the request, not after its response.
+- v0.3.4 rechecks focus immediately before replacing the panel; the request simply leaves the existing DOM alone when focus has moved inside.
+- A reproducible browser-level regression is committed in `tests/browser-e2e.cjs`. Passing GitHub CI must be verified before offering the v0.3.4 ZIP.

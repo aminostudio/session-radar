@@ -62,7 +62,10 @@
         const template = document.createElement('template');
         template.innerHTML = result.data.html.trim();
         const next = template.content.querySelector('#amino-orbit-panel');
-        if (next && current.isConnected) current.replaceWith(next);
+        // Focus may move into the panel after the request starts: recheck now.
+        if (next && current.isConnected && !current.contains(document.activeElement)) {
+          current.replaceWith(next);
+        }
       })
       .catch(() => { /* Keep the previous panel when offline. */ })
       .finally(() => { refreshing = false; });
