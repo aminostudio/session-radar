@@ -171,3 +171,47 @@ jobs:
           path: /tmp/orbit-browser-failure.png
           if-no-files-found: ignore
 
+
+  wordpress-minimum:
+    name: WordPress 6.4 + PHP 8.0 minimum compatibility
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: orbit_min
+          MYSQL_USER: orbit_min
+          MYSQL_PASSWORD: orbit_min_password
+          MYSQL_ROOT_PASSWORD: orbit_min_root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent -h 127.0.0.1 -uroot -porbit_min_root"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+    env:
+      WP_ROOT: /tmp/orbit-wp-minimum
+    steps:
+      - uses: actions/checkout@v5
+      - name: Set up minimum supported PHP and WP-CLI
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.0'
+          extensions: mysqli
+          coverage: none
+          tools: wp-cli
+      - name: Install disposable WordPress 6.4 and Amino Orbit
+        run: |
+          set -euo pipefail
+          wp core download --version=6.4 --path="$WP_ROOT" --skip-content --quiet
+          wp config create --path="$WP_ROOT" --dbname=orbit_min --dbuser=orbit_min --dbpass=orbit_min_password --dbhost=127.0.0.1 --skip-check
+          wp core install --path="$WP_ROOT" --url=http://127.0.0.1:8080 --title="Amino Orbit CI" --admin_user=orbit_ci_admin --admin_password="temporary-ci-password-not-reused" --admin_email=admin@orbit-ci.invalid --skip-email
+          mkdir -p "$WP_ROOT/wp-content/plugins/amino-orbit"
+          cp amino-orbit.php uninstall.php readme.txt README.md LICENSE "$WP_ROOT/wp-content/plugins/amino-orbit/"
+          cp -R assets includes languages "$WP_ROOT/wp-content/plugins/amino-orbit/"
+          wp plugin activate amino-orbit --path="$WP_ROOT"
+          wp language core install fr_FR es_ES --path="$WP_ROOT"
+          wp core version --path="$WP_ROOT"
+      - name: Native session, role, logout and locale tests on minimum supported stack
+        run: wp eval-file "$GITHUB_WORKSPACE/tests/wordpress-integration.php" --path="$WP_ROOT"
