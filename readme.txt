@@ -4,7 +4,7 @@ Tags: dashboard, users, sessions, activity, privacy
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.3.4
+Stable tag: 0.3.5
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -50,6 +50,12 @@ Data retention of native WordPress session information is managed by WordPress, 
 * Activity pings are best-effort, not a live socket. Browser background throttling can delay updates.
 
 == Changelog ==
+
+= 0.3.5 =
+* Repairs bundled French and Spanish MO headers for compatibility with WordPress 6.4's original gettext/POMO reader.
+* Adds regression checks for legacy MO table offsets and WordPress 6.4 with PHP 8.0.
+* Does not change any tracking, settings, permissions, or presentation behavior.
+
 
 = 0.3.4 =
 * Preserves keyboard focus if a visitor enters the dashboard widget while an AJAX refresh request is in flight.

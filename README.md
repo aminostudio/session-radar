@@ -75,6 +75,12 @@ English is the source language. Bundled gettext catalogs provide French (`fr_FR`
 
 ## Changelog
 
+### v0.3.5 (development)
+- Fixes the hash-table offset stored in the bundled French and Spanish MO file headers. The old WordPress 6.4 POMO reader rejects a zero offset even for an empty hash table.
+- Adds a binary-header regression to the gettext test suite and a real WordPress 6.4 + PHP 8.0 CI job.
+- No change to plugin features, persisted settings, user tracking, or AJAX behavior.
+
+
 ### v0.3.4 (development)
 - Preserves keyboard focus even when an AJAX refresh response arrives after focus has moved into the widget.
 - Adds automated Chromium browser checks for activity transitions, role boundaries, focus preservation, mobile/high-contrast and axe-core WCAG 2.1 AA checks.
@@ -135,7 +141,7 @@ English is the source language. Bundled gettext catalogs provide French (`fr_FR`
 
 ## Status
 
-**v0.3.4 remains a private development build on Amino #LAB.** Real WordPress, Chromium, automatic accessibility checks, three browser languages, official Plugin Check and a limited eight-administrator concurrent HTTP test now pass. Manual assistive-technology and actual browser zoom tests remain before public release.
+**v0.3.5 source is a private development build; Amino #LAB continues running v0.3.4 until an install is explicitly authorized.** Real WordPress, Chromium, automatic accessibility checks, three browser languages, official Plugin Check and a limited eight-administrator concurrent HTTP test now pass. Manual assistive-technology and actual browser zoom tests remain before public release.
 
 ## Quality assurance
 

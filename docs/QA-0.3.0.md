@@ -112,3 +112,10 @@ This report records checks actually performed and intentionally distinguishes so
 - A follow-up regression test triggered a 500 ms delayed AJAX response while the Settings link gained keyboard focus. Run #28 failed on v0.3.3 because the DOM replacement checked focus only before the request, not after its response.
 - v0.3.4 rechecks focus immediately before replacing the panel; the request simply leaves the existing DOM alone when focus has moved inside.
 - A reproducible browser-level regression is committed in `tests/browser-e2e.cjs`. Passing GitHub CI must be verified before offering the v0.3.4 ZIP.
+
+## WordPress 6.4 gettext backward compatibility (2026-11-14)
+
+- Initial real WordPress 6.4 + PHP 8.0 integration passed 18 session/permissions checks but failed French gettext both after dynamic locale switching and on fresh fr_FR boot.
+- Root cause traced to Babel-generated .mo headers: zero hash-table offset despite having a translation index, tolerated by newer WP translators but rejected by WordPress 6.4's POMO parser.
+- v0.3.5 repairs only the 4-byte hash-table-offset field in each bundled FR/ES .mo catalog; no user setting or PHP runtime logic changes.
+- Added a binary gettext-header assertion to tests/i18n.py. Real legacy compatibility CI must pass before publishing/installing the new ZIP.
