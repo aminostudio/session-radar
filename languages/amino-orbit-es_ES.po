@@ -1,5 +1,5 @@
 msgid ""
-msgstr "Project-Id-Version: Amino Orbit 0.3.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=2; plural=(n != 1);\n"
+msgstr "Project-Id-Version: Amino Orbit 0.3.1\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=2; plural=(n != 1);\n"
 
 
 #, php-format
@@ -116,3 +116,6 @@ msgstr "Intervalo de actualización del widget"
 msgid "WordPress sessions and recent admin activity, without tracking public-site browsing."
 msgstr "Sesiones de WordPress y actividad reciente en la administración, sin rastrear la navegación pública."
 
+
+msgid "Partial results: the session scan limit has been reached."
+msgstr "Resultados parciales: se ha alcanzado el límite de búsqueda de sesiones."

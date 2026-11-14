@@ -23,7 +23,7 @@ function current_user_can($cap){return $GLOBALS['state']['admin'];}
 function is_user_logged_in(){return true;}
 function wp_get_current_user(){return new WP_User(1,'Amino Studio',$GLOBALS['state']['roles']);}
 function get_current_user_id(){return 1;}
-function get_users($args){return $args['fields']==='ID'?array_keys($GLOBALS['state']['meta']):$GLOBALS['state']['users'];}
+function get_users($args){return $args['fields']==='ID'?array_keys($GLOBALS['state']['meta']):array_slice($GLOBALS['state']['users'],0,$args['number']??PHP_INT_MAX);}
 function get_user_meta($id,$key,$single){return $GLOBALS['state']['meta'][$id]??[];}
 function update_user_meta($id,$key,$value){$GLOBALS['state']['meta'][$id]=$value;}
 function delete_user_meta($id,$key){unset($GLOBALS['state']['meta'][$id]);}
@@ -115,5 +115,22 @@ $state['options']=['viewer_roles'=>['editor'], 'show_ip'=>1];
 assert_true(panel()==='', 'Unapproved author role denied despite allowed editor role');
 $state['roles']=['editor'];
 assert_true(!str_contains(panel(),'192.0.2.'),'Authorized editor cannot see native IP addresses');
+WP_Session_Tokens::$sessionsByUser=[];
+$state['admin']=true;
+$state['roles']=['administrator'];
+$state['options']=[];
+$state['users']=[];
+for($id=1;$id<=201;$id++) $state['users'][]=new WP_User($id,'Test User '.$id,['subscriber']);
+$html=panel();
+assert_true(str_contains($html,'Partial results: the session scan limit has been reached.'),'201 accounts disclose truncated scan');
+assert_true(str_contains($html,'>200</strong><small>Sessions'),'Account scan is capped at 200');
+$state['users']=[new WP_User(1,'Test Admin',['administrator'])];
+$lots=[];
+for($i=1;$i<=510;$i++) $lots[]=['login'=>time()-$i,'expiration'=>time()+3600,'ua'=>'Firefox/159 Windows','ip'=>'192.0.2.10'];
+WP_Session_Tokens::$sessionsByUser=[1=>$lots];
+$html=panel();
+assert_true(str_contains($html,'Partial results: the session scan limit has been reached.'),'510 sessions disclose truncated scan');
+assert_true(str_contains($html,'>500</strong><small>Sessions'),'Session scan capped at 500');
+assert_true(substr_count($html,'class="amino-orbit__user"')===40,'40-session UI row cap remains');
 WP_Session_Tokens::$sessionsByUser=[];
 echo "All smoke checks passed.\n";

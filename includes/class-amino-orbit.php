@@ -19,6 +19,7 @@ final class Amino_Orbit {
 	private const NONCE = 'amino_orbit_ajax';
 	private const CLEANUP_HOOK = 'amino_orbit_daily_cleanup';
 	private const MAX_USERS = 200;
+	private const MAX_SCANNED_SESSIONS = 500;
 	private const MAX_ROWS = 40;
 
 	/** Register WordPress hooks. */
@@ -254,7 +255,8 @@ final class Amino_Orbit {
 	}
 
 	/** Read current WordPress sessions; never infer a sign-out from idle time. */
-	private static function sessions(): array {
+	private static function sessions( bool &$truncated ): array {
+		$truncated = false;
 		$now = time();
 		$options = self::options();
 		$users = get_users(
@@ -262,11 +264,14 @@ final class Amino_Orbit {
 				'meta_key' => 'session_tokens',
 				'fields' => 'all',
 				'count_total' => false,
-				'number' => self::MAX_USERS,
+				'number' => self::MAX_USERS + 1,
 				'orderby' => 'ID',
 				'order' => 'ASC',
 			)
 		);
+		// Fetch one extra user so the interface can disclose incomplete results.
+		$truncated = count( $users ) > self::MAX_USERS;
+		$users = array_slice( $users, 0, self::MAX_USERS );
 		$rows = array();
 		foreach ( $users as $user ) {
 			if ( ! $user instanceof WP_User ) {
@@ -293,6 +298,10 @@ final class Amino_Orbit {
 					'device' => self::device( (string) ( $session['ua'] ?? '' ) ),
 					'ip' => (string) ( $session['ip'] ?? '' ),
 				);
+				if ( count( $rows ) >= self::MAX_SCANNED_SESSIONS ) {
+					$truncated = true;
+					break 2;
+				}
 			}
 		}
 		$priority = array( 'active' => 0, 'idle' => 1, 'session' => 2 );
@@ -310,7 +319,8 @@ final class Amino_Orbit {
 		if ( ! self::can_view() ) {
 			return;
 		}
-		$rows = self::sessions();
+		$truncated = false;
+		$rows = self::sessions( $truncated );
 		$total = count( $rows );
 		$active = count( array_filter( $rows, static fn( array $row ): bool => 'active' === $row['status'] ) );
 		$user_ids = array();
@@ -374,6 +384,9 @@ final class Amino_Orbit {
 							</li>
 						<?php endforeach; ?>
 					</ul>
+				<?php endif; ?>
+				<?php if ( $truncated ) : ?>
+					<p class="amino-orbit__note"><?php esc_html_e( 'Partial results: the session scan limit has been reached.', 'amino-orbit' ); ?></p>
 				<?php endif; ?>
 				<?php if ( $total > self::MAX_ROWS ) : ?>
 					<p class="amino-orbit__note"><?php echo esc_html( sprintf( /* translators: %d: maximum number of displayed sessions. */ __( 'Showing up to %d sessions.', 'amino-orbit' ), self::MAX_ROWS ) ); ?></p>

@@ -63,3 +63,11 @@ Reference: https://make.wordpress.org/core/2024/10/21/i18n-improvements-6-7/
 Keep the repository **private** and classify v0.3.0 as **development** until the pending real WordPress checks, Plugin Check, and security/accessibility review are complete.
 
 This report records checks actually performed and intentionally distinguishes source-level tests from verified WordPress integration behavior.
+
+## Maintenance follow-up: v0.3.1
+
+- Added a visible, translated partial-results notice when the scan exceeds 200 session-bearing users or reaches 500 valid sessions; the widget still shows up to 40 rows.
+- Added isolated regression tests for the caps. Current WordPress settings and privacy defaults are unchanged.
+- All **37** gettext source messages are included in both bundled French and Spanish locale catalogs.
+- The private-bundle `load_plugin_textdomain()` Plugin Check warning remains documented, not silently suppressed.
+- This is a development patch, not a claim of complete live Plugin Check validation.

@@ -75,6 +75,11 @@ English is the source language. Bundled gettext catalogs provide French (`fr_FR`
 
 ## Changelog
 
+### v0.3.1 (development)
+- Explicit notice when scanning 200 users or 500 sessions makes summary counts partial.
+- Improved upper bounds on database and session work.
+
+
 ### v0.3.0 (development)
 - Internationalized all admin labels and settings (English source, French and Spanish catalogs).
 - Hardened role-setting sanitization against nested-array submissions.
@@ -110,7 +115,7 @@ English is the source language. Bundled gettext catalogs provide French (`fr_FR`
 
 ## Status
 
-**v0.3.0 is a development build**, not a stable public release. Initial isolated tests and syntax checks are not substitutes for real WordPress integration testing.
+**v0.3.1 is a development build**, not a stable public release. Initial isolated tests and syntax checks are not substitutes for real WordPress integration testing.
 
 ## Quality assurance
 
