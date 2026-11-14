@@ -149,3 +149,4 @@ English is the source language. Bundled gettext catalogs provide French (`fr_FR`
 - [Real browser and accessibility QA for v0.3.4](docs/BROWSER-QA-0.3.4.md) documents 32 earlier Chromium assertions and the corrected in-flight keyboard-focus race.
 - [v0.3.4 final automated QA baseline](docs/QA-AUTOMATED-0.3.4.md) records **36 browser checks**, 200%/400% simulated reflow, 205-user/510-session limits, warm/cold query measurements, and automated official Plugin Check (0 errors, 3 known warnings).
 - [v0.3.4 eight-admin AJAX and real-browser locale tests](docs/QA-CONCURRENCY-AND-LOCALES-0.3.4.md) documents 16 successful concurrent HTTP calls and six FR/ES/EN UI assertions.
+- [WordPress.org pre-submission assessment](docs/WORDPRESS-ORG-READINESS-0.3.4.md) reviews privacy/consent, translation delivery, declared minimum WP version and public identity requirements.
