@@ -68,7 +68,7 @@ jobs:
           set -euo pipefail
           wp core download --path="$WP_ROOT" --skip-content --quiet
           wp config create --path="$WP_ROOT" --dbname=orbit_ci --dbuser=orbit_ci --dbpass=orbit_ci_password --dbhost=127.0.0.1 --skip-check
-          wp core install --path="$WP_ROOT" --url=http://localhost --title="Amino Orbit CI" --admin_user=orbit_ci_admin --admin_password="temporary-ci-password-not-reused" --admin_email=admin@orbit-ci.invalid --skip-email
+          wp core install --path="$WP_ROOT" --url=http://127.0.0.1:8080 --title="Amino Orbit CI" --admin_user=orbit_ci_admin --admin_password="temporary-ci-password-not-reused" --admin_email=admin@orbit-ci.invalid --skip-email
           mkdir -p "$WP_ROOT/wp-content/plugins/amino-orbit"
           cp amino-orbit.php uninstall.php "$WP_ROOT/wp-content/plugins/amino-orbit/"
           cp -R assets includes languages "$WP_ROOT/wp-content/plugins/amino-orbit/"
@@ -76,3 +76,27 @@ jobs:
           wp language core install fr_FR es_ES --path="$WP_ROOT"
       - name: Real WordPress session, authorization and translation checks
         run: wp eval-file "$GITHUB_WORKSPACE/tests/wordpress-integration.php" --path="$WP_ROOT"
+
+      - name: Install Chromium and accessibility audit tools
+        run: |
+          npm install --no-save --no-audit --no-fund playwright axe-core
+          npx playwright install --with-deps chromium
+      - name: Browser AJAX, idle, keyboard and WCAG integration
+        run: |
+          set -euo pipefail
+          php -S 127.0.0.1:8080 -t "$WP_ROOT" > /tmp/orbit-php-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true; tail -n 35 /tmp/orbit-php-server.log || true' EXIT
+          for attempt in {1..30}; do
+            if curl --silent --fail http://127.0.0.1:8080/wp-login.php > /dev/null; then break; fi
+            sleep 1
+          done
+          node tests/browser-e2e.cjs
+      - name: Upload browser failure screenshot
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: amino-orbit-browser-qa-failure
+          path: /tmp/orbit-browser-failure.png
+          if-no-files-found: ignore
+
