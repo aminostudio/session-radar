@@ -2,7 +2,7 @@
 /**
  * Browser QA fixture. Only permitted inside the GitHub Actions disposable WP.
  *
- * ORBIT_BROWSER_FIXTURE_MODE=setup|idle wp eval-file tests/browser-fixture.php
+ * ORBIT_BROWSER_FIXTURE_MODE=setup|idle|allow-editor wp eval-file tests/browser-fixture.php
  *
  * This file MUST NOT be run against Amino #LAB or any real WordPress site.
  */
@@ -35,6 +35,17 @@ if ( 'setup' === $mode ) {
     );
     delete_user_meta( $admin->ID, '_amino_orbit_presence' );
     WP_CLI::success( 'Disposable browser setup complete, with admin-only widget.' );
+ } elseif ( 'allow-editor' === $mode ) {
+    update_option(
+        'amino_orbit_settings',
+        array(
+            'viewer_roles'     => array( 'editor' ),
+            'inactive_minutes' => 5,
+            'refresh_seconds'  => 30,
+            'show_ip'          => 1,
+        )
+    );
+    WP_CLI::success( 'Editor widget access enabled in disposable CI only.' );
 } elseif ( 'idle' === $mode ) {
     $sessions = get_user_meta( $admin->ID, 'session_tokens', true );
     $presence = array();
