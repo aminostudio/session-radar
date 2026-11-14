@@ -141,7 +141,7 @@ English is the source language. Bundled gettext catalogs provide French (`fr_FR`
 
 ## Status
 
-**v0.3.5 source is a private development build; Amino #LAB continues running v0.3.4 until an install is explicitly authorized.** Real WordPress, Chromium, automatic accessibility checks, three browser languages, official Plugin Check and a limited eight-administrator concurrent HTTP test now pass. Manual assistive-technology and actual browser zoom tests remain before public release.
+**v0.3.5 is a tested private compatibility ZIP; Amino #LAB continues running v0.3.4 until an upgrade is explicitly authorized.** Real WordPress, Chromium, automatic accessibility checks, three browser languages, official Plugin Check and a limited eight-administrator concurrent HTTP test now pass. Manual assistive-technology and actual browser zoom tests remain before public release.
 
 ## Quality assurance
 
@@ -156,3 +156,4 @@ English is the source language. Bundled gettext catalogs provide French (`fr_FR`
 - [v0.3.4 final automated QA baseline](docs/QA-AUTOMATED-0.3.4.md) records **36 browser checks**, 200%/400% simulated reflow, 205-user/510-session limits, warm/cold query measurements, and automated official Plugin Check (0 errors, 3 known warnings).
 - [v0.3.4 eight-admin AJAX and real-browser locale tests](docs/QA-CONCURRENCY-AND-LOCALES-0.3.4.md) documents 16 successful concurrent HTTP calls and six FR/ES/EN UI assertions.
 - [WordPress.org pre-submission assessment](docs/WORDPRESS-ORG-READINESS-0.3.4.md) reviews privacy/consent, translation delivery, declared minimum WP version and public identity requirements.
+- [v0.3.5 legacy WordPress compatibility](docs/QA-0.3.5-COMPATIBILITY.md) verifies WordPress 6.4/PHP 8.0 FR/ES gettext loading and explains the fixed MO headers.

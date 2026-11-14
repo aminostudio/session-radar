@@ -50,9 +50,11 @@ The existing `load_plugin_textdomain()` at `init` is intentionally used by the p
 - Screenshots, support contact, accessible setup copy and a short FAQ are beneficial but not essential for the private ZIP.
 - Maintain public source/build access if code is built or generated; the plugin's current assets and PHP source are human-readable.
 
-### D. Compatibility baseline: medium priority
+### D. Compatibility baseline: verified for the declared minimum
 
-The readme claims WordPress **6.4 minimum**, while the full real-WordPress browser integration has so far run against WordPress **7.1.4**. CI runs PHP 8.0, 8.2 and 8.4 independently, but these are isolated tests; it does **not** yet prove WordPress 6.4 interoperability. Before submission, either add integration against the declared WordPress minimum (preferred) or choose a supported minimum reflecting genuine test evidence.
+**Resolved in private v0.3.5.** [GitHub Actions #48](https://github.com/aminostudio/amino-orbit/actions/runs/43563598946) passed real **WordPress 6.4 + PHP 8.0** integration for authentication sessions, role privacy, logout and AJAX hooks, plus fresh WordPress bootstrap gettext tests for **fr_FR and es_ES**. The genuine defect in the old MO hash-offset headers was corrected and permanently tested. See [compatibility evidence](QA-0.3.5-COMPATIBILITY.md). The latest WordPress 7.1.4 integration and Chromium suites also passed.
+
+This confirms the advertised WordPress minimum for tested plugin features. It is not a comprehensive matrix of every intermediate WordPress version or third-party authentication/session manager.
 
 ### E. Public delivery: publication decision required
 
@@ -67,7 +69,7 @@ The automated Chromium suite passed six FR/ES/EN UI assertions, 16 concurrent AJ
 1. Make the privacy/consent design decision and document who may monitor whom.
 2. Test against the advertised WordPress 6.4 minimum and decide public i18n behavior.
 3. Add the final privacy/UI changes in **one release-candidate build**, not endless patch versions on #LAB.
-4. Conduct the short human accessibility review.
+4. Conduct the short human accessibility review. WordPress 6.4 minimum compatibility is now automated and passing.
 5. Verify the real WordPress.org account, slug, dedicated page and publication readiness, then submit when authorized.
 
 **Current decision: no public submission and no change to LAB 0.3.4.** This report identifies the remaining decisions without prematurely modifying a functioning development installation.
