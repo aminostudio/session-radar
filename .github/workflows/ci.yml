@@ -33,3 +33,46 @@ jobs:
         run: python3 tests/i18n.py
       - name: JavaScript syntax check
         run: node --check assets/admin.js
+
+  wordpress-integration:
+    name: Real WordPress integration (PHP 8.2)
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: orbit_ci
+          MYSQL_USER: orbit_ci
+          MYSQL_PASSWORD: orbit_ci_password
+          MYSQL_ROOT_PASSWORD: orbit_ci_root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent -h 127.0.0.1 -uroot -porbit_ci_root"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+    env:
+      WP_ROOT: ${{ runner.temp }}/orbit-wp
+    steps:
+      - uses: actions/checkout@v5
+      - name: Set up PHP and WordPress CLI
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mysqli
+          coverage: none
+          tools: wp-cli
+      - name: Install disposable WordPress and the plugin
+        run: |
+          set -euo pipefail
+          wp core download --path="$WP_ROOT" --skip-content --quiet
+          wp config create --path="$WP_ROOT" --dbname=orbit_ci --dbuser=orbit_ci --dbpass=orbit_ci_password --dbhost=127.0.0.1 --skip-check
+          wp core install --path="$WP_ROOT" --url=http://localhost --title="Amino Orbit CI" --admin_user=orbit_ci_admin --admin_password="temporary-ci-password-not-reused" --admin_email=admin@orbit-ci.invalid --skip-email
+          mkdir -p "$WP_ROOT/wp-content/plugins/amino-orbit"
+          cp amino-orbit.php uninstall.php "$WP_ROOT/wp-content/plugins/amino-orbit/"
+          cp -R assets includes languages "$WP_ROOT/wp-content/plugins/amino-orbit/"
+          wp plugin activate amino-orbit --path="$WP_ROOT"
+          wp language core install fr_FR es_ES --path="$WP_ROOT"
+      - name: Real WordPress session, authorization and translation checks
+        run: wp eval-file "$GITHUB_WORKSPACE/tests/wordpress-integration.php" --path="$WP_ROOT"
