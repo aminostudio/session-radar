@@ -24,6 +24,7 @@ final class Amino_Orbit {
 
 	/** Register WordPress hooks. */
 	public static function init(): void {
+		add_action( 'init', array( __CLASS__, 'migrate_legacy_privacy' ), 0 );
 		add_action( 'init', array( __CLASS__, 'load_translations' ) );
 		add_action( 'wp_dashboard_setup', array( __CLASS__, 'register_widget' ) );
 		add_action( 'admin_menu', array( __CLASS__, 'register_settings_page' ) );
@@ -41,6 +42,24 @@ final class Amino_Orbit {
 	/** Register bundled locale files at init, never before. */
 	public static function load_translations(): void {
 		load_plugin_textdomain( 'amino-orbit', false, dirname( plugin_basename( AMINO_ORBIT_FILE ) ) . '/languages' );
+	}
+
+	/**
+	 * One-time privacy migration for installs upgraded from pre-opt-in versions.
+	 *
+	 * The missing activity_enabled key means monitoring has never explicitly
+	 * been approved. Clear legacy observations and persist OFF without changing
+	 * refresh rate, viewer roles or other settings. Native sessions stay intact.
+	 */
+	public static function migrate_legacy_privacy(): void {
+		$stored = get_option( self::OPTION, array() );
+		$stored = is_array( $stored ) ? $stored : array();
+		if ( array_key_exists( 'activity_enabled', $stored ) ) {
+			return;
+		}
+		delete_metadata( 'user', 0, self::META, '', true );
+		$stored['activity_enabled'] = 0;
+		update_option( self::OPTION, $stored );
 	}
 
 	/** Set up the WordPress cron cleanup without modifying existing settings. */
