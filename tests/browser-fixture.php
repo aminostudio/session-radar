@@ -2,7 +2,7 @@
 /**
  * Browser QA fixture. Only permitted inside the GitHub Actions disposable WP.
  *
- * ORBIT_BROWSER_FIXTURE_MODE=setup|idle|allow-editor wp eval-file tests/browser-fixture.php
+ * ORBIT_BROWSER_FIXTURE_MODE=setup|idle|allow-editor|locale-fr|locale-es|locale-en wp eval-file tests/browser-fixture.php
  *
  * This file MUST NOT be run against Amino #LAB or any real WordPress site.
  */
@@ -46,6 +46,20 @@ if ( 'setup' === $mode ) {
         )
     );
     WP_CLI::success( 'Editor widget access enabled in disposable CI only.' );
+} elseif ( in_array( $mode, array( 'locale-fr', 'locale-es', 'locale-en' ), true ) ) {
+    // Exercise the real WordPress per-user admin locale over HTTP.
+    $locales = array(
+        'locale-fr' => 'fr_FR',
+        'locale-es' => 'es_ES',
+        'locale-en' => '',
+    );
+    $locale = $locales[ $mode ];
+    if ( '' === $locale ) {
+        delete_user_meta( $admin->ID, 'locale' );
+    } else {
+        update_user_meta( $admin->ID, 'locale', $locale );
+    }
+    WP_CLI::success( 'Disposable administrator locale set to ' . ( $locale ?: 'default' ) . '.' );
 } elseif ( 'idle' === $mode ) {
     $sessions = get_user_meta( $admin->ID, 'session_tokens', true );
     $presence = array();
