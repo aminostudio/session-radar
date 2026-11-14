@@ -1,0 +1,54 @@
+<?php
+/**
+ * Browser QA fixture. Only permitted inside the GitHub Actions disposable WP.
+ *
+ * ORBIT_BROWSER_FIXTURE_MODE=setup|idle wp eval-file tests/browser-fixture.php
+ *
+ * This file MUST NOT be run against Amino #LAB or any real WordPress site.
+ */
+if ( ! defined( 'WP_CLI' ) || ! WP_CLI ) {
+    exit( 1 );
+}
+$site = (string) home_url();
+if ( 'Amino Orbit CI' !== get_option( 'blogname' ) || ! preg_match( '~^http://127\\.0\\.0\\.1:8080/?$~', $site ) ) {
+    WP_CLI::error( 'Browser fixture refused: requires disposable local CI WordPress.' );
+}
+$mode  = (string) getenv( 'ORBIT_BROWSER_FIXTURE_MODE' );
+$admin = get_user_by( 'login', 'orbit_ci_admin' );
+if ( ! $admin instanceof WP_User ) {
+    WP_CLI::error( 'Missing disposable CI administrator.' );
+}
+if ( 'setup' === $mode ) {
+    $editor = get_user_by( 'login', 'orbit_ci_editor' );
+    if ( ! $editor instanceof WP_User ) {
+        WP_CLI::error( 'Missing disposable CI editor.' );
+    }
+    wp_set_password( 'temporary-editor-ci-password', $editor->ID );
+    update_option(
+        'amino_orbit_settings',
+        array(
+            'viewer_roles'     => array(),
+            'inactive_minutes' => 5,
+            'refresh_seconds'  => 30,
+            'show_ip'          => 0,
+        )
+    );
+    delete_user_meta( $admin->ID, '_amino_orbit_presence' );
+    WP_CLI::success( 'Disposable browser setup complete, with admin-only widget.' );
+} elseif ( 'idle' === $mode ) {
+    $sessions = get_user_meta( $admin->ID, 'session_tokens', true );
+    $presence = array();
+    foreach ( is_array( $sessions ) ? $sessions : array() as $verifier => $session ) {
+        if ( is_string( $verifier ) && preg_match( '/^[a-f0-9]{64}$/D', $verifier ) ) {
+            $key = hash_hmac( 'sha256', $verifier, wp_salt( 'auth' ) );
+            $presence[ $key ] = time() - 10 * MINUTE_IN_SECONDS;
+        }
+    }
+    if ( ! $presence ) {
+        WP_CLI::error( 'No real native session found for idle fixture.' );
+    }
+    update_user_meta( $admin->ID, '_amino_orbit_presence', $presence );
+    WP_CLI::success( 'All native admin sessions marked inactive in disposable CI.' );
+} else {
+    WP_CLI::error( 'Unknown browser fixture mode.' );
+}
