@@ -128,3 +128,12 @@ msgstr ""
 msgid "Activity older than 24 hours is no longer shown. Stored records are deleted on later interactions or during WordPress scheduled cleanup, which may run later. Turning monitoring off deletes Orbit activity records immediately. WordPress manages login sessions separately."
 msgstr ""
 
+msgid "Amino Orbit admin activity"
+msgstr ""
+
+msgid "Last observed admin interaction"
+msgstr ""
+
+msgid "Could not remove Amino Orbit activity data."
+msgstr ""
+

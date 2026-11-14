@@ -29,6 +29,8 @@ final class Amino_Orbit {
 		add_action( 'admin_menu', array( __CLASS__, 'register_settings_page' ) );
 		add_action( 'admin_init', array( __CLASS__, 'register_settings' ) );
 		add_action( 'admin_init', array( __CLASS__, 'register_privacy_policy_text' ) );
+		add_filter( 'wp_privacy_personal_data_exporters', array( __CLASS__, 'register_personal_data_exporter' ) );
+		add_filter( 'wp_privacy_personal_data_erasers', array( __CLASS__, 'register_personal_data_eraser' ) );
 		add_action( 'update_option_amino_orbit_settings', array( __CLASS__, 'clear_presence_on_disable' ), 10, 2 );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_assets' ) );
 		add_action( 'wp_ajax_amino_orbit_ping', array( __CLASS__, 'ajax_ping' ) );
@@ -156,6 +158,99 @@ final class Amino_Orbit {
 			$html .= '<p>' . esc_html( $paragraph ) . '</p>';
 		}
 		wp_add_privacy_policy_content( 'Amino Orbit', $html );
+	}
+
+	/**
+	 * Make plugin-only activity available through WordPress's personal-data export.
+	 * The plugin does not export native WordPress login session data.
+	 */
+	public static function register_personal_data_exporter( array $exporters ): array {
+		$exporters['amino-orbit'] = array(
+			'exporter_friendly_name' => __( 'Amino Orbit admin activity', 'amino-orbit' ),
+			'callback' => array( __CLASS__, 'export_personal_data' ),
+		);
+		return $exporters;
+	}
+
+	/** Offer the corresponding eraser through the native WordPress privacy workflow. */
+	public static function register_personal_data_eraser( array $erasers ): array {
+		$erasers['amino-orbit'] = array(
+			'eraser_friendly_name' => __( 'Amino Orbit admin activity', 'amino-orbit' ),
+			'callback' => array( __CLASS__, 'erase_personal_data' ),
+		);
+		return $erasers;
+	}
+
+	/**
+	 * Export only recent observation times, not opaque session identifiers, IPs,
+	 * native login tokens or data belonging to another email address.
+	 */
+	public static function export_personal_data( string $email_address, int $page = 1 ): array {
+		$result = array( 'data' => array(), 'done' => true );
+		if ( 1 !== $page ) {
+			return $result;
+		}
+		$user = get_user_by( 'email', $email_address );
+		if ( ! $user instanceof WP_User ) {
+			return $result;
+		}
+		$presence = get_user_meta( $user->ID, self::META, true );
+		if ( ! is_array( $presence ) ) {
+			return $result;
+		}
+		$now  = time();
+		$seen = array_filter(
+			array_values( $presence ),
+			static fn( $timestamp ): bool => is_numeric( $timestamp )
+				&& (int) $timestamp >= $now - DAY_IN_SECONDS
+				&& (int) $timestamp <= $now
+		);
+		rsort( $seen, SORT_NUMERIC );
+		foreach ( array_slice( $seen, 0, 32 ) as $index => $timestamp ) {
+			$result['data'][] = array(
+				'group_id' => 'amino-orbit-activity',
+				'group_label' => __( 'Amino Orbit admin activity', 'amino-orbit' ),
+				'item_id' => 'amino-orbit-presence-' . $index,
+				'data' => array(
+					array(
+						'name' => __( 'Last observed admin interaction', 'amino-orbit' ),
+						'value' => wp_date( 'Y-m-d H:i:s T', (int) $timestamp ),
+					),
+				),
+			);
+		}
+		return $result;
+	}
+
+	/**
+	 * Erase all Orbit-specific metadata for the requested WordPress account.
+	 * Core's privacy workflow validates and authorizes the request.
+	 */
+	public static function erase_personal_data( string $email_address, int $page = 1 ): array {
+		$result = array(
+			'items_removed' => false,
+			'items_retained' => false,
+			'messages' => array(),
+			'done' => true,
+		);
+		if ( 1 !== $page ) {
+			return $result;
+		}
+		$user = get_user_by( 'email', $email_address );
+		if ( ! $user instanceof WP_User ) {
+			return $result;
+		}
+		// Asking for all values also detects an empty or malformed metadata row.
+		$existing = get_user_meta( $user->ID, self::META, false );
+		if ( ! $existing ) {
+			return $result;
+		}
+		$result['items_removed'] = (bool) delete_user_meta( $user->ID, self::META );
+		if ( ! $result['items_removed'] ) {
+			$result['items_retained'] = true;
+			$result['messages'][] = __( 'Could not remove Amino Orbit activity data.', 'amino-orbit' );
+		}
+		return $result;
 	}
 
 	/** Register dashboard widget for permitted logged-in roles only. */

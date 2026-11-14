@@ -4,7 +4,7 @@ Tags: dashboard, users, sessions, activity, privacy
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.3.6
+Stable tag: 0.3.7
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -43,6 +43,8 @@ Nothing is sent to external providers. Viewer permissions are checked server-sid
 
 Data retention of native WordPress session information is managed by WordPress, not Amino Orbit.
 
+Use **Tools > Export Personal Data** or **Tools > Erase Personal Data** to process a confirmed personal-data request. Amino Orbit participates using the user's registered WordPress email address, exporting only recent activity timestamps or deleting only the person's Orbit activity records. Native WordPress login sessions are never removed by Orbit's privacy eraser.
+
 == Limitations ==
 
 * Presence monitoring covers `wp-admin` only, not the public frontend.
@@ -52,6 +54,13 @@ Data retention of native WordPress session information is managed by WordPress, 
 * Activity pings are best-effort, not a live socket. Browser background throttling can delay updates.
 
 == Changelog ==
+
+= 0.3.7 =
+* Integrates WordPress's native Export Personal Data and Erase Personal Data tools for Orbit-specific session activity.
+* Exports only recent interaction timestamps, never session fingerprints, IP addresses or native authentication tokens.
+* Erases only the requested WordPress account's Orbit activity metadata, preserving native WordPress login sessions.
+* Includes FR/ES translations and explicit PHP/WordPress integration tests for both privacy callbacks.
+
 
 = 0.3.6 =
 * Adds an administrator-controlled, default-off activity opt-in without hiding native WordPress login sessions.

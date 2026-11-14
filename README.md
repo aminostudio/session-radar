@@ -38,7 +38,7 @@ On this development branch, **recent activity signals are disabled by default** 
 
 This is site-owner authorization, **not a declaration of consent or legal compliance on behalf of every user**. The site operator must inform affected team members and establish an appropriate legal basis where required. The WordPress Privacy Policy Guide receives editable suggested disclosure text.
 
-[Implementation and release gates](docs/PRIVACY-OPT-IN-DESIGN.md).
+[Implementation and release gates](docs/PRIVACY-OPT-IN-DESIGN.md). See also [native export and erasure in v0.3.7](docs/PRIVACY-TOOLS-0.3.7.md).
 
 ## Privacy and security
 
@@ -82,6 +82,13 @@ amino-orbit/
 English is the source language. Bundled gettext catalogs provide French (`fr_FR`) and Spanish (`es_ES`) translations. The plugin follows the WordPress admin user locale; it does not force the site language. `.po` files can be edited by translators; `.mo` files are compiled for WordPress. A `.pot` template is included.
 
 ## Changelog
+
+### v0.3.7 (private development)
+- Adds WordPress core privacy exporter and eraser callbacks for Orbit-specific, per-user activity metadata.
+- Exports at most 32 valid interaction timestamps from the previous 24 hours, without revealing HMAC fingerprints, authentication tokens or IP addresses.
+- Erases only the requested user's Orbit data, preserving WordPress's native login sessions and unrelated user metadata.
+- Adds PHP 8.0/8.2/8.4 and real WordPress integration regression tests; French and Spanish catalogs updated.
+
 
 ### v0.3.6 (private development)
 - Explicit, default-off site-level opt-in for recent WordPress admin activity while keeping session visibility.

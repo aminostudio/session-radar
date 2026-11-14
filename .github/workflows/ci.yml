@@ -31,6 +31,8 @@ jobs:
         run: php tests/ajax-security.php
       - name: Site opt-in and policy guide regression tests
         run: php tests/privacy.php
+      - name: Personal data export and erasure regression tests
+        run: php tests/privacy-data.php
       - name: Compiled translation catalog tests
         run: python3 tests/i18n.py
       - name: JavaScript syntax check
