@@ -4,6 +4,7 @@ Installable WordPress plugin packages for **Amino #LAB**, built from [main](http
 
 ## Available versions
 
+- **[amino-orbit-0.3.7.zip](amino-orbit-0.3.7.zip)** · adds native WordPress Export Personal Data / Erase Personal Data integration for plugin-only timestamps. Preserves WordPress login sessions, does not export HMAC identifiers/IP, and passes [full CI run #80](https://github.com/aminostudio/amino-orbit/actions/runs/43611190015).
 - **[amino-orbit-0.3.6.zip](amino-orbit-0.3.6.zip)** · first privacy-focused build: recent admin activity signals are OFF by default until the site administrator explicitly opts in. Disabling removes Orbit's own presence records, while native login sessions remain visible. Includes WordPress Privacy Policy Guide suggestions and FR/ES strings. [All CI jobs passed](https://github.com/aminostudio/amino-orbit/actions/runs/43610102713).
 - [amino-orbit-0.3.5.zip](amino-orbit-0.3.5.zip) · WordPress 6.4 French/Spanish gettext compatibility fix.
 - [amino-orbit-0.3.4.zip](amino-orbit-0.3.4.zip) · keyboard focus-safe AJAX refresh.
