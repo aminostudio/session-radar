@@ -1,13 +1,14 @@
-# Amino Orbit · Development packages
+# Amino Orbit · Development builds
 
-This private branch provides downloadable, installable WordPress plugin archives for **Amino #LAB**. The source of truth is the [main branch](https://github.com/aminostudio/amino-orbit).
+This private branch contains installable ZIP packages for **Amino #LAB**. The source of truth and test suite live on the [main branch](https://github.com/aminostudio/amino-orbit/tree/main).
 
-## Available builds
+## WordPress packages
 
-- **[amino-orbit-0.3.0.zip](amino-orbit-0.3.0.zip)** · bundled French and Spanish translations, security hardening, accessibility improvements and more efficient session queries.
+- **[amino-orbit-0.3.1.zip](amino-orbit-0.3.1.zip)** · 200-account / 500-session scan caps with visible partial-results warning; translations preserved.
+- [amino-orbit-0.3.0.zip](amino-orbit-0.3.0.zip) · internationalization and accessibility refinements.
 - [amino-orbit-0.2.1.zip](amino-orbit-0.2.1.zip) · optional 30-second refresh.
-- [amino-orbit-0.2.0.zip](amino-orbit-0.2.0.zip) · initial visual refinements.
+- [amino-orbit-0.2.0.zip](amino-orbit-0.2.0.zip) · visual refinements.
 
-Each ZIP has one top-level `amino-orbit/` directory, and can replace the existing installation via WordPress **Plugins → Add New → Upload Plugin**.
+Each archive contains one top-level `amino-orbit/` folder. To replace an existing installation, go to WordPress **Plugins → Add New → Upload Plugin**.
 
-v0.3.0 remains a **development build**, not a stable or public release.
+**Development only.** These packages are not stable WordPress.org releases. The `load_plugin_textdomain()` warning for private bundled translations is documented in [QA](https://github.com/aminostudio/amino-orbit/blob/main/docs/QA-0.3.0.md).
