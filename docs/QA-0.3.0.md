@@ -86,3 +86,9 @@ This report records checks actually performed and intentionally distinguishes so
 - The isolated test harness was corrected. **No installed plugin PHP was changed.**
 - [Run #13](https://github.com/aminostudio/amino-orbit/actions/runs/43554813610) then passed the full PHP 8.0 / 8.2 / 8.4 job matrix, including syntax, smoke tests, daily cleanup regression, gettext catalogs and JS syntax.
 - See [CI-0.3.2.md](CI-0.3.2.md). Real-browser access controls and performance measurements remain outstanding.
+
+## AJAX security regression added (2026-11-14)
+
+- `tests/ajax-security.php` exercises authenticated and anonymous permission gates, valid/invalid nonce handling, IP redaction, hashed session fingerprints, ping throttling and missing/expired native sessions.
+- All three PHP matrix jobs in [run #16](https://github.com/aminostudio/amino-orbit/actions/runs/43555114386) passed, including the new AJAX security step.
+- This is isolated testing only. Real WordPress role/AJAX integration still requires a separate account and browser session.

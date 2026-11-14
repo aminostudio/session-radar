@@ -42,3 +42,10 @@ The plugin's `Requires PHP: 8.0` requirement now has direct automated source-tes
 This is **not** WordPress functional integration testing. The following release gates remain: real-browser admin UI locale checks, unprivileged/editor AJAX access checks, idle/logout behavior, visual accessibility checks, representative DB query benchmarks, and WordPress Plugin Check remaining warnings.
 
 **No change to the PHP runtime plugin or installable ZIP** was required. The active #LAB version stays **0.3.2**.
+
+## Added AJAX authorization/privacy regression (2026-11-14)
+
+- Committed `tests/ajax-security.php`, covering anonymous access rejection, role authorization, nonce rejection, editor IP redaction, administrator IP opt-in, session-token HMAC storage, rapid-ping throttling, absent/expired tokens.
+- Added the regression suite to `.github/workflows/ci.yml` for every PHP matrix version; no runtime plugin PHP was changed.
+- [GitHub Actions run #16](https://github.com/aminostudio/amino-orbit/actions/runs/43555114386) shows the **AJAX security stage succeeded on PHP 8.0, 8.2 and 8.4**, alongside all other stages. The PHP 8.0 job log contains the final `All AJAX security checks passed.` message.
+- These are isolated server-side test doubles, **not** a real WordPress integration or browser security audit.
