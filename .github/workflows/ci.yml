@@ -27,6 +27,8 @@ jobs:
         run: php tests/smoke.php
       - name: Daily cleanup regression tests
         run: php tests/cleanup.php
+      - name: AJAX authorization and privacy regression tests
+        run: php tests/ajax-security.php
       - name: Compiled translation catalog tests
         run: python3 tests/i18n.py
       - name: JavaScript syntax check
