@@ -64,3 +64,10 @@ The first workflow attempt reported `no_plugin_readme` because the ephemeral CI 
 - Actual release/tag and user-facing release notes when the publication decision is made.
 
 **Decision:** Keep v0.3.4 private and operational on LAB, no unnecessary patch release or new installation. Automated test coverage is complete for the scenarios described; public-release clearance has **not** been claimed.
+
+## Additional verified tests: GitHub Actions #43
+
+- [Detailed report](QA-CONCURRENCY-AND-LOCALES-0.3.4.md).
+- Eight distinct administrator accounts, real auth cookies and nonces, 8 PHP workers; two eight-request waves separated by 30 seconds: **16/16 HTTP 200 responses**, no IP exposure with privacy defaults, no server errors.
+- New 6 real-browser locale assertions confirm FR/ES/EN labels in both the WordPress Dashboard widget and plugin Settings page.
+- The existing v0.3.4 ZIP and live LAB site were not modified. Remaining human checks: named screen reader and actual browser zoom.

@@ -120,13 +120,14 @@ English is the source language. Bundled gettext catalogs provide French (`fr_FR`
 ## Roadmap
 
 - [x] Verify two concurrent sessions of one account on Amino #LAB.
-- [ ] Verify permissions with a separate editor account and actual logout/idle transitions.
+- [x] Verify real admin/editor permissions, inactivity and logout in Chromium on disposable WordPress.
 - [x] Add isolated PHP tests, gettext catalog tests and JavaScript syntax checks.
-- [ ] Complete real-browser integration tests and accessibility audit.
+- [x] Complete authenticated Chromium integration and automated scoped axe-core WCAG 2.1 AA checks (0 violations detected).
 - [x] Translate user-facing strings (French, English, Spanish).
 - [x] Run and triage the first full Plugin Check export (0 errors, 3 documented warnings).
-- [ ] Benchmark query cost, complete security and accessibility review.
-- [ ] Publish a stable v1.0 release after validation.
+- [x] Measure warm/cold query cost and limited eight-admin concurrent polling in disposable CI.
+- [ ] Complete manual screen-reader and actual 200%/400% browser zoom checks.
+- [ ] Complete WordPress.org-specific distribution review and prepare a public stable release after remaining human checks.
 
 ## License
 
@@ -134,7 +135,7 @@ English is the source language. Bundled gettext catalogs provide French (`fr_FR`
 
 ## Status
 
-**v0.3.4 remains a private development build.** Real WordPress, Chromium, accessibility automation and official Plugin Check are now integrated into CI. Manual assistive-technology and representative concurrent-load checks remain before public release.
+**v0.3.4 remains a private development build on Amino #LAB.** Real WordPress, Chromium, automatic accessibility checks, three browser languages, official Plugin Check and a limited eight-administrator concurrent HTTP test now pass. Manual assistive-technology and actual browser zoom tests remain before public release.
 
 ## Quality assurance
 
@@ -147,3 +148,4 @@ English is the source language. Bundled gettext catalogs provide French (`fr_FR`
 - [Real WordPress integration results for v0.3.3](docs/WORDPRESS-INTEGRATION-0.3.3.md) document 24 successful assertions, the fixed session collision and the remaining gates.
 - [Real browser and accessibility QA for v0.3.4](docs/BROWSER-QA-0.3.4.md) documents 32 earlier Chromium assertions and the corrected in-flight keyboard-focus race.
 - [v0.3.4 final automated QA baseline](docs/QA-AUTOMATED-0.3.4.md) records **36 browser checks**, 200%/400% simulated reflow, 205-user/510-session limits, warm/cold query measurements, and automated official Plugin Check (0 errors, 3 known warnings).
+- [v0.3.4 eight-admin AJAX and real-browser locale tests](docs/QA-CONCURRENCY-AND-LOCALES-0.3.4.md) documents 16 successful concurrent HTTP calls and six FR/ES/EN UI assertions.
