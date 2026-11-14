@@ -112,3 +112,19 @@ msgstr ""
 
 msgid "Partial results: the session scan limit has been reached."
 msgstr ""
+
+msgid "Enable admin activity signals"
+msgstr ""
+
+msgid "When enabled, this site stores a last-interaction timestamp for authenticated WordPress admin sessions. Inform affected users before activating this feature."
+msgstr ""
+
+msgid "Activity signals are disabled until an administrator explicitly enables them. Authentication sessions remain visible without activity tracking."
+msgstr ""
+
+msgid "If enabled, Amino Orbit records the time of recent interactions in the WordPress administration area for authenticated user sessions. It does not record public-site visits or send data to external services."
+msgstr ""
+
+msgid "Activity records use HMAC-derived session identifiers and are removed after 24 hours, on scheduled cleanup, or when monitoring is disabled. WordPress separately manages its own login session details."
+msgstr ""
+
