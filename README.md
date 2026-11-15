@@ -85,7 +85,14 @@ English is the source language. Bundled gettext catalogs provide French (`fr_FR`
 
 ## Changelog
 
-### v0.3.8 (private release candidate)
+### v0.3.9 (private release candidate)
+
+- Correctly retries legacy presence deletion after a transient database failure, rather than marking an incomplete migration as done.
+- Handles an empty legacy dataset without retry loops.
+- Adds failure/recovery/empty-data regression coverage.
+- This version remains private pending CI verification and deployment review.
+
+### v0.3.8 (private development release)
 - One-time privacy migration: an existing installation without the explicit monitoring preference purges old Orbit-only activity and saves `activity_enabled=0`.
 - Keeps existing viewer roles, IP display choice, inactivity threshold and refresh interval; never deletes native WordPress authentication sessions.
 - Additional isolated and genuine WordPress regression tests check first boot, idempotence and consent already enabled.
@@ -171,7 +178,7 @@ English is the source language. Bundled gettext catalogs provide French (`fr_FR`
 
 ## Status
 
-**v0.3.5 is a tested private compatibility ZIP; Amino #LAB continues running v0.3.4 until an upgrade is explicitly authorized.** Real WordPress, Chromium, automatic accessibility checks, three browser languages, official Plugin Check and a limited eight-administrator concurrent HTTP test now pass. Manual assistive-technology and actual browser zoom tests remain before public release.
+**Amino #LAB has been manually upgraded to v0.3.8 (WordPress reported a successful plugin update). v0.3.9 has not been deployed.** Real WordPress, Chromium, automatic accessibility checks, three browser languages, official Plugin Check and a limited eight-administrator concurrent HTTP test now pass. Manual assistive-technology and actual browser zoom tests remain before public release.
 
 ## Quality assurance
 
