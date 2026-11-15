@@ -150,3 +150,18 @@ msgstr "Rechercher des sessions"
 
 msgid "Name, role or device"
 msgstr "Nom, rôle ou appareil"
+
+msgid "Sort sessions"
+msgstr "Trier les sessions"
+
+msgid "Suggested order"
+msgstr "Ordre recommandé"
+
+msgid "Newest login"
+msgstr "Connexions récentes"
+
+msgid "Oldest login"
+msgstr "Connexions anciennes"
+
+msgid "Filters and sorting apply only to displayed sessions."
+msgstr "Les filtres et le tri ne s’appliquent qu’aux sessions affichées."
