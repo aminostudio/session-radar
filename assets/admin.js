@@ -52,20 +52,32 @@
   const shell = document.getElementById('amino_orbit_widget');
   if (!shell) return;
   let refreshing = false;
-  // Filters affect only the already-authorized visible rows. No extra AJAX
-  // requests, cookies, storage, or additional tracking are introduced.
+  // Only already-authorized, rendered rows are filtered and sorted locally.
+  // None of these UI choices generate tracking, persistence or extra requests.
   let selectedStatus = 'all';
+  let selectedSort = 'suggested';
   let searchQuery = '';
   let searchInput = '';
-  const normalizeSearch = (value) => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase().trim();
   const statuses = ['all', 'active', 'idle', 'session'];
+  const sortModes = ['suggested', 'newest', 'oldest'];
+  const normalizeSearch = (value) => String(value || '').normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase().trim();
 
   function applyFilter(panel) {
     if (!panel) return;
+    const list = panel.querySelector('.amino-orbit__list');
+    const rows = [...panel.querySelectorAll('.amino-orbit__user[data-orbit-status]')];
+    // The initial server order is stable and can always be restored.
+    rows.sort((a, b) => {
+      const initial = Number(a.dataset.orbitOrder) - Number(b.dataset.orbitOrder);
+      if (selectedSort === 'suggested') return initial;
+      const delta = Number(b.dataset.orbitLogin) - Number(a.dataset.orbitLogin);
+      return (selectedSort === 'newest' ? delta : -delta) || initial;
+    });
+    if (list) rows.forEach((row) => list.appendChild(row));
     let shown = 0;
-    const rows = panel.querySelectorAll('.amino-orbit__user[data-orbit-status]');
     rows.forEach((row) => {
-      // Search only the authorized name, role and device, never IPs or tokens.
+      // Deliberately exclude native session IPs and any hidden/internal metadata.
       const terms = ['.amino-orbit__identity strong', '.amino-orbit__identity small', '.amino-orbit__device']
         .map((selector) => row.querySelector(selector)?.textContent || '').join(' ');
       const visible = (selectedStatus === 'all' || row.dataset.orbitStatus === selectedStatus) &&
@@ -76,6 +88,8 @@
     panel.querySelectorAll('.amino-orbit__filter[data-orbit-status]').forEach((button) => {
       button.setAttribute('aria-pressed', String(button.dataset.orbitStatus === selectedStatus));
     });
+    const sort = panel.querySelector('.amino-orbit__sort');
+    if (sort) sort.value = selectedSort;
     const count = panel.querySelector('.amino-orbit__filter-count');
     if (count) count.textContent = shown + ' / ' + rows.length;
   }
@@ -84,13 +98,19 @@
     const button = event.target.closest('.amino-orbit__filter[data-orbit-status]');
     if (!button || !shell.contains(button) || !statuses.includes(button.dataset.orbitStatus)) return;
     selectedStatus = button.dataset.orbitStatus;
-    shell.addEventListener('input', (event) => {
+    applyFilter(document.getElementById('amino-orbit-panel'));
+  });
+  // This listener must not be nested under a filter click: search works immediately.
+  shell.addEventListener('input', (event) => {
     if (!event.target.matches('.amino-orbit__search')) return;
     searchInput = event.target.value;
     searchQuery = normalizeSearch(searchInput);
     applyFilter(document.getElementById('amino-orbit-panel'));
   });
-  applyFilter(document.getElementById('amino-orbit-panel'));
+  shell.addEventListener('change', (event) => {
+    if (!event.target.matches('.amino-orbit__sort') || !sortModes.includes(event.target.value)) return;
+    selectedSort = event.target.value;
+    applyFilter(document.getElementById('amino-orbit-panel'));
   });
   applyFilter(document.getElementById('amino-orbit-panel'));
 
