@@ -4,7 +4,7 @@ Tags: dashboard, users, sessions, activity, privacy
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.3.8
+Stable tag: 0.3.9
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -54,6 +54,12 @@ Use **Tools > Export Personal Data** or **Tools > Erase Personal Data** to proce
 * Activity pings are best-effort, not a live socket. Browser background throttling can delay updates.
 
 == Changelog ==
+
+= 0.3.9 =
+* Retries the legacy privacy migration if historic Orbit activity records could not be deleted due to a database error.
+* Treats an empty legacy activity dataset as a completed migration without unnecessary repeated operations.
+* Adds regression tests for failed deletion, subsequent recovery, and empty legacy datasets.
+
 
 = 0.3.8 =
 * Performs a one-time privacy migration for installations upgraded from versions before the explicit activity opt-in.
