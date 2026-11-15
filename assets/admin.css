@@ -97,3 +97,10 @@
 .amino-orbit__filter-count { margin-left: auto; color: #625a6e; font-variant-numeric: tabular-nums; font-size: 12px; }
 .amino-orbit__user[hidden] { display: none !important; }
 @media (forced-colors: active) { .amino-orbit__filter[aria-pressed="true"] { border: 2px solid Highlight; } }
+
+/* v0.5: search only already-rendered, authorized session rows. */
+.amino-orbit__search-wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 7px 12px; padding: 5px 0 12px; }
+.amino-orbit__search-wrap label { font-size: 12px; font-weight: 600; color: #4f4260; }
+.amino-orbit__search { flex: 1 1 190px; min-width: 0; max-width: 100%; box-sizing: border-box; border: 1px solid #b4a5c7; border-radius: 7px; padding: 8px 10px; color: #30263e; background: #fff; font: inherit; }
+.amino-orbit__search:focus-visible { outline: 2px solid #7549a1; outline-offset: 2px; }
+@media (forced-colors: active) { .amino-orbit__search { border: 1px solid CanvasText; } }

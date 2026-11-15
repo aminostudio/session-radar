@@ -109,6 +109,7 @@ $html=panel();
 assert_true(substr_count($html,'data-orbit-status="')===7, 'Accessible filter toolbar and session status data are present');
 assert_true(str_contains($html, 'aria-pressed="true"') && str_contains($html, 'aria-live="polite"'), 'Filter state and visible-count announcement are accessible');
 assert_true(str_contains($html, 'data-orbit-status="idle"') && str_contains($html, 'data-orbit-status="active"'), 'Filter metadata uses established activity categories');
+assert_true(str_contains($html,'class="amino-orbit__search"') && str_contains($html,'type="search"') && str_contains($html,'autocomplete="off"'), 'Search input is labeled and disables browser autofill');
 assert_true(substr_count($html,'class="amino-orbit__user"')===3,'Three valid sessions displayed, expired session ignored');
 assert_true(str_contains($html,'Morgan &lt;script&gt;alert(1)&lt;/script&gt;') && !str_contains($html,'<script>alert(1)</script>'),'Display names are HTML-escaped');
 assert_true(str_contains($html,'Firefox · Windows') && str_contains($html,'Chrome · Android'),'Device labels derived from user agents');

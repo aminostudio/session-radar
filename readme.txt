@@ -4,7 +4,7 @@ Tags: dashboard, users, sessions, activity, privacy
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.4.0
+Stable tag: 0.5.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -54,6 +54,13 @@ Use **Tools > Export Personal Data** or **Tools > Erase Personal Data** to proce
 * Activity pings are best-effort, not a live socket. Browser background throttling can delay updates.
 
 == Changelog ==
+
+= 0.5.0 =
+* Adds local, live search by visible WordPress user name, role and device to the session widget.
+* Combines search with the existing status filters and visible result count.
+* Preserves the search query across dashboard refreshes without sending queries to the server or storing them.
+* Excludes native session IP addresses and authentication tokens from search.
+
 
 = 0.4.0 =
 * Adds accessible status filters to the dashboard session list: all, active, inactive and session open.
