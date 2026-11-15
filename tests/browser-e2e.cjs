@@ -147,6 +147,32 @@ async function main() {
       'Keyboard Enter restores all sessions');
     await page.evaluate(() => document.activeElement.blur());
 
+    // v0.5: search and status filters compose locally, excluding IP metadata.
+    const searchField = page.locator('#amino-orbit-panel .amino-orbit__search');
+    await searchField.fill('no-such-orbit-user-2026');
+    check(await page.locator('#amino-orbit-panel .amino-orbit__user:not([hidden])').count() === 0,
+      'A nonexistent query hides all rendered session rows');
+    check((await page.locator('#amino-orbit-panel .amino-orbit__filter-count').textContent()).startsWith('0 / '),
+      'Empty search announces zero visible results');
+    await searchField.fill('192.0.2.');
+    check(await page.locator('#amino-orbit-panel .amino-orbit__user:not([hidden])').count() === 0,
+      'WordPress session IP addresses are never searchable');
+    await searchField.fill('admin');
+    check(await page.locator('#amino-orbit-panel .amino-orbit__user:not([hidden])').count() >= 1,
+      'Visible user and role metadata are searchable');
+    await page.locator('#amino-orbit-panel .amino-orbit__filter[data-orbit-status="active"]').click();
+    check(await page.locator('#amino-orbit-panel .amino-orbit__user:not([hidden])').count() >= 1,
+      'Live search composes with selected status');
+    const searchPanel = await page.locator('#amino-orbit-panel').elementHandle();
+    await page.evaluate(() => document.activeElement.blur());
+    await refresh(page);
+    await page.waitForFunction((node) => !node.isConnected, searchPanel, { timeout: 10000 });
+    check(await page.locator('#amino-orbit-panel .amino-orbit__search').inputValue() === 'admin',
+      'Search query persists across an authorized AJAX panel replacement');
+    await page.locator('#amino-orbit-panel .amino-orbit__search').fill('');
+    await page.locator('#amino-orbit-panel .amino-orbit__filter[data-orbit-status="all"]').click();
+    await page.evaluate(() => document.activeElement.blur());
+
     // Focus inside the widget must prevent automatic HTML replacement.
     const oldPanel = await panel.elementHandle();
     const settingsLink = page.locator('#amino-orbit-panel .amino-orbit__footer a');
