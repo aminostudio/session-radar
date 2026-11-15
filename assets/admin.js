@@ -56,6 +56,7 @@
   // requests, cookies, storage, or additional tracking are introduced.
   let selectedStatus = 'all';
   let searchQuery = '';
+  let searchInput = '';
   const normalizeSearch = (value) => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase().trim();
   const statuses = ['all', 'active', 'idle', 'session'];
 
@@ -85,7 +86,8 @@
     selectedStatus = button.dataset.orbitStatus;
     shell.addEventListener('input', (event) => {
     if (!event.target.matches('.amino-orbit__search')) return;
-    searchQuery = normalizeSearch(event.target.value);
+    searchInput = event.target.value;
+    searchQuery = normalizeSearch(searchInput);
     applyFilter(document.getElementById('amino-orbit-panel'));
   });
   applyFilter(document.getElementById('amino-orbit-panel'));
@@ -110,7 +112,7 @@
         if (next && current.isConnected && !current.contains(document.activeElement)) {
           current.replaceWith(next);
           const input = next.querySelector('.amino-orbit__search');
-          if (input) input.value = searchQuery;
+          if (input) input.value = searchInput;
           applyFilter(next);
         }
       })
