@@ -85,6 +85,25 @@ English is the source language. Bundled gettext catalogs provide French (`fr_FR`
 
 ## Changelog
 
+### v0.9.0 (private development candidate)
+- Reset all local session filters, show no-match feedback and offer compact view, with a11y checks.
+- No WordPress.org submission before v1.0.0.
+
+### v0.8.0 (private development)
+- Restrict local role selection to already-rendered authorized sessions.
+
+### v0.7.0 (private development)
+- Add on-demand session refresh with localized accessible feedback and preserved focus.
+
+### v0.6.0 (private development)
+- Add deterministic session ordering, partial-results disclosure and an immediate-search bug fix.
+
+### v0.5.0 (private #LAB build)
+- Add local name/role/device search, combined with status filters. Installed on Amino #LAB.
+
+### v0.4.0 (private development)
+- Add local session status filters and accessible visible-count feedback.
+
 ### v0.3.9 (private release candidate)
 
 - Correctly retries legacy presence deletion after a transient database failure, rather than marking an incomplete migration as done.
@@ -178,7 +197,7 @@ English is the source language. Bundled gettext catalogs provide French (`fr_FR`
 
 ## Status
 
-**Amino #LAB has been manually upgraded to v0.3.8 (WordPress reported a successful plugin update). v0.3.9 has not been deployed.** Real WordPress, Chromium, automatic accessibility checks, three browser languages, official Plugin Check and a limited eight-administrator concurrent HTTP test now pass. Manual assistive-technology and actual browser zoom tests remain before public release.
+**Amino #LAB has been manually upgraded to v0.5.0 (WordPress reported a successful plugin update). Versions 0.6–0.9 remain GitHub development milestones and have not been installed on #LAB in this workflow.** Real WordPress, Chromium, automatic accessibility checks, three browser languages, official Plugin Check and a limited eight-administrator concurrent HTTP test now pass. Manual assistive-technology and actual browser zoom tests remain before public release.
 
 ## Quality assurance
 
