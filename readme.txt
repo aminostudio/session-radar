@@ -4,7 +4,7 @@ Tags: dashboard, users, sessions, activity, privacy
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.6.0
+Stable tag: 0.7.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -54,6 +54,13 @@ Use **Tools > Export Personal Data** or **Tools > Erase Personal Data** to proce
 * Activity pings are best-effort, not a live socket. Browser background throttling can delay updates.
 
 == Changelog ==
+
+= 0.7.0 =
+* Adds an on-demand Refresh now button with accessible, localized progress, success, and failure status.
+* Preserves keyboard focus when the user explicitly requests a refresh.
+* Continues to defer automatic DOM replacement while focus is inside the dashboard widget.
+* Uses only the existing authorized WordPress AJAX session endpoint, without extra tracking or storage.
+
 
 = 0.6.0 =
 * Adds accessible, client-side sorting of displayed sessions by original order, newest login and oldest login.
