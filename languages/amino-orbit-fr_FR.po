@@ -183,3 +183,12 @@ msgstr "Filtrer par rôle"
 
 msgid "All roles"
 msgstr "Tous les rôles"
+
+msgid "Reset filters"
+msgstr "Réinitialiser les filtres"
+
+msgid "Compact view"
+msgstr "Vue compacte"
+
+msgid "No sessions match these filters."
+msgstr "Aucune session ne correspond à ces filtres."
