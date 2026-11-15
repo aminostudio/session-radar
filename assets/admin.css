@@ -104,3 +104,10 @@
 .amino-orbit__search { flex: 1 1 190px; min-width: 0; max-width: 100%; box-sizing: border-box; border: 1px solid #b4a5c7; border-radius: 7px; padding: 8px 10px; color: #30263e; background: #fff; font: inherit; }
 .amino-orbit__search:focus-visible { outline: 2px solid #7549a1; outline-offset: 2px; }
 @media (forced-colors: active) { .amino-orbit__search { border: 1px solid CanvasText; } }
+
+/* v0.6: deterministic client-side ordering for the capped visible session list. */
+.amino-orbit__sort-wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 7px 12px; padding: 7px 0 5px; }
+.amino-orbit__sort-wrap label { font-size: 12px; font-weight: 600; color: #4f4260; }
+.amino-orbit__sort { min-width: 150px; max-width: 100%; padding: 6px 25px 6px 9px; border: 1px solid #b4a5c7; border-radius: 7px; background: #fff; color: #30263e; }
+.amino-orbit__sort:focus-visible { outline: 2px solid #7549a1; outline-offset: 2px; }
+@media (forced-colors: active) { .amino-orbit__sort { border-color: CanvasText; } }
