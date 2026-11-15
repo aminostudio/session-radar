@@ -55,6 +55,8 @@
   // Filters affect only the already-authorized visible rows. No extra AJAX
   // requests, cookies, storage, or additional tracking are introduced.
   let selectedStatus = 'all';
+  let searchQuery = '';
+  const normalizeSearch = (value) => String(value || '').normalize('NFKC').toLocaleLowerCase().trim();
   const statuses = ['all', 'active', 'idle', 'session'];
 
   function applyFilter(panel) {
@@ -62,7 +64,11 @@
     let shown = 0;
     const rows = panel.querySelectorAll('.amino-orbit__user[data-orbit-status]');
     rows.forEach((row) => {
-      const visible = selectedStatus === 'all' || row.dataset.orbitStatus === selectedStatus;
+      // Search only the authorized name, role and device, never IPs or tokens.
+      const terms = ['.amino-orbit__identity strong', '.amino-orbit__identity small', '.amino-orbit__device']
+        .map((selector) => row.querySelector(selector)?.textContent || '').join(' ');
+      const visible = (selectedStatus === 'all' || row.dataset.orbitStatus === selectedStatus) &&
+        normalizeSearch(terms).includes(searchQuery);
       row.hidden = !visible;
       if (visible) shown += 1;
     });
@@ -77,7 +83,12 @@
     const button = event.target.closest('.amino-orbit__filter[data-orbit-status]');
     if (!button || !shell.contains(button) || !statuses.includes(button.dataset.orbitStatus)) return;
     selectedStatus = button.dataset.orbitStatus;
+    shell.addEventListener('input', (event) => {
+    if (!event.target.matches('.amino-orbit__search')) return;
+    searchQuery = normalizeSearch(event.target.value);
     applyFilter(document.getElementById('amino-orbit-panel'));
+  });
+  applyFilter(document.getElementById('amino-orbit-panel'));
   });
   applyFilter(document.getElementById('amino-orbit-panel'));
 
@@ -98,6 +109,8 @@
         // Focus may move into the panel after the request starts: recheck now.
         if (next && current.isConnected && !current.contains(document.activeElement)) {
           current.replaceWith(next);
+          const input = next.querySelector('.amino-orbit__search');
+          if (input) input.value = searchQuery;
           applyFilter(next);
         }
       })
