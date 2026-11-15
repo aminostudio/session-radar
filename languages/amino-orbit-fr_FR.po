@@ -165,3 +165,15 @@ msgstr "Connexions anciennes"
 
 msgid "Filters and sorting apply only to displayed sessions."
 msgstr "Les filtres et le tri ne s’appliquent qu’aux sessions affichées."
+
+msgid "Refresh now"
+msgstr "Actualiser maintenant"
+
+msgid "Updating sessions…"
+msgstr "Actualisation des sessions…"
+
+msgid "Sessions updated"
+msgstr "Sessions actualisées"
+
+msgid "Refresh failed"
+msgstr "Échec de l’actualisation"
