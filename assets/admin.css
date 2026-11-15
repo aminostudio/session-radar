@@ -87,3 +87,13 @@
   .amino-orbit__symbol::before { border-color: CanvasText; }
   .amino-orbit__symbol span, .amino-orbit__live i { background: CanvasText; }
 }
+
+/* v0.4: keyboard-accessible local session filters; no new data collection. */
+.amino-orbit__filters { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; padding: 12px 0 5px; }
+.amino-orbit__filter { appearance: none; border: 1px solid #d8cce7; border-radius: 20px; background: #fff; color: #594b68; padding: 5px 10px; font: inherit; font-weight: 600; cursor: pointer; }
+.amino-orbit__filter:hover { border-color: #916ab8; }
+.amino-orbit__filter[aria-pressed="true"] { border-color: #7549a1; background: #ede1f9; color: #4f2878; }
+.amino-orbit__filter:focus-visible { outline: 2px solid #7549a1; outline-offset: 3px; }
+.amino-orbit__filter-count { margin-left: auto; color: #625a6e; font-variant-numeric: tabular-nums; font-size: 12px; }
+.amino-orbit__user[hidden] { display: none !important; }
+@media (forced-colors: active) { .amino-orbit__filter[aria-pressed="true"] { border: 2px solid Highlight; } }

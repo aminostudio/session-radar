@@ -4,7 +4,7 @@ Tags: dashboard, users, sessions, activity, privacy
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.3.9
+Stable tag: 0.4.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -54,6 +54,13 @@ Use **Tools > Export Personal Data** or **Tools > Erase Personal Data** to proce
 * Activity pings are best-effort, not a live socket. Browser background throttling can delay updates.
 
 == Changelog ==
+
+= 0.4.0 =
+* Adds accessible status filters to the dashboard session list: all, active, inactive and session open.
+* Filters only the authorized session rows already present in the widget; no additional collection, storage, or network requests.
+* Remembers the selected filter during automatic widget refresh without interrupting keyboard focus.
+* Reuses bundled English, French and Spanish status translations.
+
 
 = 0.3.9 =
 * Retries the legacy privacy migration if historic Orbit activity records could not be deleted due to a database error.

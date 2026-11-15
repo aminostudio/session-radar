@@ -52,6 +52,34 @@
   const shell = document.getElementById('amino_orbit_widget');
   if (!shell) return;
   let refreshing = false;
+  // Filters affect only the already-authorized visible rows. No extra AJAX
+  // requests, cookies, storage, or additional tracking are introduced.
+  let selectedStatus = 'all';
+  const statuses = ['all', 'active', 'idle', 'session'];
+
+  function applyFilter(panel) {
+    if (!panel) return;
+    let shown = 0;
+    const rows = panel.querySelectorAll('.amino-orbit__user[data-orbit-status]');
+    rows.forEach((row) => {
+      const visible = selectedStatus === 'all' || row.dataset.orbitStatus === selectedStatus;
+      row.hidden = !visible;
+      if (visible) shown += 1;
+    });
+    panel.querySelectorAll('.amino-orbit__filter[data-orbit-status]').forEach((button) => {
+      button.setAttribute('aria-pressed', String(button.dataset.orbitStatus === selectedStatus));
+    });
+    const count = panel.querySelector('.amino-orbit__filter-count');
+    if (count) count.textContent = shown + ' / ' + rows.length;
+  }
+
+  shell.addEventListener('click', (event) => {
+    const button = event.target.closest('.amino-orbit__filter[data-orbit-status]');
+    if (!button || !shell.contains(button) || !statuses.includes(button.dataset.orbitStatus)) return;
+    selectedStatus = button.dataset.orbitStatus;
+    applyFilter(document.getElementById('amino-orbit-panel'));
+  });
+  applyFilter(document.getElementById('amino-orbit-panel'));
 
   function refresh() {
     if (refreshing || document.visibilityState !== 'visible') return;
@@ -70,6 +98,7 @@
         // Focus may move into the panel after the request starts: recheck now.
         if (next && current.isConnected && !current.contains(document.activeElement)) {
           current.replaceWith(next);
+          applyFilter(next);
         }
       })
       .catch(() => { /* Keep the previous panel when offline. */ })

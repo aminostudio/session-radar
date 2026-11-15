@@ -121,6 +121,32 @@ async function main() {
       .first().waitFor({ timeout: 9000 });
     check(true, 'Real authenticated browser ping becomes an active session after AJAX refresh');
 
+    // v0.4: filters are local, keyboard-operable and survive AJAX replacement.
+    const activeFilter = page.locator('#amino-orbit-panel .amino-orbit__filter[data-orbit-status="active"]');
+    await activeFilter.click();
+    check(await activeFilter.getAttribute('aria-pressed') === 'true',
+      'Active filter exposes pressed state after click');
+    check(await page.locator('#amino-orbit-panel .amino-orbit__user:not([hidden])').count() >= 1,
+      'Active filter retains matching sessions');
+    const filteredCount = await page.locator('#amino-orbit-panel .amino-orbit__user:not([hidden])').count();
+    const totalCount = await page.locator('#amino-orbit-panel .amino-orbit__user').count();
+    check(filteredCount <= totalCount &&
+      await page.locator('#amino-orbit-panel .amino-orbit__filter-count').textContent() === filteredCount + ' / ' + totalCount,
+      'Status filtering preserves all rows and announces the visible count');
+    await page.evaluate(() => document.activeElement.blur());
+    await refresh(page);
+    await page.waitForFunction(() => {
+      const panel = document.getElementById('amino-orbit-panel');
+      return panel?.querySelector('.amino-orbit__filter[data-orbit-status="active"]')?.getAttribute('aria-pressed') === 'true';
+    });
+    check(await page.locator('#amino-orbit-panel .amino-orbit__filter[data-orbit-status="active"]').getAttribute('aria-pressed') === 'true',
+      'Selected filter persists after authenticated refresh');
+    await page.locator('#amino-orbit-panel .amino-orbit__filter[data-orbit-status="all"]').focus();
+    await page.keyboard.press('Enter');
+    check(await page.locator('#amino-orbit-panel .amino-orbit__filter[data-orbit-status="all"]').getAttribute('aria-pressed') === 'true',
+      'Keyboard Enter restores all sessions');
+    await page.evaluate(() => document.activeElement.blur());
+
     // Focus inside the widget must prevent automatic HTML replacement.
     const oldPanel = await panel.elementHandle();
     const settingsLink = page.locator('#amino-orbit-panel .amino-orbit__footer a');
