@@ -4,7 +4,7 @@ Tags: dashboard, users, sessions, activity, privacy
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.5.0
+Stable tag: 0.6.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -54,6 +54,13 @@ Use **Tools > Export Personal Data** or **Tools > Erase Personal Data** to proce
 * Activity pings are best-effort, not a live socket. Browser background throttling can delay updates.
 
 == Changelog ==
+
+= 0.6.0 =
+* Adds accessible, client-side sorting of displayed sessions by original order, newest login and oldest login.
+* Preserves the selected sorting method through AJAX refresh without storing the choice.
+* Fixes search input binding so typing works before any status filter is clicked.
+* Explains clearly when filtering and sorting cover only a capped subset of sessions.
+
 
 = 0.5.0 =
 * Adds local, live search by visible WordPress user name, role and device to the session widget.
