@@ -555,6 +555,17 @@ final class Amino_Orbit {
 			$user_ids[ $row['user']->ID ] = true;
 		}
 		$options = self::options();
+		// Only expose role choices already represented by the capped visible rows.
+		$visible_roles = array();
+		foreach ( array_slice( $rows, 0, self::MAX_ROWS ) as $visible_row ) {
+			foreach ( (array) $visible_row['user']->roles as $role ) {
+				$role_definition = wp_roles()->roles[ $role ] ?? null;
+				if ( is_array( $role_definition ) ) {
+					$visible_roles[ $role ] = translate_user_role( $role_definition['name'] );
+				}
+			}
+		}
+		asort( $visible_roles, SORT_NATURAL | SORT_FLAG_CASE );
 		?>
 		<div class="amino-orbit" id="amino-orbit-panel">
 			<div class="amino-orbit__header">
@@ -588,6 +599,15 @@ final class Amino_Orbit {
 							<option value="oldest"><?php esc_html_e( 'Oldest login', 'amino-orbit' ); ?></option>
 						</select>
 					</div>
+					<div class="amino-orbit__role-wrap">
+						<label for="amino-orbit-role"><?php esc_html_e( 'Filter by role', 'amino-orbit' ); ?></label>
+						<select id="amino-orbit-role" class="amino-orbit__role-filter">
+							<option value=""><?php esc_html_e( 'All roles', 'amino-orbit' ); ?></option>
+							<?php foreach ( $visible_roles as $role_slug => $role_label ) : ?>
+								<option value="<?php echo esc_attr( sanitize_key( $role_slug ) ); ?>"><?php echo esc_html( $role_label ); ?></option>
+							<?php endforeach; ?>
+						</select>
+					</div>
 					<div class="amino-orbit__search-wrap">
 						<label for="amino-orbit-search"><?php esc_html_e( 'Search sessions', 'amino-orbit' ); ?></label>
 						<input id="amino-orbit-search" class="amino-orbit__search" type="search" autocomplete="off" spellcheck="false" placeholder="<?php echo esc_attr__( 'Name, role or device', 'amino-orbit' ); ?>" />
@@ -608,7 +628,7 @@ final class Amino_Orbit {
 							);
 							$initials = function_exists( 'mb_substr' ) ? mb_strtoupper( mb_substr( (string) $user->display_name, 0, 2 ) ) : strtoupper( substr( (string) $user->display_name, 0, 2 ) );
 							?>
-							<li class="amino-orbit__user" data-orbit-status="<?php echo esc_attr( $row['status'] ); ?>" data-orbit-login="<?php echo esc_attr( (string) absint( $row['login'] ) ); ?>" data-orbit-order="<?php echo esc_attr( (string) $row_index ); ?>">
+							<li class="amino-orbit__user" data-orbit-roles="<?php echo esc_attr( implode( ' ', array_map( 'sanitize_key', (array) $user->roles ) ) ); ?>" data-orbit-status="<?php echo esc_attr( $row['status'] ); ?>" data-orbit-login="<?php echo esc_attr( (string) absint( $row['login'] ) ); ?>" data-orbit-order="<?php echo esc_attr( (string) $row_index ); ?>">
 								<div class="amino-orbit__avatar" aria-hidden="true"><?php echo esc_html( $initials ); ?></div>
 								<div class="amino-orbit__identity">
 									<strong><?php echo esc_html( $user->display_name ); ?></strong>

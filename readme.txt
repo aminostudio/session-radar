@@ -4,7 +4,7 @@ Tags: dashboard, users, sessions, activity, privacy
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.7.0
+Stable tag: 0.8.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -54,6 +54,13 @@ Use **Tools > Export Personal Data** or **Tools > Erase Personal Data** to proce
 * Activity pings are best-effort, not a live socket. Browser background throttling can delay updates.
 
 == Changelog ==
+
+= 0.8.0 =
+* Adds a localized role filter populated only by roles in the already-displayed authorized WordPress session rows.
+* Combines role selection with client-side activity status, search, and sorting controls.
+* Preserves a valid role selection across authorized AJAX refreshes, resetting gracefully if it disappears.
+* No extra tracking, persistent preferences, additional requests or permissions.
+
 
 = 0.7.0 =
 * Adds an on-demand Refresh now button with accessible, localized progress, success, and failure status.

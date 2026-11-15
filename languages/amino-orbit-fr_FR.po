@@ -177,3 +177,9 @@ msgstr "Sessions actualisées"
 
 msgid "Refresh failed"
 msgstr "Échec de l’actualisation"
+
+msgid "Filter by role"
+msgstr "Filtrer par rôle"
+
+msgid "All roles"
+msgstr "Tous les rôles"

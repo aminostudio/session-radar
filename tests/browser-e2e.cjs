@@ -220,6 +220,28 @@ async function main() {
       'Manual refresh preserves its button focus across panel replacement');
     await page.evaluate(() => document.activeElement.blur());
 
+    // v0.8: role choices only describe already-rendered authorized sessions.
+    const roleField = page.locator('#amino-orbit-panel .amino-orbit__role-filter');
+    check(await roleField.count() === 1, 'Accessible role filter is present');
+    const availableRoles = await roleField.locator('option').evaluateAll(
+      (options) => options.map((option) => option.value).filter(Boolean)
+    );
+    check(availableRoles.includes('administrator'),
+      'Visible administrator sessions provide an administrator role choice');
+    await roleField.selectOption('administrator');
+    check(await page.locator('#amino-orbit-panel .amino-orbit__user:not([hidden])')
+      .evaluateAll((rows) => rows.every((row) =>
+        (row.dataset.orbitRoles || '').split(/\s+/).includes('administrator')
+      )), 'Role filter never exposes rows of other roles');
+    const rolePanel = await page.locator('#amino-orbit-panel').elementHandle();
+    await page.evaluate(() => document.activeElement.blur());
+    await refresh(page);
+    await page.waitForFunction((node) => !node.isConnected, rolePanel, { timeout: 10000 });
+    check(await page.locator('#amino-orbit-panel .amino-orbit__role-filter')
+      .inputValue() === 'administrator', 'Role selection survives AJAX replacement');
+    await page.locator('#amino-orbit-panel .amino-orbit__role-filter').selectOption('');
+    await page.evaluate(() => document.activeElement.blur());
+
     // Focus inside the widget must prevent automatic HTML replacement.
     const oldPanel = await panel.elementHandle();
     const settingsLink = page.locator('#amino-orbit-panel .amino-orbit__footer a');

@@ -56,6 +56,7 @@
   // None of these UI choices generate tracking, persistence or extra requests.
   let selectedStatus = 'all';
   let selectedSort = 'suggested';
+  let selectedRole = '';
   let searchQuery = '';
   let searchInput = '';
   const statuses = ['all', 'active', 'idle', 'session'];
@@ -65,6 +66,12 @@
 
   function applyFilter(panel) {
     if (!panel) return;
+    const roleField = panel.querySelector('.amino-orbit__role-filter');
+    // Never keep a stale role selection after refreshed data removes that role.
+    if (roleField) {
+      if (![...roleField.options].some((option) => option.value === selectedRole)) selectedRole = '';
+      roleField.value = selectedRole;
+    }
     const list = panel.querySelector('.amino-orbit__list');
     const rows = [...panel.querySelectorAll('.amino-orbit__user[data-orbit-status]')];
     // The initial server order is stable and can always be restored.
@@ -80,7 +87,10 @@
       // Deliberately exclude native session IPs and any hidden/internal metadata.
       const terms = ['.amino-orbit__identity strong', '.amino-orbit__identity small', '.amino-orbit__device']
         .map((selector) => row.querySelector(selector)?.textContent || '').join(' ');
-      const visible = (selectedStatus === 'all' || row.dataset.orbitStatus === selectedStatus) &&
+      const matchesRole = !selectedRole ||
+        (row.dataset.orbitRoles || '').split(/\s+/).includes(selectedRole);
+      const visible = matchesRole &&
+        (selectedStatus === 'all' || row.dataset.orbitStatus === selectedStatus) &&
         normalizeSearch(terms).includes(searchQuery);
       row.hidden = !visible;
       if (visible) shown += 1;
@@ -108,6 +118,11 @@
     applyFilter(document.getElementById('amino-orbit-panel'));
   });
   shell.addEventListener('change', (event) => {
+    if (event.target.matches('.amino-orbit__role-filter')) {
+      selectedRole = event.target.value;
+      applyFilter(document.getElementById('amino-orbit-panel'));
+      return;
+    }
     if (!event.target.matches('.amino-orbit__sort') || !sortModes.includes(event.target.value)) return;
     selectedSort = event.target.value;
     applyFilter(document.getElementById('amino-orbit-panel'));
