@@ -575,12 +575,20 @@ final class Amino_Orbit {
 						<button type="button" class="amino-orbit__filter" data-orbit-status="session" aria-pressed="false"><?php esc_html_e( 'Session open', 'amino-orbit' ); ?></button>
 						<span class="amino-orbit__filter-count" aria-live="polite" aria-atomic="true"></span>
 					</div>
+					<div class="amino-orbit__sort-wrap">
+						<label for="amino-orbit-sort"><?php esc_html_e( 'Sort sessions', 'amino-orbit' ); ?></label>
+						<select id="amino-orbit-sort" class="amino-orbit__sort">
+							<option value="suggested"><?php esc_html_e( 'Suggested order', 'amino-orbit' ); ?></option>
+							<option value="newest"><?php esc_html_e( 'Newest login', 'amino-orbit' ); ?></option>
+							<option value="oldest"><?php esc_html_e( 'Oldest login', 'amino-orbit' ); ?></option>
+						</select>
+					</div>
 					<div class="amino-orbit__search-wrap">
 						<label for="amino-orbit-search"><?php esc_html_e( 'Search sessions', 'amino-orbit' ); ?></label>
 						<input id="amino-orbit-search" class="amino-orbit__search" type="search" autocomplete="off" spellcheck="false" placeholder="<?php echo esc_attr__( 'Name, role or device', 'amino-orbit' ); ?>" />
 					</div>
 					<ul class="amino-orbit__list" aria-label="<?php echo esc_attr__( 'Authenticated WordPress sessions', 'amino-orbit' ); ?>">
-						<?php foreach ( array_slice( $rows, 0, self::MAX_ROWS ) as $row ) : ?>
+						<?php foreach ( array_slice( $rows, 0, self::MAX_ROWS ) as $row_index => $row ) : ?>
 							<?php
 							$user = $row['user'];
 							$role_labels = array();
@@ -595,7 +603,7 @@ final class Amino_Orbit {
 							);
 							$initials = function_exists( 'mb_substr' ) ? mb_strtoupper( mb_substr( (string) $user->display_name, 0, 2 ) ) : strtoupper( substr( (string) $user->display_name, 0, 2 ) );
 							?>
-							<li class="amino-orbit__user" data-orbit-status="<?php echo esc_attr( $row['status'] ); ?>">
+							<li class="amino-orbit__user" data-orbit-status="<?php echo esc_attr( $row['status'] ); ?>" data-orbit-login="<?php echo esc_attr( (string) absint( $row['login'] ) ); ?>" data-orbit-order="<?php echo esc_attr( (string) $row_index ); ?>">
 								<div class="amino-orbit__avatar" aria-hidden="true"><?php echo esc_html( $initials ); ?></div>
 								<div class="amino-orbit__identity">
 									<strong><?php echo esc_html( $user->display_name ); ?></strong>
@@ -617,6 +625,9 @@ final class Amino_Orbit {
 							</li>
 						<?php endforeach; ?>
 					</ul>
+				<?php endif; ?>
+				<?php if ( $truncated || $total > self::MAX_ROWS ) : ?>
+					<p class="amino-orbit__note"><?php esc_html_e( 'Filters and sorting apply only to displayed sessions.', 'amino-orbit' ); ?></p>
 				<?php endif; ?>
 				<?php if ( $truncated ) : ?>
 					<p class="amino-orbit__note"><?php esc_html_e( 'Partial results: the session scan limit has been reached.', 'amino-orbit' ); ?></p>
