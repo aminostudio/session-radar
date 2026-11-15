@@ -89,6 +89,7 @@ function update_user_meta( $id, $key, $value ) {
     $GLOBALS['orbit']['presence'][ $id ] = $value;
 }
 function absint( $x ) { return abs( (int) $x ); }
+function sanitize_key( $value ) { return preg_replace( '/[^a-z0-9_-]/', '', strtolower( (string) $value ) ); }
 function wp_json_encode( $data ) { return json_encode( $data ); }
 function wp_salt( $purpose ) { return 'isolated-test-auth-salt'; }
 function wp_date( $format, $time ) { return gmdate( $format, $time ); }
