@@ -4,7 +4,7 @@ Tags: dashboard, users, sessions, activity, privacy
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.9.0
+Stable tag: 1.0.0-rc.1
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -88,6 +88,13 @@ The minimums are WordPress 6.4 and PHP 8.0. The plugin follows the current WordP
 * Activity pings are best-effort, not a live socket. Browser background throttling can delay updates.
 
 == Changelog ==
+
+= 1.0.0-rc.1 =
+* Private release candidate for final WordPress.org pre-submission review; not a public release.
+* Adds a documented FAQ and strict integrity and version checks to the private build process.
+* Carries forward all session controls, default-off activity monitoring and native WordPress privacy tools from 0.9.0.
+* No WordPress.org submission or public stable release has occurred.
+
 
 = 0.9.0 =
 * Adds a single keyboard-accessible action to reset text, role, status and sort filters without extra requests.
