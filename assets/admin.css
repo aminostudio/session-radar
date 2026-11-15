@@ -127,3 +127,17 @@
 .amino-orbit__role-filter { min-width: 150px; max-width: 100%; border: 1px solid #b4a5c7; border-radius: 7px; padding: 6px 24px 6px 9px; color: #30263e; background: #fff; }
 .amino-orbit__role-filter:focus-visible { outline: 2px solid #7549a1; outline-offset: 2px; }
 @media (forced-colors: active) { .amino-orbit__role-filter { border-color: CanvasText; } }
+
+/* v0.9: reversible density choice, visible empty results, and focusable reset. */
+.amino-orbit__display-tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 0 0 11px; }
+.amino-orbit__display-tools button { appearance: none; cursor: pointer; padding: 6px 10px; border: 1px solid #b4a5c7; border-radius: 6px; background: #fff; color: #4f2878; font: inherit; font-weight: 600; }
+.amino-orbit__display-tools button[aria-pressed="true"] { border-color: #7549a1; background: #ede1f9; }
+.amino-orbit__display-tools button:focus-visible { outline: 2px solid #7549a1; outline-offset: 3px; }
+.amino-orbit__empty-filter { padding: 12px; border: 1px solid #d8cce7; border-radius: 6px; color: #4f4260; font-size: 13px; }
+.amino-orbit__empty-filter[hidden] { display: none !important; }
+.amino-orbit--compact .amino-orbit__user { padding-block: 7px; }
+.amino-orbit--compact .amino-orbit__avatar { height: 32px; flex-basis: 32px; }
+.amino-orbit--compact .amino-orbit__identity .amino-orbit__device,
+.amino-orbit--compact .amino-orbit__identity .amino-orbit__ip,
+.amino-orbit--compact .amino-orbit__timing small { margin-top: 2px; }
+@media (forced-colors: active) { .amino-orbit__display-tools button[aria-pressed="true"] { border: 2px solid Highlight; } }
