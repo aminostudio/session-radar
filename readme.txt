@@ -45,6 +45,40 @@ Data retention of native WordPress session information is managed by WordPress, 
 
 Use **Tools > Export Personal Data** or **Tools > Erase Personal Data** to process a confirmed personal-data request. Amino Orbit participates using the user's registered WordPress email address, exporting only recent activity timestamps or deleting only the person's Orbit activity records. Native WordPress login sessions are never removed by Orbit's privacy eraser.
 
+== Frequently Asked Questions ==
+
+= Does Amino Orbit show who is online right now? =
+
+No. Orbit displays WordPress authentication sessions. A valid login session does not prove someone is currently using the site. Optional admin activity signals only indicate recently detected interactions, not live presence.
+
+= Does it monitor public visitors or send information elsewhere? =
+
+No. There is no public-visitor tracking or third-party telemetry. When explicitly enabled by an administrator, only authenticated WordPress admin activity signals are stored locally as short-lived plugin user metadata.
+
+= Is activity monitoring enabled automatically? =
+
+No. It is disabled by default. An administrator must explicitly enable it in Settings > Amino Orbit. The site operator is responsible for informing affected users and establishing any necessary legal basis.
+
+= Who can see session information? =
+
+Administrators have access. An administrator may grant read-only widget access to additional roles. IP addresses from native WordPress sessions are hidden by default and can only be revealed to administrators.
+
+= Can Orbit log users out or revoke their sessions? =
+
+No. The widget is read-only. Native WordPress authentication sessions and logout are managed by WordPress.
+
+= What happens when I turn off monitoring or uninstall? =
+
+Disabling activity monitoring deletes Orbit-specific activity records while retaining native WordPress sessions. Uninstall removes Orbit settings and Orbit-specific metadata. WP-Cron cleanup may run later than its scheduled time.
+
+= Why can the visible list be smaller than the session count? =
+
+To keep dashboard queries bounded, the widget shows at most 40 session rows and scans a limited number of accounts and valid sessions. Filters and sorting apply only to the displayed subset. A partial-results warning appears when scan limits are reached.
+
+= Which WordPress and PHP versions are supported? =
+
+The minimums are WordPress 6.4 and PHP 8.0. The plugin follows the current WordPress user's admin locale, with bundled French and Spanish translations.
+
 == Limitations ==
 
 * Presence monitoring covers `wp-admin` only, not the public frontend.
