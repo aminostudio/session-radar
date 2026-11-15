@@ -85,6 +85,11 @@ English is the source language. Bundled gettext catalogs provide French (`fr_FR`
 
 ## Changelog
 
+### 1.0.0-rc.1 (private release candidate)
+- First feature-complete pre-submission candidate, pending human accessibility, identity, notice and #LAB acceptance gates.
+- Do not submit publicly until an explicit approval after all release gates pass.
+
+
 ### v0.9.0 (private development candidate)
 - Reset all local session filters, show no-match feedback and offer compact view, with a11y checks.
 - No WordPress.org submission before v1.0.0.
