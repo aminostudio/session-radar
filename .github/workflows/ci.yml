@@ -178,12 +178,15 @@ jobs:
           mkdir -p /tmp/orbit-release/amino-orbit
           cp amino-orbit.php uninstall.php readme.txt README.md LICENSE /tmp/orbit-release/amino-orbit/
           cp -R assets includes languages /tmp/orbit-release/amino-orbit/
-          (cd /tmp/orbit-release && zip -qr "$GITHUB_WORKSPACE/amino-orbit-0.5.0.zip" amino-orbit)
+          VERSION=$(sed -n 's/^ \* Version: //p' amino-orbit.php | head -n 1)
+          test -n "$VERSION"
+          test "$(sed -n 's/^Stable tag: //p' readme.txt | head -n 1)" = "$VERSION"
+          (cd /tmp/orbit-release && zip -qr "$GITHUB_WORKSPACE/amino-orbit-${VERSION}.zip" amino-orbit)
       - name: Upload private WordPress install candidate
         uses: actions/upload-artifact@v4
         with:
-          name: amino-orbit-0.5.0-private-zip
-          path: amino-orbit-0.5.0.zip
+          name: amino-orbit-private-zip
+          path: amino-orbit-*.zip
           if-no-files-found: error
       - name: Upload Plugin Check JSON findings
         if: always()
