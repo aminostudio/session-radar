@@ -575,6 +575,10 @@ final class Amino_Orbit {
 						<button type="button" class="amino-orbit__filter" data-orbit-status="session" aria-pressed="false"><?php esc_html_e( 'Session open', 'amino-orbit' ); ?></button>
 						<span class="amino-orbit__filter-count" aria-live="polite" aria-atomic="true"></span>
 					</div>
+					<div class="amino-orbit__search-wrap">
+						<label for="amino-orbit-search"><?php esc_html_e( 'Search sessions', 'amino-orbit' ); ?></label>
+						<input id="amino-orbit-search" class="amino-orbit__search" type="search" autocomplete="off" spellcheck="false" placeholder="<?php echo esc_attr__( 'Name, role or device', 'amino-orbit' ); ?>" />
+					</div>
 					<ul class="amino-orbit__list" aria-label="<?php echo esc_attr__( 'Authenticated WordPress sessions', 'amino-orbit' ); ?>">
 						<?php foreach ( array_slice( $rows, 0, self::MAX_ROWS ) as $row ) : ?>
 							<?php
