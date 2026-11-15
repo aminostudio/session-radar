@@ -50,10 +50,10 @@ def compile_mo(entries):
     data = bytearray()
     for source, _ in pairs:
         source_table.extend((len(source), data_offset + len(data)))
-        data.extend(source + b"\\0")
+        data.extend(source + b"\0")
     for _, translation in pairs:
         translation_table.extend((len(translation), data_offset + len(data)))
-        data.extend(translation + b"\\0")
+        data.extend(translation + b"\0")
     header = struct.pack("<7I", 0x950412DE, 0, count,
                          originals, translations, 0, hash_offset)
     return (header + struct.pack(f"<{2 * count}I", *source_table)
