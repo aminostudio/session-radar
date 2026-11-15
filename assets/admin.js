@@ -56,7 +56,7 @@
   // requests, cookies, storage, or additional tracking are introduced.
   let selectedStatus = 'all';
   let searchQuery = '';
-  const normalizeSearch = (value) => String(value || '').normalize('NFD').replace(/[\\u0300-\\u036f]/g, '').toLocaleLowerCase().trim();
+  const normalizeSearch = (value) => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase().trim();
   const statuses = ['all', 'active', 'idle', 'session'];
 
   function applyFilter(panel) {
