@@ -121,6 +121,15 @@ async function main() {
       .first().waitFor({ timeout: 9000 });
     check(true, 'Real authenticated browser ping becomes an active session after AJAX refresh');
 
+    // v0.6 regression: search must respond before any filter button is clicked.
+    const immediateSearch = page.locator('#amino-orbit-panel .amino-orbit__search');
+    await immediateSearch.fill('nonexistent-orbit-session-query');
+    check(await page.locator('#amino-orbit-panel .amino-orbit__user:not([hidden])').count() === 0,
+      'Live search works without first clicking a status filter');
+    await immediateSearch.fill('');
+    check(await page.locator('#amino-orbit-panel .amino-orbit__user:not([hidden])').count() >= 1,
+      'Clearing search restores the local visible session list');
+
     // v0.4: filters are local, keyboard-operable and survive AJAX replacement.
     const activeFilter = page.locator('#amino-orbit-panel .amino-orbit__filter[data-orbit-status="active"]');
     await activeFilter.click();
@@ -171,6 +180,27 @@ async function main() {
       'Search query persists across an authorized AJAX panel replacement');
     await page.locator('#amino-orbit-panel .amino-orbit__search').fill('');
     await page.locator('#amino-orbit-panel .amino-orbit__filter[data-orbit-status="all"]').click();
+    await page.evaluate(() => document.activeElement.blur());
+
+    // v0.6: deterministic sort from preexisting WordPress login timestamps.
+    const sortField = page.locator('#amino-orbit-panel .amino-orbit__sort');
+    await sortField.selectOption('oldest');
+    const loginTimes = await page.locator('#amino-orbit-panel .amino-orbit__user')
+      .evaluateAll((rows) => rows.map((row) => Number(row.dataset.orbitLogin)));
+    check(loginTimes.every((value, i) => i === 0 || loginTimes[i - 1] <= value),
+      'Oldest login sorting is ascending and deterministic');
+    const sortedPanel = await page.locator('#amino-orbit-panel').elementHandle();
+    await page.evaluate(() => document.activeElement.blur());
+    await refresh(page);
+    await page.waitForFunction((node) => !node.isConnected, sortedPanel, { timeout: 10000 });
+    check(await page.locator('#amino-orbit-panel .amino-orbit__sort').inputValue() === 'oldest',
+      'Sorting selection persists across AJAX replacement');
+    await page.locator('#amino-orbit-panel .amino-orbit__sort').selectOption('newest');
+    const newestTimes = await page.locator('#amino-orbit-panel .amino-orbit__user')
+      .evaluateAll((rows) => rows.map((row) => Number(row.dataset.orbitLogin)));
+    check(newestTimes.every((value, i) => i === 0 || newestTimes[i - 1] >= value),
+      'Newest login sorting is descending');
+    await page.locator('#amino-orbit-panel .amino-orbit__sort').selectOption('suggested');
     await page.evaluate(() => document.activeElement.blur());
 
     // Focus inside the widget must prevent automatic HTML replacement.
