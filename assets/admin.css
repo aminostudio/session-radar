@@ -120,3 +120,10 @@
 .amino-orbit__refresh-now:focus-visible { outline: 2px solid #7549a1; outline-offset: 3px; }
 .amino-orbit__refresh-feedback { font-size: 12px; min-width: 0; color: #4f4260; }
 @media (forced-colors: active) { .amino-orbit__refresh-now { border-color: CanvasText; } }
+
+/* v0.8: role filter uses only choices present in the authorized visible list. */
+.amino-orbit__role-wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 7px 12px; padding: 6px 0; }
+.amino-orbit__role-wrap label { font-size: 12px; font-weight: 600; color: #4f4260; }
+.amino-orbit__role-filter { min-width: 150px; max-width: 100%; border: 1px solid #b4a5c7; border-radius: 7px; padding: 6px 24px 6px 9px; color: #30263e; background: #fff; }
+.amino-orbit__role-filter:focus-visible { outline: 2px solid #7549a1; outline-offset: 2px; }
+@media (forced-colors: active) { .amino-orbit__role-filter { border-color: CanvasText; } }
