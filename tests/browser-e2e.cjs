@@ -203,6 +203,23 @@ async function main() {
     await page.locator('#amino-orbit-panel .amino-orbit__sort').selectOption('suggested');
     await page.evaluate(() => document.activeElement.blur());
 
+    // v0.7: explicit refresh is accessible and restores its own keyboard focus.
+    const manualButton = page.locator('#amino-orbit-panel .amino-orbit__refresh-now');
+    check(await manualButton.count() === 1, 'Manual session refresh control is present');
+    const manualRequest = page.waitForResponse((response) =>
+      response.url().includes('admin-ajax.php') &&
+      (response.request().postData() || '').includes('action=amino_orbit_refresh')
+    );
+    await manualButton.click();
+    check((await manualRequest).status() === 200, 'Manual refresh reaches authorized AJAX endpoint');
+    await page.waitForFunction(() =>
+      document.querySelector('.amino-orbit__refresh-feedback')?.textContent?.includes('Sessions updated')
+    );
+    check(await page.locator('#amino-orbit-panel .amino-orbit__refresh-now')
+      .evaluate((node) => node === document.activeElement),
+      'Manual refresh preserves its button focus across panel replacement');
+    await page.evaluate(() => document.activeElement.blur());
+
     // Focus inside the widget must prevent automatic HTML replacement.
     const oldPanel = await panel.elementHandle();
     const settingsLink = page.locator('#amino-orbit-panel .amino-orbit__footer a');

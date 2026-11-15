@@ -111,3 +111,12 @@
 .amino-orbit__sort { min-width: 150px; max-width: 100%; padding: 6px 25px 6px 9px; border: 1px solid #b4a5c7; border-radius: 7px; background: #fff; color: #30263e; }
 .amino-orbit__sort:focus-visible { outline: 2px solid #7549a1; outline-offset: 2px; }
 @media (forced-colors: active) { .amino-orbit__sort { border-color: CanvasText; } }
+
+/* v0.7: accessible on-demand session refresh and nonintrusive status. */
+.amino-orbit__footer { flex-wrap: wrap; justify-content: flex-start; }
+.amino-orbit__footer a { margin-inline-start: auto; }
+.amino-orbit__refresh-now { appearance: none; cursor: pointer; border-radius: 6px; border: 1px solid #b4a5c7; color: #4f2878; background: #fff; padding: 6px 10px; font: inherit; font-weight: 650; }
+.amino-orbit__refresh-now:hover { border-color: #7549a1; }
+.amino-orbit__refresh-now:focus-visible { outline: 2px solid #7549a1; outline-offset: 3px; }
+.amino-orbit__refresh-feedback { font-size: 12px; min-width: 0; color: #4f4260; }
+@media (forced-colors: active) { .amino-orbit__refresh-now { border-color: CanvasText; } }
