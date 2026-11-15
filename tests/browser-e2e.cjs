@@ -128,8 +128,11 @@ async function main() {
       'Active filter exposes pressed state after click');
     check(await page.locator('#amino-orbit-panel .amino-orbit__user:not([hidden])').count() >= 1,
       'Active filter retains matching sessions');
-    check(await page.locator('#amino-orbit-panel .amino-orbit__user[hidden]').count() >= 0,
-      'Status filtering uses the hidden attribute without deleting session rows');
+    const filteredCount = await page.locator('#amino-orbit-panel .amino-orbit__user:not([hidden])').count();
+    const totalCount = await page.locator('#amino-orbit-panel .amino-orbit__user').count();
+    check(filteredCount <= totalCount &&
+      await page.locator('#amino-orbit-panel .amino-orbit__filter-count').textContent() === filteredCount + ' / ' + totalCount,
+      'Status filtering preserves all rows and announces the visible count');
     await page.evaluate(() => document.activeElement.blur());
     await refresh(page);
     await page.waitForFunction(() => {
