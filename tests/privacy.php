@@ -9,6 +9,8 @@ $GLOBALS['orbit_privacy'] = array(
     'deletions' => array(),
     'updates' => array(),
     'policy' => array(),
+    'deletion_result' => true,
+    'records_remaining' => false,
 );
 class Orbit_Privacy_Roles {
     public array $roles = array(
@@ -33,8 +35,15 @@ function wp_add_privacy_policy_content( $name, $content ) {
 }
 function delete_metadata( $type, $id, $key, $value, $all ) {
     $GLOBALS['orbit_privacy']['deletions'][] = array( $type, $id, $key, $value, $all );
-    return true;
+    return $GLOBALS['orbit_privacy']['deletion_result'];
 }
+class Orbit_Privacy_DB {
+    public string $usermeta = 'wp_usermeta';
+    public string $last_error = '';
+    public function prepare( $query, $key ) { return str_replace( '%s', "'" . $key . "'", $query ); }
+    public function get_var( $query ) { return $GLOBALS['orbit_privacy']['records_remaining'] ? '12' : null; }
+}
+$GLOBALS['wpdb'] = new Orbit_Privacy_DB();
 function check( bool $ok, string $message ): void {
     if ( ! $ok ) {
         fwrite( STDERR, 'FAIL: ' . $message . "\n" );
@@ -102,6 +111,31 @@ Amino_Orbit::migrate_legacy_privacy();
 check( 1 === count( $GLOBALS['orbit_privacy']['deletions'] ),
     'Explicitly enabled activity is never purged by migration'
 );
+
+// A failed database deletion must leave the missing-key sentinel in place.
+$GLOBALS['orbit_privacy']['settings'] = array( 'viewer_roles' => array( 'editor' ) );
+$GLOBALS['orbit_privacy']['deletion_result'] = false;
+$GLOBALS['orbit_privacy']['records_remaining'] = true;
+$updates_before = count( $GLOBALS['orbit_privacy']['updates'] );
+Amino_Orbit::migrate_legacy_privacy();
+check(
+    ! array_key_exists( 'activity_enabled', $GLOBALS['orbit_privacy']['settings'] ) &&
+    $updates_before === count( $GLOBALS['orbit_privacy']['updates'] ),
+    'Failed purge leaves migration pending for the next request'
+);
+$GLOBALS['orbit_privacy']['deletion_result'] = true;
+$GLOBALS['orbit_privacy']['records_remaining'] = false;
+Amino_Orbit::migrate_legacy_privacy();
+check( 0 === $GLOBALS['orbit_privacy']['settings']['activity_enabled'],
+    'A subsequent successful purge completes the deferred migration' );
+
+// WordPress returns false for a no-op deletion when no old records exist.
+$GLOBALS['orbit_privacy']['settings'] = array();
+$GLOBALS['orbit_privacy']['deletion_result'] = false;
+Amino_Orbit::migrate_legacy_privacy();
+check( 0 === $GLOBALS['orbit_privacy']['settings']['activity_enabled'],
+    'No legacy records is a successful, idempotent migration' );
+$GLOBALS['orbit_privacy']['deletion_result'] = true;
 
 Amino_Orbit::register_privacy_policy_text();
 check( 1 === count( $GLOBALS['orbit_privacy']['policy'] ), 'A WordPress privacy policy guide entry is registered' );
