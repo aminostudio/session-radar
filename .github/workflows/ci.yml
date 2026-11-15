@@ -21,6 +21,8 @@ jobs:
         php: ['8.0', '8.2', '8.4']
     steps:
       - uses: actions/checkout@v5
+      - name: Compile bundled FR/ES catalogs from PO
+        run: python3 scripts/build-i18n.py
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -68,6 +70,8 @@ jobs:
       WP_ROOT: /tmp/orbit-wp
     steps:
       - uses: actions/checkout@v5
+      - name: Compile bundled FR/ES catalogs from PO
+        run: python3 scripts/build-i18n.py
       - name: Set up PHP and WordPress CLI
         uses: shivammathur/setup-php@v2
         with:
@@ -168,6 +172,19 @@ jobs:
           if errors:
               sys.exit(f"Plugin Check found {errors} error(s) across static/runtime checks")
           PY
+      - name: Assemble private installable candidate ZIP
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/orbit-release/amino-orbit
+          cp amino-orbit.php uninstall.php readme.txt README.md LICENSE /tmp/orbit-release/amino-orbit/
+          cp -R assets includes languages /tmp/orbit-release/amino-orbit/
+          (cd /tmp/orbit-release && zip -qr "$GITHUB_WORKSPACE/amino-orbit-0.5.0.zip" amino-orbit)
+      - name: Upload private WordPress install candidate
+        uses: actions/upload-artifact@v4
+        with:
+          name: amino-orbit-0.5.0-private-zip
+          path: amino-orbit-0.5.0.zip
+          if-no-files-found: error
       - name: Upload Plugin Check JSON findings
         if: always()
         uses: actions/upload-artifact@v4
@@ -206,6 +223,8 @@ jobs:
       WP_ROOT: /tmp/orbit-wp-minimum
     steps:
       - uses: actions/checkout@v5
+      - name: Compile bundled FR/ES catalogs from PO
+        run: python3 scripts/build-i18n.py
       - name: Set up minimum supported PHP and WP-CLI
         uses: shivammathur/setup-php@v2
         with:
