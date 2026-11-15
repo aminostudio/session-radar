@@ -242,6 +242,36 @@ async function main() {
     await page.locator('#amino-orbit-panel .amino-orbit__role-filter').selectOption('');
     await page.evaluate(() => document.activeElement.blur());
 
+    // v0.9: unambiguous no-match message and single-action reset.
+    await page.locator('#amino-orbit-panel .amino-orbit__search').fill('orbit-no-matches-ever');
+    check(await page.locator('#amino-orbit-panel .amino-orbit__empty-filter').isVisible(),
+      'No matching sessions reports an explicit accessible empty state');
+    const resetButton = page.locator('#amino-orbit-panel .amino-orbit__reset');
+    await resetButton.click();
+    check(await page.locator('#amino-orbit-panel .amino-orbit__search').inputValue() === '' &&
+      await page.locator('#amino-orbit-panel .amino-orbit__role-filter').inputValue() === '' &&
+      await page.locator('#amino-orbit-panel .amino-orbit__sort').inputValue() === 'suggested' &&
+      await page.locator('#amino-orbit-panel .amino-orbit__filter[data-orbit-status="all"]')
+        .getAttribute('aria-pressed') === 'true',
+      'One reset clears query, role, order and status');
+    check(await page.locator('#amino-orbit-panel .amino-orbit__empty-filter').isHidden(),
+      'Reset hides no-matches message once sessions are visible');
+    const compactButton = page.locator('#amino-orbit-panel .amino-orbit__compact-toggle');
+    await compactButton.click();
+    check(await compactButton.getAttribute('aria-pressed') === 'true' &&
+      await page.locator('#amino-orbit-panel').evaluate((panel) =>
+        panel.classList.contains('amino-orbit--compact')
+      ), 'Compact display exposes correct pressed state');
+    const densePanel = await page.locator('#amino-orbit-panel').elementHandle();
+    await page.evaluate(() => document.activeElement.blur());
+    await refresh(page);
+    await page.waitForFunction((node) => !node.isConnected, densePanel, { timeout: 10000 });
+    check(await page.locator('#amino-orbit-panel .amino-orbit__compact-toggle')
+      .getAttribute('aria-pressed') === 'true',
+      'Compact preference survives AJAX refresh without persistence');
+    await page.locator('#amino-orbit-panel .amino-orbit__compact-toggle').click();
+    await page.evaluate(() => document.activeElement.blur());
+
     // Focus inside the widget must prevent automatic HTML replacement.
     const oldPanel = await panel.elementHandle();
     const settingsLink = page.locator('#amino-orbit-panel .amino-orbit__footer a');
