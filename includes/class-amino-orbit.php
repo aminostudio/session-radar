@@ -593,7 +593,7 @@ final class Amino_Orbit {
 					</div>
 					<div class="amino-orbit__sort-wrap">
 						<label for="amino-orbit-sort"><?php esc_html_e( 'Sort sessions', 'amino-orbit' ); ?></label>
-						<select id="amino-orbit-sort" class="amino-orbit__sort">
+						<select id="amino-orbit-sort" class="amino-orbit__sort" aria-controls="amino-orbit-list">
 							<option value="suggested"><?php esc_html_e( 'Suggested order', 'amino-orbit' ); ?></option>
 							<option value="newest"><?php esc_html_e( 'Newest login', 'amino-orbit' ); ?></option>
 							<option value="oldest"><?php esc_html_e( 'Oldest login', 'amino-orbit' ); ?></option>
@@ -601,7 +601,7 @@ final class Amino_Orbit {
 					</div>
 					<div class="amino-orbit__role-wrap">
 						<label for="amino-orbit-role"><?php esc_html_e( 'Filter by role', 'amino-orbit' ); ?></label>
-						<select id="amino-orbit-role" class="amino-orbit__role-filter">
+						<select id="amino-orbit-role" class="amino-orbit__role-filter" aria-controls="amino-orbit-list">
 							<option value=""><?php esc_html_e( 'All roles', 'amino-orbit' ); ?></option>
 							<?php foreach ( $visible_roles as $role_slug => $role_label ) : ?>
 								<option value="<?php echo esc_attr( sanitize_key( $role_slug ) ); ?>"><?php echo esc_html( $role_label ); ?></option>
@@ -610,9 +610,14 @@ final class Amino_Orbit {
 					</div>
 					<div class="amino-orbit__search-wrap">
 						<label for="amino-orbit-search"><?php esc_html_e( 'Search sessions', 'amino-orbit' ); ?></label>
-						<input id="amino-orbit-search" class="amino-orbit__search" type="search" autocomplete="off" spellcheck="false" placeholder="<?php echo esc_attr__( 'Name, role or device', 'amino-orbit' ); ?>" />
+						<input id="amino-orbit-search" class="amino-orbit__search" type="search" aria-controls="amino-orbit-list" autocomplete="off" spellcheck="false" placeholder="<?php echo esc_attr__( 'Name, role or device', 'amino-orbit' ); ?>" />
 					</div>
-					<ul class="amino-orbit__list" aria-label="<?php echo esc_attr__( 'Authenticated WordPress sessions', 'amino-orbit' ); ?>">
+					<div class="amino-orbit__display-tools">
+						<button type="button" class="amino-orbit__reset"><?php esc_html_e( 'Reset filters', 'amino-orbit' ); ?></button>
+						<button type="button" class="amino-orbit__compact-toggle" aria-pressed="false"><?php esc_html_e( 'Compact view', 'amino-orbit' ); ?></button>
+					</div>
+					<p class="amino-orbit__empty-filter" role="status" hidden><?php esc_html_e( 'No sessions match these filters.', 'amino-orbit' ); ?></p>
+					<ul id="amino-orbit-list" class="amino-orbit__list" aria-label="<?php echo esc_attr__( 'Authenticated WordPress sessions', 'amino-orbit' ); ?>">
 						<?php foreach ( array_slice( $rows, 0, self::MAX_ROWS ) as $row_index => $row ) : ?>
 							<?php
 							$user = $row['user'];

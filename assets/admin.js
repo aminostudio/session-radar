@@ -59,6 +59,7 @@
   let selectedRole = '';
   let searchQuery = '';
   let searchInput = '';
+  let compactView = false;
   const statuses = ['all', 'active', 'idle', 'session'];
   const sortModes = ['suggested', 'newest', 'oldest'];
   const normalizeSearch = (value) => String(value || '').normalize('NFD')
@@ -102,6 +103,11 @@
     if (sort) sort.value = selectedSort;
     const count = panel.querySelector('.amino-orbit__filter-count');
     if (count) count.textContent = shown + ' / ' + rows.length;
+    const empty = panel.querySelector('.amino-orbit__empty-filter');
+    if (empty) empty.hidden = shown !== 0 || rows.length === 0;
+    panel.classList.toggle('amino-orbit--compact', compactView);
+    const density = panel.querySelector('.amino-orbit__compact-toggle');
+    if (density) density.setAttribute('aria-pressed', String(compactView));
   }
 
   shell.addEventListener('click', (event) => {
@@ -126,6 +132,22 @@
     if (!event.target.matches('.amino-orbit__sort') || !sortModes.includes(event.target.value)) return;
     selectedSort = event.target.value;
     applyFilter(document.getElementById('amino-orbit-panel'));
+  });
+  // v0.9: reset the existing local controls without losing the dashboard focus.
+  shell.addEventListener('click', (event) => {
+    if (event.target.closest('.amino-orbit__reset')) {
+      selectedStatus = 'all';
+      selectedSort = 'suggested';
+      selectedRole = '';
+      searchQuery = '';
+      searchInput = '';
+      const field = document.querySelector('#amino-orbit-panel .amino-orbit__search');
+      if (field) field.value = '';
+      applyFilter(document.getElementById('amino-orbit-panel'));
+    } else if (event.target.closest('.amino-orbit__compact-toggle')) {
+      compactView = !compactView;
+      applyFilter(document.getElementById('amino-orbit-panel'));
+    }
   });
   applyFilter(document.getElementById('amino-orbit-panel'));
 

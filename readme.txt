@@ -4,7 +4,7 @@ Tags: dashboard, users, sessions, activity, privacy
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.8.0
+Stable tag: 0.9.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -54,6 +54,13 @@ Use **Tools > Export Personal Data** or **Tools > Erase Personal Data** to proce
 * Activity pings are best-effort, not a live socket. Browser background throttling can delay updates.
 
 == Changelog ==
+
+= 0.9.0 =
+* Adds a single keyboard-accessible action to reset text, role, status and sort filters without extra requests.
+* Provides an explicit no-matches message, distinct from a site with no WordPress sessions.
+* Offers a compact view without hiding session details, and retains it during AJAX updates.
+* Improves control-to-list accessibility relationships while preserving user privacy defaults.
+
 
 = 0.8.0 =
 * Adds a localized role filter populated only by roles in the already-displayed authorized WordPress session rows.
