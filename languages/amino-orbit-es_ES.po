@@ -144,3 +144,9 @@ msgstr "Última interacción observada en la administración"
 msgid "Could not remove Amino Orbit activity data."
 msgstr "No se pudieron eliminar los datos de actividad de Amino Orbit."
 
+
+msgid "Search sessions"
+msgstr "Buscar sesiones"
+
+msgid "Name, role or device"
+msgstr "Nombre, rol o dispositivo"
