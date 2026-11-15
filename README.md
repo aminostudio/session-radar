@@ -85,8 +85,8 @@ English is the source language. Bundled gettext catalogs provide French (`fr_FR`
 
 ## Changelog
 
-### 1.0.0-rc.1 (private release candidate)
-- First feature-complete pre-submission candidate, pending human accessibility, identity, notice and #LAB acceptance gates.
+### 1.0.0 (stable candidate, awaiting final acceptance)
+- First pre-submission stable candidate, pending human accessibility, identity, notice and #LAB acceptance gates.
 - Do not submit publicly until an explicit approval after all release gates pass.
 
 
