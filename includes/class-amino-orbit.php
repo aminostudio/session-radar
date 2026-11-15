@@ -333,6 +333,11 @@ final class Amino_Orbit {
 				'canView'       => $dashboard,
 				'refreshMs'     => $options['refresh_seconds'] * 1000,
 				'trackActivity' => ! empty( $options['activity_enabled'] ),
+				'labels'        => array(
+					'refreshing' => __( 'Updating sessions…', 'amino-orbit' ),
+					'updated'    => __( 'Sessions updated', 'amino-orbit' ),
+					'failed'     => __( 'Refresh failed', 'amino-orbit' ),
+				),
 			)
 		);
 	}
@@ -638,6 +643,8 @@ final class Amino_Orbit {
 			</div>
 			<div class="amino-orbit__footer">
 				<span><?php echo esc_html( sprintf( /* translators: %d: refresh interval in seconds. */ __( 'Refresh: %d s', 'amino-orbit' ), (int) $options['refresh_seconds'] ) ); ?></span>
+				<button type="button" class="amino-orbit__refresh-now"><?php esc_html_e( 'Refresh now', 'amino-orbit' ); ?></button>
+				<span class="amino-orbit__refresh-feedback" role="status" aria-live="polite" aria-atomic="true"></span>
 				<?php if ( current_user_can( 'manage_options' ) ) : ?>
 					<a href="<?php echo esc_url( admin_url( 'options-general.php?page=amino-orbit' ) ); ?>"><?php esc_html_e( 'Settings', 'amino-orbit' ); ?> <span aria-hidden="true">↗</span></a>
 				<?php endif; ?>
