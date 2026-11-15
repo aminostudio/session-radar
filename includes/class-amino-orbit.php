@@ -568,6 +568,13 @@ final class Amino_Orbit {
 				<?php if ( ! $rows ) : ?>
 					<p class="amino-orbit__empty"><?php esc_html_e( 'No open WordPress sessions detected.', 'amino-orbit' ); ?></p>
 				<?php else : ?>
+					<div class="amino-orbit__filters" role="group" aria-label="<?php echo esc_attr__( 'Authenticated WordPress sessions', 'amino-orbit' ); ?>">
+						<button type="button" class="amino-orbit__filter" data-orbit-status="all" aria-pressed="true"><?php esc_html_e( 'Sessions', 'amino-orbit' ); ?></button>
+						<button type="button" class="amino-orbit__filter" data-orbit-status="active" aria-pressed="false"><?php esc_html_e( 'Active', 'amino-orbit' ); ?></button>
+						<button type="button" class="amino-orbit__filter" data-orbit-status="idle" aria-pressed="false"><?php esc_html_e( 'Inactive', 'amino-orbit' ); ?></button>
+						<button type="button" class="amino-orbit__filter" data-orbit-status="session" aria-pressed="false"><?php esc_html_e( 'Session open', 'amino-orbit' ); ?></button>
+						<span class="amino-orbit__filter-count" aria-live="polite" aria-atomic="true"></span>
+					</div>
 					<ul class="amino-orbit__list" aria-label="<?php echo esc_attr__( 'Authenticated WordPress sessions', 'amino-orbit' ); ?>">
 						<?php foreach ( array_slice( $rows, 0, self::MAX_ROWS ) as $row ) : ?>
 							<?php
@@ -584,7 +591,7 @@ final class Amino_Orbit {
 							);
 							$initials = function_exists( 'mb_substr' ) ? mb_strtoupper( mb_substr( (string) $user->display_name, 0, 2 ) ) : strtoupper( substr( (string) $user->display_name, 0, 2 ) );
 							?>
-							<li class="amino-orbit__user">
+							<li class="amino-orbit__user" data-orbit-status="<?php echo esc_attr( $row['status'] ); ?>">
 								<div class="amino-orbit__avatar" aria-hidden="true"><?php echo esc_html( $initials ); ?></div>
 								<div class="amino-orbit__identity">
 									<strong><?php echo esc_html( $user->display_name ); ?></strong>
