@@ -37,6 +37,10 @@ function delete_metadata( $type, $id, $key, $value, $all ) {
     $GLOBALS['orbit_privacy']['deletions'][] = array( $type, $id, $key, $value, $all );
     return $GLOBALS['orbit_privacy']['deletion_result'];
 }
+function get_users( $args ) {
+    $GLOBALS['orbit_privacy']['last_user_query'] = $args;
+    return $GLOBALS['orbit_privacy']['records_remaining'] ? array( 12 ) : array();
+}
 class Orbit_Privacy_DB {
     public string $usermeta = 'wp_usermeta';
     public string $last_error = '';
@@ -118,6 +122,12 @@ $GLOBALS['orbit_privacy']['deletion_result'] = false;
 $GLOBALS['orbit_privacy']['records_remaining'] = true;
 $updates_before = count( $GLOBALS['orbit_privacy']['updates'] );
 Amino_Orbit::migrate_legacy_privacy();
+check(
+    1 === $GLOBALS['orbit_privacy']['last_user_query']['number'] &&
+    false === $GLOBALS['orbit_privacy']['last_user_query']['count_total'] &&
+    'ID' === $GLOBALS['orbit_privacy']['last_user_query']['fields'],
+    'Migration checks a single user via WordPress query API'
+);
 check(
     ! array_key_exists( 'activity_enabled', $GLOBALS['orbit_privacy']['settings'] ) &&
     $updates_before === count( $GLOBALS['orbit_privacy']['updates'] ),

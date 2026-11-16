@@ -60,14 +60,18 @@ final class Amino_Orbit {
 		// A failed deletion must not permanently mark the migration complete.
 		// WordPress also returns false when there are simply no rows to delete.
 		if ( ! delete_metadata( 'user', 0, self::META, '', true ) ) {
+			// A failed deletion can also mean that no matching metadata exists.
+			// Check only one user through WordPress's standard query API.
 			global $wpdb;
-			$remaining = $wpdb->get_var(
-				$wpdb->prepare(
-					"SELECT umeta_id FROM {$wpdb->usermeta} WHERE meta_key = %s LIMIT 1",
-					self::META
+			$remaining = get_users(
+				array(
+					'meta_key' => self::META,
+					'fields' => 'ID',
+					'number' => 1,
+					'count_total' => false,
 				)
 			);
-			if ( null !== $remaining || $wpdb->last_error ) {
+			if ( ! empty( $remaining ) || $wpdb->last_error ) {
 				return; // Keep the missing-key sentinel so the next request retries.
 			}
 		}
