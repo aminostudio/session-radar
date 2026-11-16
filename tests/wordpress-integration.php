@@ -13,7 +13,7 @@ if ( ! defined( 'WP_CLI' ) || ! WP_CLI ) {
     exit( 1 );
 }
 if ( ! defined( 'AMINO_ORBIT_VERSION' ) ) {
-    WP_CLI::error( 'Amino Orbit is not loaded: activate the plugin first.' );
+    WP_CLI::error( 'Session Radar is not loaded: activate the plugin first.' );
 }
 
 function orbit_integration_assert( bool $condition, string $message ): void {
@@ -76,7 +76,7 @@ orbit_integration_assert(
 
 wp_set_current_user( $admin_id );
 update_option(
-    'amino_orbit_settings',
+    'session_radar_settings',
     array(
         'viewer_roles'     => array(),
         'inactive_minutes' => 5,
@@ -116,7 +116,7 @@ orbit_integration_assert(
     $fingerprint !== $second_fingerprint,
     'Different WordPress token verifiers have distinct Orbit presence IDs'
 );
-update_user_meta( $admin_id, '_amino_orbit_presence', array( $fingerprint => time() ) );
+update_user_meta( $admin_id, '_session_radar_presence', array( $fingerprint => time() ) );
 $activity_html = orbit_integration_render();
 orbit_integration_assert(
     1 === substr_count( $activity_html, 'amino-orbit__status--active' ) &&
@@ -127,10 +127,10 @@ orbit_integration_assert(
 // Viewer permissions are computed by WordPress capabilities and user roles.
 wp_set_current_user( $editor_id );
 orbit_integration_assert( '' === orbit_integration_render(), 'Editor cannot see widget without permission' );
-$enabled = get_option( 'amino_orbit_settings' );
+$enabled = get_option( 'session_radar_settings' );
 $enabled['viewer_roles'] = array( 'editor' );
 $enabled['show_ip'] = 1;
-update_option( 'amino_orbit_settings', $enabled );
+update_option( 'session_radar_settings', $enabled );
 
 $editor_html = orbit_integration_render();
 orbit_integration_assert(
@@ -158,7 +158,7 @@ if ( '1' === getenv( 'ORBIT_CHECK_LOCALE_IN_FRESH_BOOT' ) ) {
 // WordPress locale switching exercises actual bundled .mo files, not mocks.
 orbit_integration_assert( switch_to_locale( 'fr_FR' ), 'WordPress switches to the installed French locale' );
 orbit_integration_assert(
-    'Session ouverte' === __( 'Session open', 'amino-orbit' ),
+    'Session ouverte' === __( 'Session open', 'session-radar' ),
     'Bundled French translations load through WordPress gettext'
 );
 orbit_integration_assert(
@@ -169,7 +169,7 @@ restore_previous_locale();
 
 orbit_integration_assert( switch_to_locale( 'es_ES' ), 'WordPress switches to the installed Spanish locale' );
 orbit_integration_assert(
-    'Sesión abierta' === __( 'Session open', 'amino-orbit' ),
+    'Sesión abierta' === __( 'Session open', 'session-radar' ),
     'Bundled Spanish translations load through WordPress gettext'
 );
 orbit_integration_assert(
@@ -194,10 +194,10 @@ orbit_integration_assert(
 $exporters = apply_filters( 'wp_privacy_personal_data_exporters', array() );
 $erasers   = apply_filters( 'wp_privacy_personal_data_erasers', array() );
 orbit_integration_assert(
-    isset( $exporters['amino-orbit']['callback'], $erasers['amino-orbit']['callback'] ),
+    isset( $exporters['session-radar']['callback'], $erasers['session-radar']['callback'] ),
     'WordPress registers the Orbit privacy exporter and eraser'
 );
-$exported = call_user_func( $exporters['amino-orbit']['callback'], 'admin@orbit-ci.invalid', 1 );
+$exported = call_user_func( $exporters['session-radar']['callback'], 'admin@orbit-ci.invalid', 1 );
 orbit_integration_assert(
     true === $exported['done'] && 1 === count( $exported['data'] ),
     'Core privacy exporter finds exactly one active Orbit observation'
@@ -207,10 +207,10 @@ orbit_integration_assert(
     ! str_contains( wp_json_encode( $exported ), $token_one ),
     'Core privacy exporter does not reveal fingerprints or native auth tokens'
 );
-$erased = call_user_func( $erasers['amino-orbit']['callback'], 'admin@orbit-ci.invalid', 1 );
+$erased = call_user_func( $erasers['session-radar']['callback'], 'admin@orbit-ci.invalid', 1 );
 orbit_integration_assert(
     $erased['items_removed'] && ! $erased['items_retained'] &&
-    ! get_user_meta( $admin_id, '_amino_orbit_presence', true ),
+    ! get_user_meta( $admin_id, '_session_radar_presence', true ),
     'Core privacy eraser deletes plugin-specific user activity'
 );
 orbit_integration_assert(
@@ -218,21 +218,21 @@ orbit_integration_assert(
     'WordPress authentication session survives personal-data erasure'
 );
 orbit_integration_assert(
-    array() === call_user_func( $exporters['amino-orbit']['callback'], 'admin@orbit-ci.invalid', 1 )['data'],
+    array() === call_user_func( $exporters['session-radar']['callback'], 'admin@orbit-ci.invalid', 1 )['data'],
     'After erasure, a second export contains no Orbit activity'
 );
 
 // Emulate a legacy pre-opt-in option payload on genuine WordPress. The
 // first browser bootstrap has already occurred, so trigger the migration
 // explicitly here with its original settings preserved.
-$before = get_option( 'amino_orbit_settings', array() );
+$before = get_option( 'session_radar_settings', array() );
 $before['activity_enabled'] = 0;
-update_option( 'amino_orbit_settings', $before );
+update_option( 'session_radar_settings', $before );
 unset( $before['activity_enabled'] );
-update_option( 'amino_orbit_settings', $before );
-update_user_meta( $admin_id, '_amino_orbit_presence', array( 'legacy-stale' => time() - 20 ) );
+update_option( 'session_radar_settings', $before );
+update_user_meta( $admin_id, '_session_radar_presence', array( 'legacy-stale' => time() - 20 ) );
 Amino_Orbit::migrate_legacy_privacy();
-$after = get_option( 'amino_orbit_settings', array() );
+$after = get_option( 'session_radar_settings', array() );
 orbit_integration_assert(
     0 === $after['activity_enabled'] &&
     $before['viewer_roles'] === $after['viewer_roles'] &&
@@ -240,16 +240,16 @@ orbit_integration_assert(
     'Legacy privacy migration records OFF while preserving settings'
 );
 orbit_integration_assert(
-    ! get_user_meta( $admin_id, '_amino_orbit_presence', true ) &&
+    ! get_user_meta( $admin_id, '_session_radar_presence', true ) &&
     is_array( $admin_manager->get( $token_one ) ),
     'Legacy activity purged without ending native WordPress login session'
 );
-update_user_meta( $admin_id, '_amino_orbit_presence', array( 'fresh-mark' => time() ) );
+update_user_meta( $admin_id, '_session_radar_presence', array( 'fresh-mark' => time() ) );
 Amino_Orbit::migrate_legacy_privacy();
 orbit_integration_assert(
-    (bool) get_user_meta( $admin_id, '_amino_orbit_presence', true ),
+    (bool) get_user_meta( $admin_id, '_session_radar_presence', true ),
     'Migration is idempotent and does not erase data on each request'
 );
-delete_user_meta( $admin_id, '_amino_orbit_presence' );
+delete_user_meta( $admin_id, '_session_radar_presence' );
 
 WP_CLI::success( 'Real WordPress integration checks passed; all data is confined to CI.' );

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Preflight the *private* Amino Orbit build before any WordPress.org submission.
+"""Preflight the *private* Session Radar build before any WordPress.org submission.
 
 Static checks cannot approve privacy/legal obligations or manual accessibility QA.
 """
@@ -25,7 +25,7 @@ def require(condition, message):
 
 
 def check_sources():
-    plugin = (ROOT / "amino-orbit.php").read_text(encoding="utf-8")
+    plugin = (ROOT / "session-radar.php").read_text(encoding="utf-8")
     readme = (ROOT / "readme.txt").read_text(encoding="utf-8")
     version = header(plugin, "Version")
     stable = re.search(r"^Stable tag:\s*(\S+)", readme, re.M)
@@ -34,7 +34,7 @@ def check_sources():
     require(f"AMINO_ORBIT_VERSION', '{version}'" in plugin, "Runtime constant matches plugin header")
     description = header(plugin, "Description")
     require(len(description) < 140, "Description fits WordPress.org plugin header guideline")
-    require(header(plugin, "Text Domain") == "amino-orbit", "Plugin text domain matches slug")
+    require(header(plugin, "Text Domain") == "session-radar", "Plugin text domain matches slug")
     require(header(plugin, "Domain Path") == "/languages", "Bundled language path is declared")
     require(header(plugin, "License") == "GPL-2.0-or-later", "License header is GPL-compatible")
     require("License: GPL-2.0-or-later" in readme, "Readme license matches header")
@@ -45,9 +45,9 @@ def check_sources():
     require("== Changelog ==" in readme and f"= {version} =" in readme,
             "Current version has a readme changelog entry")
     for relative in ("includes/class-amino-orbit.php", "uninstall.php", "assets/admin.js",
-                     "assets/admin.css", "languages/amino-orbit-fr_FR.po",
-                     "languages/amino-orbit-es_ES.po", "languages/amino-orbit-fr_FR.mo",
-                     "languages/amino-orbit-es_ES.mo"):
+                     "assets/admin.css", "languages/session-radar-fr_FR.po",
+                     "languages/session-radar-es_ES.po", "languages/session-radar-fr_FR.mo",
+                     "languages/session-radar-es_ES.mo"):
         require((ROOT / relative).is_file(), f"Required plugin file: {relative}")
     require("activity_enabled' => 0" in (ROOT / "includes/class-amino-orbit.php").read_text(encoding="utf-8"),
             "Activity collection default is OFF")
@@ -60,22 +60,22 @@ def check_zip(path, version):
         require(bundle.testzip() is None, "ZIP checksum and CRC validation")
         names = bundle.namelist()
         require(bool(names), "ZIP has entries")
-        require(all(name.startswith("amino-orbit/") and not name.startswith("/")
+        require(all(name.startswith("session-radar/") and not name.startswith("/")
                     and ".." not in Path(name).parts for name in names),
-                "Single safe amino-orbit top-level directory")
-        required = {"amino-orbit/amino-orbit.php", "amino-orbit/readme.txt",
-                    "amino-orbit/uninstall.php", "amino-orbit/LICENSE",
-                    "amino-orbit/includes/class-amino-orbit.php",
-                    "amino-orbit/assets/admin.js", "amino-orbit/assets/admin.css",
-                    "amino-orbit/languages/amino-orbit-fr_FR.mo",
-                    "amino-orbit/languages/amino-orbit-es_ES.mo"}
+                "Single safe session-radar top-level directory")
+        required = {"session-radar/session-radar.php", "session-radar/readme.txt",
+                    "session-radar/uninstall.php", "session-radar/LICENSE",
+                    "session-radar/includes/class-amino-orbit.php",
+                    "session-radar/assets/admin.js", "session-radar/assets/admin.css",
+                    "session-radar/languages/session-radar-fr_FR.mo",
+                    "session-radar/languages/session-radar-es_ES.mo"}
         require(required.issubset(set(names)), "Required runtime and translation files included")
         forbidden = ("tests/", "docs/", ".git/", ".github/", "__pycache__/", "node_modules/",
                      "scripts/", ".env", "wp-config.php")
         require(not any(any(fragment in name for fragment in forbidden) for name in names),
                 "No development scripts, test fixtures or sensitive configuration in install ZIP")
-        bundled = bundle.read("amino-orbit/amino-orbit.php").decode("utf-8")
-        bundled_readme = bundle.read("amino-orbit/readme.txt").decode("utf-8")
+        bundled = bundle.read("session-radar/session-radar.php").decode("utf-8")
+        bundled_readme = bundle.read("session-radar/readme.txt").decode("utf-8")
         require(header(bundled, "Version") == version, "Packaged version equals source version")
         require(f"Stable tag: {version}" in bundled_readme, "Packaged readme stable tag matches version")
 
@@ -85,7 +85,7 @@ if __name__ == "__main__":
         current = check_sources()
         if len(sys.argv) > 1:
             check_zip(Path(sys.argv[1]), current)
-        print("Amino Orbit private release preflight passed. Not a WordPress.org approval.")
+        print("Session Radar private release preflight passed. Not a WordPress.org approval.")
     except (OSError, ValueError, zipfile.BadZipFile) as error:
         print("FAIL:", error, file=sys.stderr)
         sys.exit(1)

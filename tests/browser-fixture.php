@@ -10,7 +10,7 @@ if ( ! defined( 'WP_CLI' ) || ! WP_CLI ) {
     exit( 1 );
 }
 $site = (string) home_url();
-if ( 'Amino Orbit CI' !== get_option( 'blogname' ) || ! preg_match( '~^http://127\\.0\\.0\\.1:8080/?$~', $site ) ) {
+if ( 'Session Radar CI' !== get_option( 'blogname' ) || ! preg_match( '~^http://127\\.0\\.0\\.1:8080/?$~', $site ) ) {
     WP_CLI::error( 'Browser fixture refused: requires disposable local CI WordPress.' );
 }
 $mode  = (string) getenv( 'ORBIT_BROWSER_FIXTURE_MODE' );
@@ -25,7 +25,7 @@ if ( 'setup' === $mode ) {
     }
     wp_set_password( 'temporary-editor-ci-password', $editor->ID );
     update_option(
-        'amino_orbit_settings',
+        'session_radar_settings',
         array(
             'viewer_roles'     => array(),
             'inactive_minutes' => 5,
@@ -34,11 +34,11 @@ if ( 'setup' === $mode ) {
             'activity_enabled' => 1,
         )
     );
-    delete_user_meta( $admin->ID, '_amino_orbit_presence' );
+    delete_user_meta( $admin->ID, '_session_radar_presence' );
     WP_CLI::success( 'Disposable browser setup complete, with admin-only widget.' );
  } elseif ( 'allow-editor' === $mode ) {
     update_option(
-        'amino_orbit_settings',
+        'session_radar_settings',
         array(
             'viewer_roles'     => array( 'editor' ),
             'inactive_minutes' => 5,
@@ -63,22 +63,22 @@ if ( 'setup' === $mode ) {
     }
     WP_CLI::success( 'Disposable administrator locale set to ' . ( $locale ?: 'default' ) . '.' );
 } elseif ( 'monitoring-off' === $mode ) {
-    $before = get_user_meta( $admin->ID, '_amino_orbit_presence', true );
+    $before = get_user_meta( $admin->ID, '_session_radar_presence', true );
     if ( ! is_array( $before ) || ! $before ) {
         WP_CLI::error( 'Expected real browser presence before opting out.' );
     }
-    $options = get_option( 'amino_orbit_settings', array() );
+    $options = get_option( 'session_radar_settings', array() );
     $options['activity_enabled'] = 0;
-    update_option( 'amino_orbit_settings', $options );
-    $after = get_user_meta( $admin->ID, '_amino_orbit_presence', true );
+    update_option( 'session_radar_settings', $options );
+    $after = get_user_meta( $admin->ID, '_session_radar_presence', true );
     if ( $after ) {
         WP_CLI::error( 'Disabling monitoring did not remove existing activity.' );
     }
     WP_CLI::success( 'Monitoring disabled and all plugin activity metadata purged.' );
 } elseif ( 'monitoring-on' === $mode ) {
-    $options = get_option( 'amino_orbit_settings', array() );
+    $options = get_option( 'session_radar_settings', array() );
     $options['activity_enabled'] = 1;
-    update_option( 'amino_orbit_settings', $options );
+    update_option( 'session_radar_settings', $options );
     WP_CLI::success( 'Explicit monitoring opt-in restored for disposable CI.' );
 } elseif ( 'idle' === $mode ) {
     $sessions = get_user_meta( $admin->ID, 'session_tokens', true );
@@ -92,7 +92,7 @@ if ( 'setup' === $mode ) {
     if ( ! $presence ) {
         WP_CLI::error( 'No real native session found for idle fixture.' );
     }
-    update_user_meta( $admin->ID, '_amino_orbit_presence', $presence );
+    update_user_meta( $admin->ID, '_session_radar_presence', $presence );
     WP_CLI::success( 'All native admin sessions marked inactive in disposable CI.' );
 } else {
     WP_CLI::error( 'Unknown browser fixture mode.' );

@@ -4,7 +4,7 @@ define( 'ABSPATH', '/tmp/' );
 define( 'DAY_IN_SECONDS', 86400 );
 $GLOBALS['state'] = array( 'meta' => array(), 'updates' => 0, 'deletes' => 0 );
 function get_users( $args ) {
-    assert( $args['meta_key'] === '_amino_orbit_presence' );
+    assert( $args['meta_key'] === '_session_radar_presence' );
     assert( $args['fields'] === 'ID' );
     return array_slice( array_keys( $GLOBALS['state']['meta'] ), 0, $args['number'] );
 }
@@ -46,6 +46,6 @@ Amino_Orbit::cleanup_presence();
 verify( $GLOBALS['state']['updates'] === 1 && $GLOBALS['state']['deletes'] === 1, 'Repeated cleanup performs no writes on unchanged records' );
 $previous = $GLOBALS['state']['meta'][1];
 $GLOBALS['state']['meta'][1]['new_ping'] = $now;
-verify( false === update_user_meta( 1, '_amino_orbit_presence', array( 'old' => $now ), $previous ), 'Conditional update does not overwrite newer pings' );
+verify( false === update_user_meta( 1, '_session_radar_presence', array( 'old' => $now ), $previous ), 'Conditional update does not overwrite newer pings' );
 verify( isset( $GLOBALS['state']['meta'][1]['new_ping'] ), 'New ping is preserved' );
 echo "All daily cleanup tests passed.\n";

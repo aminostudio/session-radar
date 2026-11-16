@@ -3,7 +3,7 @@
 define('ABSPATH', '/tmp/');
 define('DAY_IN_SECONDS', 86400);
 define('MINUTE_IN_SECONDS', 60);
-define('AMINO_ORBIT_FILE', '/test/plugins/amino-orbit/amino-orbit.php');
+define('AMINO_ORBIT_FILE', '/test/plugins/session-radar/session-radar.php');
 $state = [ 'admin'=>true, 'roles'=>['administrator'], 'options'=>['activity_enabled'=>1], 'meta'=>[], 'users'=>[] ];
 class WP_User { public int $ID; public string $display_name; public array $roles; public function __construct($id,$name,$roles){$this->ID=$id;$this->display_name=$name;$this->roles=$roles;} }
 class Test_Roles {public array $roles=['administrator'=>['name'=>'Administrator'],'editor'=>['name'=>'Editor'],'author'=>['name'=>'Author']];}
@@ -45,12 +45,12 @@ function checked($value,$match=null){if($value===$match)echo ' checked';}
 function selected($value,$match=null){if($value===$match)echo ' selected';}
 function settings_fields($a){}
 function submit_button($a){}
-function plugin_basename($f){return 'amino-orbit/amino-orbit.php';}
+function plugin_basename($f){return 'session-radar/session-radar.php';}
 function load_plugin_textdomain($domain,$unused,$path){$GLOBALS['state']['textdomain']=$path;return true;}
 function assert_true($condition,$message){if(!$condition){fwrite(STDERR,"FAIL: $message\n");exit(1);} echo "PASS: $message\n";}
 require dirname( __DIR__ ) . '/includes/class-amino-orbit.php';
 Amino_Orbit::load_translations();
-assert_true($state['textdomain']==='amino-orbit/languages','Localized catalog load path is correct');
+assert_true($state['textdomain']==='session-radar/languages','Localized catalog load path is correct');
 $state['users']=[new WP_User(1,'Amino Test',['administrator'])];
 $session=['login'=>time()-120,'expiration'=>time()+3600,'ua'=>'Mozilla/5.0 Firefox/159 Windows NT 10.0','ip'=>'192.0.2.10'];
 WP_Session_Tokens::$sessions=[$session];

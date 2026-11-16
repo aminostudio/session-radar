@@ -74,7 +74,7 @@ check( 0 === $invalid['activity_enabled'], 'Unexpected values cannot silently op
 Amino_Orbit::clear_presence_on_disable( array( 'activity_enabled' => 1 ), array( 'activity_enabled' => 0 ) );
 check( 1 === count( $GLOBALS['orbit_privacy']['deletions'] ), 'Turning monitoring off triggers one purge' );
 check(
-    array( 'user', 0, '_amino_orbit_presence', '', true ) === $GLOBALS['orbit_privacy']['deletions'][0],
+    array( 'user', 0, '_session_radar_presence', '', true ) === $GLOBALS['orbit_privacy']['deletions'][0],
     'Purge deletes only all Orbit activity records, never WordPress login tokens'
 );
 Amino_Orbit::clear_presence_on_disable( array( 'activity_enabled' => 0 ), array( 'activity_enabled' => 1 ) );
@@ -140,7 +140,7 @@ $GLOBALS['orbit_privacy']['deletion_result'] = true;
 Amino_Orbit::register_privacy_policy_text();
 check( 1 === count( $GLOBALS['orbit_privacy']['policy'] ), 'A WordPress privacy policy guide entry is registered' );
 $policy = $GLOBALS['orbit_privacy']['policy'][0];
-check( 'Amino Orbit' === $policy[0], 'Policy guide credits the correct plugin' );
+check( 'Session Radar' === $policy[0], 'Policy guide credits the correct plugin' );
 check( 2 === substr_count( $policy[1], '<p>' ), 'Suggested policy contains two escaped paragraphs' );
 check(
     str_contains( $policy[1], '24 hours' ) &&

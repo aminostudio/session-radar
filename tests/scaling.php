@@ -9,7 +9,7 @@ if ( ! defined( 'WP_CLI' ) || ! WP_CLI ) {
     exit( 1 );
 }
 
-if ( 'Amino Orbit CI' !== get_option( 'blogname' ) ||
+if ( 'Session Radar CI' !== get_option( 'blogname' ) ||
     'http://127.0.0.1:8080' !== untrailingslashit( home_url() ) ) {
     WP_CLI::error( 'Refusing to run a scale test outside disposable WordPress CI.' );
 }
@@ -70,7 +70,7 @@ orbit_scale_assert( $admin instanceof WP_User, 'Disposable CI admin exists' );
 wp_set_current_user( $admin->ID );
 
 update_option(
-    'amino_orbit_settings',
+    'session_radar_settings',
     array(
         'viewer_roles'     => array(),
         'inactive_minutes' => 5,

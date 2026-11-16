@@ -1,4 +1,4 @@
-name: Amino Orbit checks
+name: Session Radar checks
 
 on:
   # Run on main merges and PR updates, not twice for every feature push.
@@ -30,11 +30,13 @@ jobs:
           coverage: none
       - name: PHP syntax checks
         run: |
-          php -l amino-orbit.php
+          php -l session-radar.php
           php -l includes/class-amino-orbit.php
           php -l uninstall.php
       - name: PHP isolated smoke checks
         run: php tests/smoke.php
+      - name: Public slug upgrade migration regression tests
+        run: php tests/migration.php
       - name: Daily cleanup regression tests
         run: php tests/cleanup.php
       - name: AJAX authorization and privacy regression tests
@@ -86,11 +88,11 @@ jobs:
           set -euo pipefail
           wp core download --path="$WP_ROOT" --skip-content --quiet
           wp config create --path="$WP_ROOT" --dbname=orbit_ci --dbuser=orbit_ci --dbpass=orbit_ci_password --dbhost=127.0.0.1 --skip-check
-          wp core install --path="$WP_ROOT" --url=http://127.0.0.1:8080 --title="Amino Orbit CI" --admin_user=orbit_ci_admin --admin_password="temporary-ci-password-not-reused" --admin_email=admin@orbit-ci.invalid --skip-email
-          mkdir -p "$WP_ROOT/wp-content/plugins/amino-orbit"
-          cp amino-orbit.php uninstall.php readme.txt README.md LICENSE "$WP_ROOT/wp-content/plugins/amino-orbit/"
-          cp -R assets includes languages "$WP_ROOT/wp-content/plugins/amino-orbit/"
-          wp plugin activate amino-orbit --path="$WP_ROOT"
+          wp core install --path="$WP_ROOT" --url=http://127.0.0.1:8080 --title="Session Radar CI" --admin_user=orbit_ci_admin --admin_password="temporary-ci-password-not-reused" --admin_email=admin@orbit-ci.invalid --skip-email
+          mkdir -p "$WP_ROOT/wp-content/plugins/session-radar"
+          cp session-radar.php uninstall.php readme.txt README.md LICENSE "$WP_ROOT/wp-content/plugins/session-radar/"
+          cp -R assets includes languages "$WP_ROOT/wp-content/plugins/session-radar/"
+          wp plugin activate session-radar --path="$WP_ROOT"
           wp language core install fr_FR es_ES --path="$WP_ROOT"
       - name: Real WordPress session, authorization and translation checks
         run: wp eval-file "$GITHUB_WORKSPACE/tests/wordpress-integration.php" --path="$WP_ROOT"
@@ -131,9 +133,9 @@ jobs:
           set -euo pipefail
           wp plugin install plugin-check --activate --path="$WP_ROOT"
           set +e
-          wp plugin check amino-orbit --format=json --path="$WP_ROOT" > /tmp/orbit-pcp-static.json 2>/tmp/orbit-pcp-static.err
+          wp plugin check session-radar --format=json --path="$WP_ROOT" > /tmp/orbit-pcp-static.json 2>/tmp/orbit-pcp-static.err
           STATIC_EXIT=$?
-          wp plugin check amino-orbit --format=json --require="$WP_ROOT/wp-content/plugins/plugin-check/cli.php" --path="$WP_ROOT" > /tmp/orbit-pcp-runtime.json 2>/tmp/orbit-pcp-runtime.err
+          wp plugin check session-radar --format=json --require="$WP_ROOT/wp-content/plugins/plugin-check/cli.php" --path="$WP_ROOT" > /tmp/orbit-pcp-runtime.json 2>/tmp/orbit-pcp-runtime.err
           RUNTIME_EXIT=$?
           set -e
           echo "PLUGIN CHECK STATIC EXIT: $STATIC_EXIT"
@@ -177,36 +179,36 @@ jobs:
       - name: Assemble private installable candidate ZIP
         run: |
           set -euo pipefail
-          mkdir -p /tmp/orbit-release/amino-orbit
-          cp amino-orbit.php uninstall.php readme.txt README.md LICENSE /tmp/orbit-release/amino-orbit/
-          cp -R assets includes languages /tmp/orbit-release/amino-orbit/
-          VERSION=$(sed -n 's/^ \* Version: //p' amino-orbit.php | head -n 1)
+          mkdir -p /tmp/orbit-release/session-radar
+          cp session-radar.php uninstall.php readme.txt README.md LICENSE /tmp/orbit-release/session-radar/
+          cp -R assets includes languages /tmp/orbit-release/session-radar/
+          VERSION=$(sed -n 's/^ \* Version: //p' session-radar.php | head -n 1)
           test -n "$VERSION"
           test "$(sed -n 's/^Stable tag: //p' readme.txt | head -n 1)" = "$VERSION"
-          (cd /tmp/orbit-release && zip -qr "$GITHUB_WORKSPACE/amino-orbit-${VERSION}.zip" amino-orbit)
+          (cd /tmp/orbit-release && zip -qr "$GITHUB_WORKSPACE/session-radar-${VERSION}.zip" session-radar)
       - name: Validate private ZIP structure and bundled versions
         run: |
           set -euo pipefail
-          VERSION=$(sed -n 's/^ \* Version: //p' amino-orbit.php | head -n 1)
-          python3 tests/release-preflight.py "amino-orbit-${VERSION}.zip"
+          VERSION=$(sed -n 's/^ \* Version: //p' session-radar.php | head -n 1)
+          python3 tests/release-preflight.py "session-radar-${VERSION}.zip"
       - name: Upload private WordPress install candidate
         uses: actions/upload-artifact@v4
         with:
-          name: amino-orbit-private-zip
-          path: amino-orbit-*.zip
+          name: session-radar-private-zip
+          path: session-radar-*.zip
           if-no-files-found: error
       - name: Upload Plugin Check JSON findings
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: amino-orbit-plugin-check-json
+          name: session-radar-plugin-check-json
           path: /tmp/orbit-pcp-*.json
           if-no-files-found: ignore
       - name: Upload browser failure screenshot
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: amino-orbit-browser-qa-failure
+          name: session-radar-browser-qa-failure
           path: /tmp/orbit-browser-failure.png
           if-no-files-found: ignore
 
@@ -242,16 +244,16 @@ jobs:
           extensions: mysqli
           coverage: none
           tools: wp-cli
-      - name: Install disposable WordPress 6.4 and Amino Orbit
+      - name: Install disposable WordPress 6.4 and Session Radar
         run: |
           set -euo pipefail
           wp core download --version=6.4 --path="$WP_ROOT" --skip-content --quiet
           wp config create --path="$WP_ROOT" --dbname=orbit_min --dbuser=orbit_min --dbpass=orbit_min_password --dbhost=127.0.0.1 --skip-check
-          wp core install --path="$WP_ROOT" --url=http://127.0.0.1:8080 --title="Amino Orbit CI" --admin_user=orbit_ci_admin --admin_password="temporary-ci-password-not-reused" --admin_email=admin@orbit-ci.invalid --skip-email
-          mkdir -p "$WP_ROOT/wp-content/plugins/amino-orbit"
-          cp amino-orbit.php uninstall.php readme.txt README.md LICENSE "$WP_ROOT/wp-content/plugins/amino-orbit/"
-          cp -R assets includes languages "$WP_ROOT/wp-content/plugins/amino-orbit/"
-          wp plugin activate amino-orbit --path="$WP_ROOT"
+          wp core install --path="$WP_ROOT" --url=http://127.0.0.1:8080 --title="Session Radar CI" --admin_user=orbit_ci_admin --admin_password="temporary-ci-password-not-reused" --admin_email=admin@orbit-ci.invalid --skip-email
+          mkdir -p "$WP_ROOT/wp-content/plugins/session-radar"
+          cp session-radar.php uninstall.php readme.txt README.md LICENSE "$WP_ROOT/wp-content/plugins/session-radar/"
+          cp -R assets includes languages "$WP_ROOT/wp-content/plugins/session-radar/"
+          wp plugin activate session-radar --path="$WP_ROOT"
           wp language core install fr_FR es_ES --path="$WP_ROOT"
           wp core version --path="$WP_ROOT"
       - name: Native sessions, roles and logout on WordPress 6.4
