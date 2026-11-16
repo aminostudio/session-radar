@@ -1,7 +1,6 @@
 <?php
 /**
  * Plugin Name: Amino Orbit
- * Plugin URI: https://aminostudio.fr/
  * Description: A lightweight, privacy-conscious WordPress dashboard widget for authenticated sessions and recent back-office activity.
  * Version: 1.0.0
  * Requires at least: 6.4
