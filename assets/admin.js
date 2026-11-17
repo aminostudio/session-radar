@@ -60,6 +60,7 @@
   let searchQuery = '';
   let searchInput = '';
   let compactView = false;
+  let autoRefreshPaused = false;
   const statuses = ['all', 'active', 'idle', 'session'];
   const sortModes = ['suggested', 'newest', 'oldest'];
   const normalizeSearch = (value) => String(value || '').normalize('NFD')
@@ -108,6 +109,29 @@
     panel.classList.toggle('amino-orbit--compact', compactView);
     const density = panel.querySelector('.amino-orbit__compact-toggle');
     if (density) density.setAttribute('aria-pressed', String(compactView));
+    // The pause choice belongs to this browser tab only. Neither localStorage
+    // nor a WordPress option records it; manual refresh remains available.
+    const pause = panel.querySelector('.amino-orbit__pause-refresh');
+    if (pause) {
+      pause.setAttribute('aria-pressed', String(autoRefreshPaused));
+      pause.textContent = autoRefreshPaused
+        ? (config.labels?.resumeRefresh || 'Resume automatic refresh')
+        : (config.labels?.pauseRefresh || 'Pause automatic refresh');
+    }
+    const live = panel.querySelector('.amino-orbit__live');
+    if (live) {
+      const message = autoRefreshPaused
+        ? (config.labels?.paused || 'Paused')
+        : (config.labels?.auto || 'Auto');
+      const liveLabel = autoRefreshPaused
+        ? (config.labels?.pauseDescription || 'Automatic refresh paused')
+        : (config.labels?.autoDescription || 'Automatic refresh, not real-time presence');
+      const text = live.querySelector('.amino-orbit__live-label');
+      if (text) text.textContent = message;
+      live.setAttribute('aria-label', liveLabel);
+      live.setAttribute('title', liveLabel);
+      live.classList.toggle('amino-orbit__live--paused', autoRefreshPaused);
+    }
   }
 
   shell.addEventListener('click', (event) => {
@@ -152,7 +176,7 @@
   applyFilter(document.getElementById('amino-orbit-panel'));
 
   function refresh(manual = false) {
-    if (refreshing || (!manual && document.visibilityState !== 'visible')) return;
+    if (refreshing || (!manual && (autoRefreshPaused || document.visibilityState !== 'visible'))) return;
     const current = document.getElementById('amino-orbit-panel');
     if (!current) return;
     // Background refresh never replaces focused controls, inputs or links.
@@ -197,6 +221,11 @@
   }
 
   shell.addEventListener('click', (event) => {
+    if (event.target.closest('.amino-orbit__pause-refresh')) {
+      autoRefreshPaused = !autoRefreshPaused;
+      applyFilter(document.getElementById('amino-orbit-panel'));
+      return;
+    }
     if (!event.target.closest('.amino-orbit__refresh-now')) return;
     refresh(true);
   });
