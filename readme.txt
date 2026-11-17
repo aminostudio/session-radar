@@ -4,7 +4,7 @@ Tags: sessions, dashboard, activity, logins, privacy
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.0.0
+Stable tag: 1.1.0-rc.1
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -88,6 +88,14 @@ The minimums are WordPress 6.4 and PHP 8.0. The plugin follows the current WordP
 * Activity pings are best-effort, not a live socket. Browser background throttling can delay updates.
 
 == Changelog ==
+
+= 1.1.0-rc.1 =
+* Adds a local Pause/Resume automatic refresh toggle with an explicit paused dashboard indicator.
+* Keeps manual session refresh available during a pause and remembers the pause while AJAX updates the panel.
+* Does not store the pause setting, collect data or change native WordPress sessions; resumes automatically on a new page load.
+* Includes FR/ES UI translations and automated browser and PHP regression tests.
+* Private development only. The already-submitted WordPress.org 1.0.0 package is unaffected.
+
 
 = 1.0.0 =
 * Prepared stable milestone for final acceptance review; WordPress.org submission remains separate and requires explicit authorization.

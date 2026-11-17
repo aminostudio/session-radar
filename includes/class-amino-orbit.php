@@ -351,6 +351,12 @@ final class Amino_Orbit {
 					'refreshing' => __( 'Updating sessions…', 'session-radar' ),
 					'updated'    => __( 'Sessions updated', 'session-radar' ),
 					'failed'     => __( 'Refresh failed', 'session-radar' ),
+                    'pauseRefresh' => __( 'Pause automatic refresh', 'session-radar' ),
+                    'resumeRefresh' => __( 'Resume automatic refresh', 'session-radar' ),
+                    'paused' => __( 'Paused', 'session-radar' ),
+                    'auto' => __( 'Auto', 'session-radar' ),
+                    'pauseDescription' => __( 'Automatic refresh paused', 'session-radar' ),
+                    'autoDescription' => __( 'Automatic refresh, not real-time presence', 'session-radar' ),
 				),
 			)
 		);
@@ -587,7 +593,7 @@ final class Amino_Orbit {
 					<div class="amino-orbit__symbol" aria-hidden="true"><span></span></div>
 					<div><strong>SESSION <em>RADAR</em></strong><small><?php esc_html_e( 'PRESENCE MONITOR', 'session-radar' ); ?></small></div>
 				</div>
-				<span class="amino-orbit__live" aria-label="<?php echo esc_attr__( 'Automatic refresh, not real-time presence', 'session-radar' ); ?>" title="<?php echo esc_attr__( 'Automatic refresh, not real-time presence', 'session-radar' ); ?>"><i aria-hidden="true"></i><?php esc_html_e( 'Auto', 'session-radar' ); ?></span>
+				<span class="amino-orbit__live" aria-label="<?php echo esc_attr__( 'Automatic refresh, not real-time presence', 'session-radar' ); ?>" title="<?php echo esc_attr__( 'Automatic refresh, not real-time presence', 'session-radar' ); ?>"><i aria-hidden="true"></i><span class="amino-orbit__live-label"><?php esc_html_e( 'Auto', 'session-radar' ); ?></span></span>
 				<div class="amino-orbit__stats">
 					<div><strong><?php echo esc_html( (string) $total ); ?></strong><small><?php esc_html_e( 'Sessions', 'session-radar' ); ?></small></div>
 					<div><strong><?php echo esc_html( (string) $active ); ?></strong><small><?php esc_html_e( 'Active sessions', 'session-radar' ); ?></small></div>
@@ -683,6 +689,7 @@ final class Amino_Orbit {
 			<div class="amino-orbit__footer">
 				<span><?php echo esc_html( sprintf( /* translators: %d: refresh interval in seconds. */ __( 'Refresh: %d s', 'session-radar' ), (int) $options['refresh_seconds'] ) ); ?></span>
 				<button type="button" class="amino-orbit__refresh-now"><?php esc_html_e( 'Refresh now', 'session-radar' ); ?></button>
+                <button type="button" class="amino-orbit__pause-refresh" aria-pressed="false"><?php esc_html_e( 'Pause automatic refresh', 'session-radar' ); ?></button>
 				<span class="amino-orbit__refresh-feedback" role="status" aria-live="polite" aria-atomic="true"></span>
 				<?php if ( current_user_can( 'manage_options' ) ) : ?>
 					<a href="<?php echo esc_url( admin_url( 'options-general.php?page=session-radar' ) ); ?>"><?php esc_html_e( 'Settings', 'session-radar' ); ?> <span aria-hidden="true">↗</span></a>
