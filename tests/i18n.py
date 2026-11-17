@@ -6,11 +6,11 @@ import struct
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 CODE = (ROOT / 'includes/class-amino-orbit.php').read_text(encoding='utf-8')
-PATTERN = r"(?:__|esc_html_e|esc_attr__|esc_html__)\(\s*'((?:[^'\\]|\\.)*)'\s*,\s*'amino-orbit'"
+PATTERN = r"(?:__|esc_html_e|esc_attr__|esc_html__)\(\s*'((?:[^'\\]|\\.)*)'\s*,\s*'session-radar'"
 source = set(re.findall(PATTERN, CODE))
 assert len(source) >= 36, f'Insufficient translated messages: {len(source)}'
 for locale in ('fr_FR', 'es_ES'):
-    with (ROOT / 'languages' / f'amino-orbit-{locale}.mo').open('rb') as mo:
+    with (ROOT / 'languages' / f'session-radar-{locale}.mo').open('rb') as mo:
         header = mo.read(28)
         assert len(header) == 28, f'{locale}: truncated binary catalog'
         magic, revision, count, originals, translations, hash_count, hash_offset = struct.unpack('<7I', header)

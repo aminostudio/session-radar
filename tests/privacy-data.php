@@ -24,7 +24,7 @@ $GLOBALS['orbit_personal_data'] = array(
     ),
     'metadata' => array(
         5 => array(
-            '_amino_orbit_presence' => array(
+            '_session_radar_presence' => array(
                 'hmac-not-a-real-session-token-1' => $now - 10,
                 'hmac-not-a-real-session-token-2' => $now - 60,
                 'expired' => $now - 90000,
@@ -33,7 +33,7 @@ $GLOBALS['orbit_personal_data'] = array(
             ),
             'session_tokens' => array( 'native-token-verifier' => array( 'expiration' => $now + 3600 ) ),
         ),
-        9 => array( '_amino_orbit_presence' => array( 'another-user' => $now - 20 ) ),
+        9 => array( '_session_radar_presence' => array( 'another-user' => $now - 20 ) ),
     ),
     'delete_failure' => false,
     'hooks' => array(),
@@ -85,13 +85,13 @@ check(
 $exporters = Amino_Orbit::register_personal_data_exporter( array() );
 $erasers   = Amino_Orbit::register_personal_data_eraser( array() );
 check(
-    isset( $exporters['amino-orbit']['exporter_friendly_name'], $exporters['amino-orbit']['callback'] ) &&
-    is_callable( $exporters['amino-orbit']['callback'] ),
+    isset( $exporters['session-radar']['exporter_friendly_name'], $exporters['session-radar']['callback'] ) &&
+    is_callable( $exporters['session-radar']['callback'] ),
     'Core exporter registration has callable and friendly name'
 );
 check(
-    isset( $erasers['amino-orbit']['eraser_friendly_name'], $erasers['amino-orbit']['callback'] ) &&
-    is_callable( $erasers['amino-orbit']['callback'] ),
+    isset( $erasers['session-radar']['eraser_friendly_name'], $erasers['session-radar']['callback'] ) &&
+    is_callable( $erasers['session-radar']['callback'] ),
     'Core eraser registration has callable and friendly name'
 );
 
@@ -127,9 +127,9 @@ $result = Amino_Orbit::erase_personal_data( 'admin@example.test' );
 check( $result['items_removed'] && ! $result['items_retained'] && $result['done'],
     'Eraser reports successful metadata removal' );
 check(
-    ! isset( $GLOBALS['orbit_personal_data']['metadata'][5]['_amino_orbit_presence'] ) &&
+    ! isset( $GLOBALS['orbit_personal_data']['metadata'][5]['_session_radar_presence'] ) &&
     isset( $GLOBALS['orbit_personal_data']['metadata'][5]['session_tokens'] ) &&
-    isset( $GLOBALS['orbit_personal_data']['metadata'][9]['_amino_orbit_presence'] ),
+    isset( $GLOBALS['orbit_personal_data']['metadata'][9]['_session_radar_presence'] ),
     'Eraser preserves native login sessions and other users activity'
 );
 $result = Amino_Orbit::erase_personal_data( 'admin@example.test' );

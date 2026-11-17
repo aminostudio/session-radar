@@ -1,8 +1,10 @@
-# Amino Orbit 🪐
+# Session Radar 🪐
+
+> **Rename in progress:** the new public WordPress identity is **Session Radar** (`session-radar`). This branch changes the distribution identity ahead of a pending initial WordPress.org review. See [the migration instructions](docs/SESSION-RADAR-MIGRATION.md) before updating a site. No WordPress.org approval is implied.
 
 **A lightweight WordPress dashboard presence monitor, designed by Amino Studio.**
 
-Amino Orbit is a GPL-2.0-or-later WordPress plugin that distinguishes **valid authentication sessions** from **recent activity in wp-admin**. It adds an elegant, responsive widget to the WordPress Dashboard with sessions, users, roles, login times, device labels, and configurable viewer permissions.
+Session Radar is a GPL-2.0-or-later WordPress plugin that distinguishes **valid authentication sessions** from **recent activity in wp-admin**. It adds an elegant, responsive widget to the WordPress Dashboard with sessions, users, roles, login times, device labels, and configurable viewer permissions.
 
 ## Presence status
 
@@ -15,9 +17,9 @@ A valid WordPress session is **not proof that someone is at their keyboard**. Th
 ## Installation
 
 1. Install the plugin ZIP via **Plugins → Add New → Upload Plugin**, or place the `amino-orbit` directory under `wp-content/plugins/`.
-2. Activate **Amino Orbit**.
+2. Activate **Session Radar**.
 3. Visit **Dashboard → Home** to see the widget.
-4. Configure viewer roles, status threshold and refresh interval in **Settings → Amino Orbit**.
+4. Configure viewer roles, status threshold and refresh interval in **Settings → Session Radar**.
 
 **Requirements:** WordPress 6.4+, PHP 8.0+.
 
@@ -36,7 +38,7 @@ A valid WordPress session is **not proof that someone is at their keyboard**. Th
 
 **Upgrading from pre-opt-in versions:** v0.3.8 removes existing Orbit-only activity records once when no explicit monitoring choice was ever saved, then records monitoring as OFF. Existing session visibility and dashboard settings are preserved.
 
-On this development branch, **recent activity signals are disabled by default** until a site administrator explicitly enables them in **Settings → Amino Orbit → Privacy**. The widget can still list native WordPress sessions without tracking activity. Disabling previously enabled monitoring immediately removes plugin-only activity metadata and prevents future server writes.
+On this development branch, **recent activity signals are disabled by default** until a site administrator explicitly enables them in **Settings → Session Radar → Privacy**. The widget can still list native WordPress sessions without tracking activity. Disabling previously enabled monitoring immediately removes plugin-only activity metadata and prevents future server writes.
 
 This is site-owner authorization, **not a declaration of consent or legal compliance on behalf of every user**. The site operator must inform affected team members and establish an appropriate legal basis where required. The WordPress Privacy Policy Guide receives editable suggested disclosure text.
 
@@ -58,8 +60,8 @@ This is site-owner authorization, **not a declaration of consent or legal compli
 
 ~~~text
 amino-orbit/
-├── amino-orbit.php
-├── includes/class-amino-orbit.php
+├── session-radar.php
+├── includes/class-session-radar.php
 ├── assets/admin.css
 ├── assets/admin.js
 ├── uninstall.php
@@ -207,7 +209,7 @@ English is the source language. Bundled gettext catalogs provide French (`fr_FR`
 ## Quality assurance
 
 - [v0.3.0 audit evidence](docs/QA-0.3.0.md) distinguishes checks performed from pending WordPress integration tests.
-- [Pre-release QA checklist](https://github.com/aminostudio/amino-orbit/issues/1) tracks the remaining release gates.
+- [Pre-release QA checklist](https://github.com/aminostudio/session-radar/issues/1) tracks the remaining release gates.
 - [GitHub Actions CI and AJAX authorization checks](docs/CI-0.3.2.md) confirm syntax, smoke, cleanup, gettext and security suites on PHP 8.0, 8.2 and 8.4.
 
 - [Plugin Check 0.3.1 findings](docs/PLUGIN-CHECK-0.3.1.md) records all three warnings and their technical disposition.

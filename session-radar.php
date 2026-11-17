@@ -1,7 +1,7 @@
 <?php
 /**
- * Plugin Name: Amino Orbit
- * Description: A lightweight, privacy-conscious WordPress dashboard widget for authenticated sessions and recent back-office activity.
+ * Plugin Name: Session Radar
+ * Description: See WordPress login sessions and recent admin activity in a privacy-focused dashboard widget.
  * Version: 1.0.0
  * Requires at least: 6.4
  * Requires PHP: 8.0
@@ -9,7 +9,7 @@
  * Author URI: https://aminostudio.fr/
  * License: GPL-2.0-or-later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: amino-orbit
+ * Text Domain: session-radar
  * Domain Path: /languages
  */
 

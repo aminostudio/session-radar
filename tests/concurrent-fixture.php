@@ -7,7 +7,7 @@ if ( ! defined( 'WP_CLI' ) || ! WP_CLI ) {
     exit( 1 );
 }
 
-if ( 'Amino Orbit CI' !== get_option( 'blogname' ) ||
+if ( 'Session Radar CI' !== get_option( 'blogname' ) ||
     'http://127.0.0.1:8080' !== untrailingslashit( home_url() ) ) {
     WP_CLI::error( 'Refusing to create load-test users outside disposable CI WordPress.' );
 }
@@ -15,7 +15,7 @@ if ( 'Amino Orbit CI' !== get_option( 'blogname' ) ||
 // The preceding browser suite explicitly enabled IP display for a privacy
 // test. Restore the production-like privacy defaults before load testing.
 update_option(
-    'amino_orbit_settings',
+    'session_radar_settings',
     array(
         'viewer_roles'     => array(),
         'inactive_minutes' => 5,
