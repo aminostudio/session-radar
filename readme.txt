@@ -1,10 +1,10 @@
 === Amino Orbit ===
-Contributors: aminostudio
+Contributors: aminostudiofr
 Tags: dashboard, users, sessions, activity, privacy
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.0.0-rc.1
+Stable tag: 1.0.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -89,11 +89,11 @@ The minimums are WordPress 6.4 and PHP 8.0. The plugin follows the current WordP
 
 == Changelog ==
 
-= 1.0.0-rc.1 =
-* Private release candidate for final WordPress.org pre-submission review; not a public release.
+= 1.0.0 =
+* Prepared stable milestone for final acceptance review; WordPress.org submission remains separate and requires explicit authorization.
 * Adds a documented FAQ and strict integrity and version checks to the private build process.
 * Carries forward all session controls, default-off activity monitoring and native WordPress privacy tools from 0.9.0.
-* No WordPress.org submission or public stable release has occurred.
+* No WordPress.org submission has occurred; installation and manual acceptance remain required.
 
 
 = 0.9.0 =
