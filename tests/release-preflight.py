@@ -41,6 +41,13 @@ def check_sources():
     require((ROOT / "LICENSE").is_file(), "License file included")
     require("Contributors: aminostudio" in readme, "WordPress.org contributor name is documented for manual verification")
     require("== Privacy ==" in readme and "== Installation ==" in readme, "Readme documents privacy and installation")
+    public_docs = (ROOT / "README.md").read_text(encoding="utf-8")
+    require("session-radar/" in public_docs and "place the `session-radar` directory" in public_docs,
+            "Public README explains the actual install directory")
+    require("├── includes/class-amino-orbit.php" in public_docs,
+            "Public README accurately names the internal PHP class file")
+    require("Rename in progress" not in public_docs,
+            "Public README does not claim the completed repository rename is pending")
     require("== Frequently Asked Questions ==" in readme, "Readme has a support-oriented FAQ")
     require("== Changelog ==" in readme and f"= {version} =" in readme,
             "Current version has a readme changelog entry")
