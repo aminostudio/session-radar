@@ -1,6 +1,6 @@
 # Session Radar 🪐
 
-> **Rename in progress:** the new public WordPress identity is **Session Radar** (`session-radar`). This branch changes the distribution identity ahead of a pending initial WordPress.org review. See [the migration instructions](docs/SESSION-RADAR-MIGRATION.md) before updating a site. No WordPress.org approval is implied.
+> **Distribution identity:** Session Radar (`session-radar`). Existing Amino ORBIT installations should follow [the migration instructions](docs/SESSION-RADAR-MIGRATION.md) before installing this differently named plugin. This public repository alone does not imply WordPress.org approval.
 
 **A lightweight WordPress dashboard presence monitor, designed by Amino Studio.**
 
@@ -16,7 +16,7 @@ A valid WordPress session is **not proof that someone is at their keyboard**. Th
 
 ## Installation
 
-1. Install the plugin ZIP via **Plugins → Add New → Upload Plugin**, or place the `amino-orbit` directory under `wp-content/plugins/`.
+1. Install the plugin ZIP via **Plugins → Add New → Upload Plugin**, or place the `session-radar` directory under `wp-content/plugins/`.
 2. Activate **Session Radar**.
 3. Visit **Dashboard → Home** to see the widget.
 4. Configure viewer roles, status threshold and refresh interval in **Settings → Session Radar**.
@@ -38,7 +38,7 @@ A valid WordPress session is **not proof that someone is at their keyboard**. Th
 
 **Upgrading from pre-opt-in versions:** v0.3.8 removes existing Orbit-only activity records once when no explicit monitoring choice was ever saved, then records monitoring as OFF. Existing session visibility and dashboard settings are preserved.
 
-On this development branch, **recent activity signals are disabled by default** until a site administrator explicitly enables them in **Settings → Session Radar → Privacy**. The widget can still list native WordPress sessions without tracking activity. Disabling previously enabled monitoring immediately removes plugin-only activity metadata and prevents future server writes.
+**Recent activity signals are disabled by default** until a site administrator explicitly enables them in **Settings → Session Radar → Privacy**. The widget can still list native WordPress sessions without tracking activity. Disabling previously enabled monitoring immediately removes plugin-only activity metadata and prevents future server writes.
 
 This is site-owner authorization, **not a declaration of consent or legal compliance on behalf of every user**. The site operator must inform affected team members and establish an appropriate legal basis where required. The WordPress Privacy Policy Guide receives editable suggested disclosure text.
 
@@ -59,9 +59,9 @@ This is site-owner authorization, **not a declaration of consent or legal compli
 ## Repository layout
 
 ~~~text
-amino-orbit/
+session-radar/
 ├── session-radar.php
-├── includes/class-session-radar.php
+├── includes/class-amino-orbit.php
 ├── assets/admin.css
 ├── assets/admin.js
 ├── uninstall.php
