@@ -141,3 +141,11 @@
 .amino-orbit--compact .amino-orbit__identity .amino-orbit__ip,
 .amino-orbit--compact .amino-orbit__timing small { margin-top: 2px; }
 @media (forced-colors: active) { .amino-orbit__display-tools button[aria-pressed="true"] { border: 2px solid Highlight; } }
+
+/* v1.1: explicit, tab-local automatic-refresh pause. No new storage or telemetry. */
+.amino-orbit__pause-refresh { appearance: none; cursor: pointer; border-radius: 6px; border: 1px solid #b4a5c7; color: #4f2878; background: #fff; padding: 6px 10px; font: inherit; font-weight: 650; }
+.amino-orbit__pause-refresh:hover { border-color: #7549a1; }
+.amino-orbit__pause-refresh:focus-visible { outline: 2px solid #7549a1; outline-offset: 3px; }
+.amino-orbit__pause-refresh[aria-pressed="true"] { color: #493951; background: #f2eef6; border-color: #745b8b; }
+.amino-orbit__live--paused i { animation: none !important; background: currentColor; opacity: 0.45; }
+@media (forced-colors: active) { .amino-orbit__pause-refresh { border-color: CanvasText; } .amino-orbit__pause-refresh[aria-pressed="true"] { border: 2px solid Highlight; } }
