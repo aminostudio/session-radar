@@ -1,6 +1,6 @@
 # Session Radar 🪐
 
-> **Distribution identity:** Session Radar (`session-radar`). Existing Amino ORBIT installations should follow [the migration instructions](docs/SESSION-RADAR-MIGRATION.md) before installing this differently named plugin. This public repository alone does not imply WordPress.org approval.
+> **WordPress.org submission:** Session Radar (`session-radar`) version **1.0.0** was submitted on **November 16, 2026**. The maintainer's WordPress.org portal showed **Awaiting Review** on November 17, 2026. This is not an approval or directory listing. Existing Amino ORBIT installations should follow [the migration instructions](docs/SESSION-RADAR-MIGRATION.md) before installing the renamed plugin.
 
 **A lightweight WordPress dashboard presence monitor, designed by Amino Studio.**
 
