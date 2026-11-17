@@ -61,7 +61,7 @@ $s30=Amino_Orbit::sanitize_settings(['refresh_seconds'=>30]);
 assert_true($s30['refresh_seconds']===30, 'Accepts optional 30-second refresh interval');
 function panel(){ob_start();Amino_Orbit::render_widget();return ob_get_clean();}
 $html=panel();
-assert_true(str_contains($html,'Amino <em>ORBIT</em>'), 'Renders orbit branding');
+assert_true(str_contains($html,'SESSION <em>RADAR</em>'), 'Renders Session Radar branding');
 assert_true(str_contains($html,'Amino Test') && str_contains($html,'Session open'), 'Shows native session without falsely marking active');
 assert_true(!str_contains($html,'192.0.2.10'), 'IP hidden by default');
 assert_true(str_contains($html,'aria-label="Authenticated WordPress sessions"'),'Session list has accessible name');
