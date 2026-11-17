@@ -1,5 +1,5 @@
 msgid ""
-msgstr "Project-Id-Version: Session Radar 1.0.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=2; plural=(n != 1);\n"
+msgstr "Project-Id-Version: Session Radar 1.1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=2; plural=(n != 1);\n"
 
 
 #, php-format
@@ -192,3 +192,15 @@ msgstr "Vista compacta"
 
 msgid "No sessions match these filters."
 msgstr "Ninguna sesión coincide con estos filtros."
+
+msgid "Pause automatic refresh"
+msgstr "Pausar actualización automática"
+
+msgid "Resume automatic refresh"
+msgstr "Reanudar actualización automática"
+
+msgid "Paused"
+msgstr "En pausa"
+
+msgid "Automatic refresh paused"
+msgstr "Actualización automática en pausa"
