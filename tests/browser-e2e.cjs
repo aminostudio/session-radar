@@ -272,6 +272,42 @@ async function main() {
     await page.locator('#amino-orbit-panel .amino-orbit__compact-toggle').click();
     await page.evaluate(() => document.activeElement.blur());
 
+    // v1.1: pausing auto-refresh must prevent network polling, but manual refresh
+    // remains usable, and the tab-local preference survives DOM replacement.
+    const pauseButton = page.locator('#amino-orbit-panel .amino-orbit__pause-refresh');
+    check(await pauseButton.count() === 1 && await pauseButton.getAttribute('aria-pressed') === 'false',
+      'Accessible automatic refresh pause control is initially unpressed');
+    await pauseButton.click();
+    check(await pauseButton.getAttribute('aria-pressed') === 'true' &&
+      (await pauseButton.textContent()).includes('Resume automatic refresh'),
+      'Pause state is announced through pressed state and resume label');
+    await page.evaluate(() => document.activeElement.blur());
+    const autoRequests = [];
+    const recordAutoRequests = (request) => {
+      if ((request.postData() || '').includes('action=amino_orbit_refresh')) autoRequests.push(request);
+    };
+    page.on('request', recordAutoRequests);
+    await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
+    await page.waitForTimeout(250);
+    check(autoRequests.length === 0, 'Paused tab does not refresh when it becomes visible');
+    page.off('request', recordAutoRequests);
+    const manualWhilePaused = page.waitForResponse((response) =>
+      response.url().includes('admin-ajax.php') &&
+      (response.request().postData() || '').includes('action=amino_orbit_refresh')
+    );
+    await page.locator('#amino-orbit-panel .amino-orbit__refresh-now').click();
+    check((await manualWhilePaused).status() === 200,
+      'Explicit manual refresh still works while automatic refresh is paused');
+    await page.waitForFunction(() =>
+      document.querySelector('#amino-orbit-panel .amino-orbit__pause-refresh')?.getAttribute('aria-pressed') === 'true'
+    );
+    check((await page.locator('#amino-orbit-panel .amino-orbit__live-label').textContent()).trim() === 'Paused',
+      'Paused mode survives AJAX panel replacement and updates dashboard indicator');
+    await page.locator('#amino-orbit-panel .amino-orbit__pause-refresh').click();
+    check(await page.locator('#amino-orbit-panel .amino-orbit__pause-refresh').getAttribute('aria-pressed') === 'false',
+      'Resuming automatic refresh restores the button state');
+    await page.evaluate(() => document.activeElement.blur());
+
     // Focus inside the widget must prevent automatic HTML replacement.
     const oldPanel = await panel.elementHandle();
     const settingsLink = page.locator('#amino-orbit-panel .amino-orbit__footer a');
