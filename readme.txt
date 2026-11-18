@@ -4,7 +4,7 @@ Tags: sessions, dashboard, activity, logins, privacy
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.1.0-rc.4
+Stable tag: 1.1.0-rc.5
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -88,6 +88,13 @@ The minimums are WordPress 6.4 and PHP 8.0. The plugin follows the current WordP
 * Activity pings are best-effort, not a live socket. Browser background throttling can delay updates.
 
 == Changelog ==
+
+= 1.1.0-rc.5 =
+* Shows a localized local-time stamp for the last successfully rendered session data, including initial dashboard load.
+* Does not treat typing, filtering, or a deferred/error response as a successful server check.
+* Works during manual refresh and paused auto-refresh without collecting activity history or persisting timestamps.
+* FR/ES translations and live browser QA added; private development only.
+
 
 = 1.1.0-rc.4 =
 * Gives filters an explicit, localized count of matching sessions within the capped displayed list.
