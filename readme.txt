@@ -4,7 +4,7 @@ Tags: sessions, dashboard, activity, logins, privacy
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.1.0-rc.7
+Stable tag: 2.0.0-alpha.1
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -88,6 +88,14 @@ The minimums are WordPress 6.4 and PHP 8.0. The plugin follows the current WordP
 * Activity pings are best-effort, not a live socket. Browser background throttling can delay updates.
 
 == Changelog ==
+
+= 2.0.0-alpha.1 =
+* Adds a dedicated, full-width Sessions workspace under the WordPress Dashboard menu for authorized administrators and explicitly allowed viewer roles.
+* Reuses the existing bounded, privacy-respecting session renderer and permission-checked AJAX refresh; no new session collection, tracking, history, logout or export actions.
+* Provides a responsive two-column session grid, keyboard-accessible filtering and refresh controls, and a direct link from the dashboard widget.
+* Includes FR/ES translations and real WordPress/Chromium role-isolation, mobile and accessibility regressions.
+* Private major-version experiment on #LAB only. The already submitted WordPress.org 1.0.0 build remains unchanged.
+
 
 = 1.1.0-rc.7 =
 * Shows count badges on each activity status filter, computed only from authorized session rows already displayed.
