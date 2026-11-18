@@ -207,3 +207,6 @@ msgstr "Actualisation automatique suspendue"
 
 msgid "Update postponed while editing"
 msgstr "Actualisation reportée pendant la saisie"
+
+msgid "Press Escape to clear search"
+msgstr "Appuyez sur Échap pour effacer la recherche"
