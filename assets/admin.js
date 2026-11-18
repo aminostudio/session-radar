@@ -187,6 +187,13 @@
       const target = panel.querySelector('.amino-orbit__refresh-feedback');
       if (target) target.textContent = message;
     };
+    const manualButton = manual ? current.querySelector('.amino-orbit__refresh-now') : null;
+    // Keep the button focusable while communicating its busy state.
+    // Disabled native buttons may discard focus before AJAX DOM replacement.
+    if (manualButton) {
+      manualButton.setAttribute('aria-disabled', 'true');
+      manualButton.setAttribute('aria-busy', 'true');
+    }
     if (manual && feedback) announce(current, labels.refreshing || 'Updating…');
     refreshing = true;
     post('amino_orbit_refresh')
@@ -211,13 +218,21 @@
             if (canRestore) next.querySelector('.amino-orbit__refresh-now')?.focus();
           }
         } else if (manual && current.isConnected) {
-          announce(current, labels.failed || 'Refresh failed');
+          // An editor changed focus while the request was in flight.
+          // Preserve their work and never misreport a successful fetch as a failure.
+          announce(current, labels.skipped || 'Update postponed while editing');
         }
       })
       .catch(() => {
         if (manual && current.isConnected) announce(current, labels.failed || 'Refresh failed');
       })
-      .finally(() => { refreshing = false; });
+      .finally(() => {
+        refreshing = false;
+        if (manualButton && manualButton.isConnected) {
+          manualButton.removeAttribute('aria-disabled');
+          manualButton.removeAttribute('aria-busy');
+        }
+      });
   }
 
   shell.addEventListener('click', (event) => {

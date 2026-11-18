@@ -4,7 +4,7 @@ Tags: sessions, dashboard, activity, logins, privacy
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.1.0-rc.1
+Stable tag: 1.1.0-rc.2
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -88,6 +88,13 @@ The minimums are WordPress 6.4 and PHP 8.0. The plugin follows the current WordP
 * Activity pings are best-effort, not a live socket. Browser background throttling can delay updates.
 
 == Changelog ==
+
+= 1.1.0-rc.2 =
+* Keeps the manual refresh button keyboard-focusable during an AJAX request while clearly exposing its busy state.
+* Prevents duplicate manual refresh requests and restores the button state after success or failure.
+* Correctly announces a valid refresh deferred to protect a focused input rather than claiming a network error.
+* Adds real Chromium race-condition tests and FR/ES translations. Private development only.
+
 
 = 1.1.0-rc.1 =
 * Adds a local Pause/Resume automatic refresh toggle with an explicit paused dashboard indicator.

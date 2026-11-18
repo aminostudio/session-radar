@@ -308,6 +308,41 @@ async function main() {
       'Resuming automatic refresh restores the button state');
     await page.evaluate(() => document.activeElement.blur());
 
+    // RC2: the explicit refresh button remains focusable and prevents repeated
+    // requests. Changing focus while the response is in flight must not erase
+    // the user's editing state or report a successful request as a failure.
+    let guardedRefreshRequests = 0;
+    await page.route('**/wp-admin/admin-ajax.php', async (route) => {
+      if ((route.request().postData() || '').includes('action=amino_orbit_refresh')) {
+        guardedRefreshRequests += 1;
+        await new Promise((done) => setTimeout(done, 350));
+      }
+      return route.continue();
+    });
+    const deferredPanel = await page.locator('#amino-orbit-panel').elementHandle();
+    const deferredResponse = page.waitForResponse((response) =>
+      response.url().includes('admin-ajax.php') &&
+      (response.request().postData() || '').includes('action=amino_orbit_refresh')
+    );
+    await page.locator('#amino-orbit-panel .amino-orbit__refresh-now').click();
+    check(await page.locator('#amino-orbit-panel .amino-orbit__refresh-now')
+      .getAttribute('aria-disabled') === 'true',
+      'Manual refresh reports busy without disabling keyboard focus');
+    await page.locator('#amino-orbit-panel .amino-orbit__refresh-now').evaluate((button) => button.click());
+    await page.locator('#amino-orbit-panel .amino-orbit__search').focus();
+    check((await deferredResponse).status() === 200, 'Deferred refresh request completes normally');
+    await page.waitForFunction(() =>
+      document.querySelector('.amino-orbit__refresh-feedback')?.textContent?.includes('Update postponed while editing')
+    );
+    check(guardedRefreshRequests === 1 && await deferredPanel.evaluate((node) =>
+      node.isConnected && node.contains(document.activeElement)
+    ), 'Duplicate request suppressed, focused input preserved and successful deferred response labeled accurately');
+    await page.waitForFunction(() =>
+      !document.querySelector('.amino-orbit__refresh-now')?.hasAttribute('aria-busy')
+    );
+    await page.unroute('**/wp-admin/admin-ajax.php');
+    await page.evaluate(() => document.activeElement.blur());
+
     // Focus inside the widget must prevent automatic HTML replacement.
     const oldPanel = await panel.elementHandle();
     const settingsLink = page.locator('#amino-orbit-panel .amino-orbit__footer a');

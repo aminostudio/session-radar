@@ -112,6 +112,7 @@ assert_true(str_contains($html, 'data-orbit-status="idle"') && str_contains($htm
 assert_true(str_contains($html, 'class="amino-orbit__reset"') && str_contains($html, 'class="amino-orbit__compact-toggle"') && str_contains($html, 'class="amino-orbit__empty-filter"'), 'Reset, compact toggle and no-matches status are present');
 assert_true(str_contains($html, 'class="amino-orbit__role-filter"') && str_contains($html, 'data-orbit-roles='), 'Authorized role filter and row role metadata are rendered');
 assert_true(str_contains($html, 'class="amino-orbit__pause-refresh"') && str_contains($html, 'Pause automatic refresh') && str_contains($html, 'class="amino-orbit__live-label"'), 'Accessible auto-refresh pause control and state label are rendered');
+assert_true(str_contains($html, 'class="amino-orbit__pause-refresh"'), 'Pause control is retained by RC2');
 assert_true(str_contains($html,'class="amino-orbit__refresh-now"') && str_contains($html,'role="status"'), 'Accessible manual refresh button and feedback region exist');
 assert_true(str_contains($html, 'class="amino-orbit__sort"') && str_contains($html, 'data-orbit-login=') && str_contains($html, 'data-orbit-order='), 'Local sort field and stable order keys are rendered');
 assert_true(str_contains($html,'class="amino-orbit__search"') && str_contains($html,'type="search"') && str_contains($html,'autocomplete="off"'), 'Search input is labeled and disables browser autofill');
