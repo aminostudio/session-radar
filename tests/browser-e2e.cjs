@@ -130,6 +130,27 @@ async function main() {
     check(await page.locator('#amino-orbit-panel .amino-orbit__user:not([hidden])').count() >= 1,
       'Clearing search restores the local visible session list');
 
+    // RC7: each status button shows the number of already-rendered sessions
+    // matching role and search, ignoring the currently selected status facet.
+    const facetCounters = page.locator('#amino-orbit-panel .amino-orbit__filter .amino-orbit__status-count');
+    check(await facetCounters.count() === 4, 'Each activity status shows a local count');
+    const facetTotals = await page.locator('#amino-orbit-panel').evaluate((panel) => {
+      const counts = {};
+      for (const button of panel.querySelectorAll('.amino-orbit__filter')) {
+        counts[button.dataset.orbitStatus] = Number(button.querySelector('.amino-orbit__status-count')?.textContent);
+      }
+      return counts;
+    });
+    check(facetTotals.all === await page.locator('#amino-orbit-panel .amino-orbit__user').count() &&
+      facetTotals.active + facetTotals.idle + facetTotals.session === facetTotals.all,
+      'Status badges partition only the currently authorized session rows');
+    await immediateSearch.fill('nonexistent-facet-query');
+    check(await facetCounters.evaluateAll((nodes) => nodes.every((node) => node.textContent.trim() === '0')),
+      'Search immediately reduces all status badges to zero without a network request');
+    await immediateSearch.fill('');
+    check(Number(await facetCounters.first().textContent()) === facetTotals.all,
+      'Clearing search restores original status badge counts');
+
     // v0.4: filters are local, keyboard-operable and survive AJAX replacement.
     const activeFilter = page.locator('#amino-orbit-panel .amino-orbit__filter[data-orbit-status="active"]');
     await activeFilter.click();
