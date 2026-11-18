@@ -153,3 +153,7 @@
 /* v1.1 RC2: pending requests stay keyboard-focusable but cannot be re-triggered. */
 .amino-orbit__refresh-now[aria-disabled="true"] { cursor: progress; opacity: .7; }
 @media (forced-colors: active) { .amino-orbit__refresh-now[aria-disabled="true"] { border-style: dashed; } }
+
+/* 1.1 RC3: visible, screen-reader-associated keyboard shortcut description. */
+.amino-orbit__search-tip { font-size: 11px; color: #554b62; flex-basis: 100%; }
+@media (forced-colors: active) { .amino-orbit__search-tip { color: CanvasText; } }
