@@ -237,3 +237,6 @@ msgstr "Explorez les sessions WordPress authentifiées. Cette vue ne prouve pas 
 
 msgid "Full sessions view"
 msgstr "Vue complète des sessions"
+
+msgid "List view"
+msgstr "Vue en liste"
