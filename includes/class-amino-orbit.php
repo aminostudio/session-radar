@@ -351,6 +351,7 @@ final class Amino_Orbit {
 					'refreshing' => __( 'Updating sessions…', 'session-radar' ),
 					'updated'    => __( 'Sessions updated', 'session-radar' ),
 					'failed'     => __( 'Refresh failed', 'session-radar' ),
+                    'skipped' => __( 'Update postponed while editing', 'session-radar' ),
                     'pauseRefresh' => __( 'Pause automatic refresh', 'session-radar' ),
                     'resumeRefresh' => __( 'Resume automatic refresh', 'session-radar' ),
                     'paused' => __( 'Paused', 'session-radar' ),
