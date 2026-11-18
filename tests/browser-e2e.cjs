@@ -140,7 +140,7 @@ async function main() {
     const filteredCount = await page.locator('#amino-orbit-panel .amino-orbit__user:not([hidden])').count();
     const totalCount = await page.locator('#amino-orbit-panel .amino-orbit__user').count();
     check(filteredCount <= totalCount &&
-      await page.locator('#amino-orbit-panel .amino-orbit__filter-count').textContent() === filteredCount + ' / ' + totalCount,
+      await page.locator('#amino-orbit-panel .amino-orbit__filter-count').textContent() === 'Showing ' + filteredCount + ' of ' + totalCount + ' displayed sessions',
       'Status filtering preserves all rows and announces the visible count');
     await page.evaluate(() => document.activeElement.blur());
     await refresh(page);
@@ -161,7 +161,7 @@ async function main() {
     await searchField.fill('no-such-orbit-user-2026');
     check(await page.locator('#amino-orbit-panel .amino-orbit__user:not([hidden])').count() === 0,
       'A nonexistent query hides all rendered session rows');
-    check((await page.locator('#amino-orbit-panel .amino-orbit__filter-count').textContent()).startsWith('0 / '),
+    check((await page.locator('#amino-orbit-panel .amino-orbit__filter-count').textContent()).startsWith('Showing 0 of '),
       'Empty search announces zero visible results');
     await searchField.fill('192.0.2.');
     check(await page.locator('#amino-orbit-panel .amino-orbit__user:not([hidden])').count() === 0,
@@ -181,6 +181,14 @@ async function main() {
     await page.locator('#amino-orbit-panel .amino-orbit__search').fill('');
     await page.locator('#amino-orbit-panel .amino-orbit__filter[data-orbit-status="all"]').click();
     await page.evaluate(() => document.activeElement.blur());
+
+    // RC4: filtering text must not detach/reappend unchanged session rows.
+    const stableFirstRow = await page.locator('#amino-orbit-panel .amino-orbit__user').first().elementHandle();
+    await page.locator('#amino-orbit-panel .amino-orbit__search').fill('example');
+    check(await stableFirstRow.evaluate((node) => node.isConnected &&
+      node === document.querySelector('#amino-orbit-panel .amino-orbit__user')),
+      'Live search preserves existing row node order when sort mode is unchanged');
+    await page.locator('#amino-orbit-panel .amino-orbit__search').fill('');
 
     // v0.6: deterministic sort from preexisting WordPress login timestamps.
     const sortField = page.locator('#amino-orbit-panel .amino-orbit__sort');
