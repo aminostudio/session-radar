@@ -219,3 +219,6 @@ msgstr "Vérifié à %s"
 
 msgid "Checked just now"
 msgstr "Vérifié à l’instant"
+
+msgid "Matching sessions"
+msgstr "Sessions correspondantes"
