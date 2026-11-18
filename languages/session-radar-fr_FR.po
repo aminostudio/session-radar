@@ -222,3 +222,18 @@ msgstr "Vérifié à l’instant"
 
 msgid "Matching sessions"
 msgstr "Sessions correspondantes"
+
+msgid "Session Radar Sessions"
+msgstr "Sessions Session Radar"
+
+msgid "Sessions Radar"
+msgstr "Sessions Radar"
+
+msgid "You are not allowed to view these sessions."
+msgstr "Vous n’êtes pas autorisé à consulter ces sessions."
+
+msgid "Explore authenticated WordPress sessions. This view does not prove that someone is online."
+msgstr "Explorez les sessions WordPress authentifiées. Cette vue ne prouve pas qu’une personne est en ligne."
+
+msgid "Full sessions view"
+msgstr "Vue complète des sessions"

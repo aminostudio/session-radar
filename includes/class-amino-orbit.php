@@ -28,6 +28,7 @@ final class Amino_Orbit {
 		add_action( 'init', array( __CLASS__, 'load_translations' ) );
 		add_action( 'wp_dashboard_setup', array( __CLASS__, 'register_widget' ) );
 		add_action( 'admin_menu', array( __CLASS__, 'register_settings_page' ) );
+		add_action( 'admin_menu', array( __CLASS__, 'register_sessions_page' ) );
 		add_action( 'admin_init', array( __CLASS__, 'register_settings' ) );
 		add_action( 'admin_init', array( __CLASS__, 'register_privacy_policy_text' ) );
 		add_filter( 'wp_privacy_personal_data_exporters', array( __CLASS__, 'register_personal_data_exporter' ) );
@@ -126,6 +127,43 @@ final class Amino_Orbit {
 		$allowed = is_array( $options['viewer_roles'] ) ? $options['viewer_roles'] : array();
 		$user = wp_get_current_user();
 		return (bool) array_intersect( (array) $user->roles, $allowed );
+	}
+
+	/**
+	 * A dedicated, full-width read-only sessions workspace for authorized roles.
+	 * The menu is registered only for users already permitted to view the
+	 * dashboard widget, and the page callback repeats the permission check.
+	 */
+	public static function register_sessions_page(): void {
+		if ( ! self::can_view() ) {
+			return;
+		}
+		add_dashboard_page(
+			__( 'Session Radar Sessions', 'session-radar' ),
+			__( 'Sessions Radar', 'session-radar' ),
+			'read',
+			'session-radar-sessions',
+			array( __CLASS__, 'sessions_page' )
+		);
+	}
+
+	/**
+	 * One shared renderer, not a separate session collector or data store.
+	 * Native WordPress authorization and the same bounded session scan apply.
+	 */
+	public static function sessions_page(): void {
+		if ( ! self::can_view() ) {
+			wp_die( esc_html__( 'You are not allowed to view these sessions.', 'session-radar' ), '', array( 'response' => 403 ) );
+		}
+		?>
+		<div class="wrap session-radar-workspace">
+			<h1><?php esc_html_e( 'Session Radar Sessions', 'session-radar' ); ?></h1>
+			<p class="session-radar-workspace__intro"><?php esc_html_e( 'Explore authenticated WordPress sessions. This view does not prove that someone is online.', 'session-radar' ); ?></p>
+			<div class="postbox" id="amino_orbit_widget">
+				<div class="inside"><?php self::render_widget(); ?></div>
+			</div>
+		</div>
+		<?php
 	}
 
 	/** Only administrators may change settings. */
@@ -316,7 +354,7 @@ final class Amino_Orbit {
 		if ( ! is_user_logged_in() ) {
 			return;
 		}
-		$dashboard = ( 'index.php' === $hook && self::can_view() );
+		$dashboard = in_array( $hook, array( 'index.php', 'dashboard_page_session-radar-sessions' ), true ) && self::can_view();
 		$settings  = ( 'settings_page_session-radar' === $hook );
 		$options   = self::options();
 		if ( $dashboard || $settings ) {
@@ -698,6 +736,7 @@ final class Amino_Orbit {
                 <button type="button" class="amino-orbit__refresh-now"><?php esc_html_e( 'Refresh now', 'session-radar' ); ?></button>
                 <button type="button" class="amino-orbit__pause-refresh" aria-pressed="false"><?php esc_html_e( 'Pause automatic refresh', 'session-radar' ); ?></button>
 				<span class="amino-orbit__refresh-feedback" role="status" aria-live="polite" aria-atomic="true"></span>
+				<a class="amino-orbit__open-workspace" href="<?php echo esc_url( admin_url( 'index.php?page=session-radar-sessions' ) ); ?>"><?php esc_html_e( 'Full sessions view', 'session-radar' ); ?></a>
 				<?php if ( current_user_can( 'manage_options' ) ) : ?>
 					<a href="<?php echo esc_url( admin_url( 'options-general.php?page=session-radar' ) ); ?>"><?php esc_html_e( 'Settings', 'session-radar' ); ?> <span aria-hidden="true">↗</span></a>
 				<?php endif; ?>
