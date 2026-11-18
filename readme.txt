@@ -4,7 +4,7 @@ Tags: sessions, dashboard, activity, logins, privacy
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.1.0-rc.5
+Stable tag: 1.1.0-rc.6
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -88,6 +88,12 @@ The minimums are WordPress 6.4 and PHP 8.0. The plugin follows the current WordP
 * Activity pings are best-effort, not a live socket. Browser background throttling can delay updates.
 
 == Changelog ==
+
+= 1.1.0-rc.6 =
+* Prevents an in-flight automatic AJAX refresh from replacing the widget after the user pauses automatic updates.
+* Leaves the previously displayed session rows, filter choices and last-checked time untouched until the user resumes or manually refreshes.
+* Adds a real WordPress browser race test covering pause-after-request but before response. Private testing only.
+
 
 = 1.1.0-rc.5 =
 * Shows a localized local-time stamp for the last successfully rendered session data, including initial dashboard load.
