@@ -40,6 +40,8 @@ function __($s,$d){return $s;}
 function wp_date($format,$timestamp){return gmdate($format,$timestamp);}
 function human_time_diff($old,$new){return ((int)(($new-$old)/60)).' minutes';}
 function admin_url($path){return 'https://example.test/wp-admin/'.$path;}
+function add_dashboard_page($title,$menu,$cap,$slug,$callback){$GLOBALS['state']['workspace_menu']=compact('title','menu','cap','slug','callback');return 'dashboard_page_'.$slug;}
+function wp_die($message,$title='',$args=[]){throw new RuntimeException('Denied access: '.$message);}
 function translate_user_role($r){return $r;}
 function checked($value,$match=null){if($value===$match)echo ' checked';}
 function selected($value,$match=null){if($value===$match)echo ' selected';}
@@ -61,6 +63,13 @@ $s30=Amino_Orbit::sanitize_settings(['refresh_seconds'=>30]);
 assert_true($s30['refresh_seconds']===30, 'Accepts optional 30-second refresh interval');
 function panel(){ob_start();Amino_Orbit::render_widget();return ob_get_clean();}
 $html=panel();
+Amino_Orbit::register_sessions_page();
+assert_true($state['workspace_menu']['slug']==='session-radar-sessions' && $state['workspace_menu']['cap']==='read', 'Dedicated sessions menu registered for authorized users with a read capability');
+ob_start();
+Amino_Orbit::sessions_page();
+$workspace_html=ob_get_clean();
+assert_true(str_contains($workspace_html,'class="wrap session-radar-workspace"') && str_contains($workspace_html,'Amino Test'), 'Full sessions view reuses authorized native session renderer');
+assert_true(str_contains($html,'index.php?page=session-radar-sessions'), 'Widget links to full sessions view');
 assert_true(str_contains($html,'SESSION <em>RADAR</em>'), 'Renders Session Radar branding');
 assert_true(str_contains($html,'Amino Test') && str_contains($html,'Session open'), 'Shows native session without falsely marking active');
 assert_true(!str_contains($html,'192.0.2.10'), 'IP hidden by default');
