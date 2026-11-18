@@ -343,6 +343,24 @@ async function main() {
     await page.unroute('**/wp-admin/admin-ajax.php');
     await page.evaluate(() => document.activeElement.blur());
 
+    // RC3: Escape clears only the current search, not the other local facets.
+    await page.locator('#amino-orbit-panel .amino-orbit__filter[data-orbit-status="active"]').click();
+    const shortcutSearch = page.locator('#amino-orbit-panel .amino-orbit__search');
+    check(await shortcutSearch.getAttribute('aria-keyshortcuts') === 'Escape' &&
+      await shortcutSearch.getAttribute('aria-describedby') === 'session-radar-search-tip',
+      'Search shortcut is discoverable through keyboard and assistive-technology metadata');
+    await shortcutSearch.fill('nonexistent-session-radar-string');
+    check(await page.locator('#amino-orbit-panel .amino-orbit__empty-filter').isVisible(),
+      'Search produces no-match state before Escape');
+    await shortcutSearch.press('Escape');
+    check(await shortcutSearch.inputValue() === '' &&
+      await page.locator('#amino-orbit-panel .amino-orbit__empty-filter').isHidden() &&
+      await page.locator('#amino-orbit-panel .amino-orbit__filter[data-orbit-status="active"]')
+        .getAttribute('aria-pressed') === 'true',
+      'Escape restores search results without resetting the selected activity status');
+    await page.locator('#amino-orbit-panel .amino-orbit__filter[data-orbit-status="all"]').click();
+    await page.evaluate(() => document.activeElement.blur());
+
     // Focus inside the widget must prevent automatic HTML replacement.
     const oldPanel = await panel.elementHandle();
     const settingsLink = page.locator('#amino-orbit-panel .amino-orbit__footer a');
