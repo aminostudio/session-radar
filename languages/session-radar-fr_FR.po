@@ -213,3 +213,9 @@ msgstr "Appuyez sur Échap pour effacer la recherche"
 
 msgid "Showing %1$s of %2$s displayed sessions"
 msgstr "Affichage de %1$s sessions sur %2$s affichables"
+
+msgid "Checked at %s"
+msgstr "Vérifié à %s"
+
+msgid "Checked just now"
+msgstr "Vérifié à l’instant"
