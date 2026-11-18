@@ -228,6 +228,10 @@
           if (manual && current.isConnected) announce(current, labels.failed || 'Refresh failed');
           return;
         }
+        // Pausing an *already-running* automatic request must still win.
+        // Discard its returned markup without resetting filters, replacing the
+        // focused DOM, or incorrectly advancing the last-checked timestamp.
+        if (!manual && autoRefreshPaused) return;
         const template = document.createElement('template');
         template.innerHTML = result.data.html.trim();
         const next = template.content.querySelector('#amino-orbit-panel');
