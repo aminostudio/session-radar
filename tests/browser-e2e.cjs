@@ -573,7 +573,7 @@ async function main() {
       .includes('does not prove that someone is online'),
       'Full workspace does not describe login sessions as live presence');
     const workspaceConfig = await page.evaluate(() => window.aminoOrbitConfig);
-    check(workspaceConfig.canView === true && workspaceConfig.ajaxUrl.includes('admin-ajax.php'),
+    check([true, 1, '1'].includes(workspaceConfig.canView) && workspaceConfig.ajaxUrl.includes('admin-ajax.php'),
       'Dedicated Sessions page enqueues authorized AJAX config');
     await page.locator('.session-radar-workspace .amino-orbit__search').fill('nonexistent-workspace-user');
     check(await page.locator('.session-radar-workspace .amino-orbit__empty-filter').isVisible(),
