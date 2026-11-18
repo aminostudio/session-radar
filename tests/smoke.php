@@ -106,6 +106,7 @@ $key3=$method->invoke(null,$s3);
 $state['meta'][1]=[$key1=>$now-10,$key2=>$now-900];
 $state['meta'][2]=[$key3=>$now-120];
 $html=panel();
+assert_true(substr_count($html, 'class="amino-orbit__status-count"') === 4, 'Four status badge placeholders rendered without new data collection');
 assert_true(substr_count($html,'data-orbit-status="')===7, 'Accessible filter toolbar and session status data are present');
 assert_true(str_contains($html, 'aria-pressed="true"') && str_contains($html, 'aria-live="polite"'), 'Filter state and visible-count announcement are accessible');
 assert_true(str_contains($html, 'data-orbit-status="idle"') && str_contains($html, 'data-orbit-status="active"'), 'Filter metadata uses established activity categories');
