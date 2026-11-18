@@ -61,6 +61,7 @@
   let searchInput = '';
   let compactView = false;
   let autoRefreshPaused = false;
+  let lastRenderedAt = Date.now();
   const statuses = ['all', 'active', 'idle', 'session'];
   const sortModes = ['suggested', 'newest', 'oldest'];
   const sortedLists = new WeakMap();
@@ -111,6 +112,13 @@
     if (count) {
       const template = config.labels?.visibleCount || 'Showing %1$s of %2$s displayed sessions';
       count.textContent = template.replace('%1$s', String(shown)).replace('%2$s', String(rows.length));
+    }
+    const checkedAt = panel.querySelector('.amino-orbit__last-checked');
+    if (checkedAt) {
+      const stamp = new Date(lastRenderedAt).toLocaleTimeString(undefined, {
+        hour: '2-digit', minute: '2-digit'
+      });
+      checkedAt.textContent = (config.labels?.checkedAt || 'Checked at %s').replace('%s', stamp);
     }
     const empty = panel.querySelector('.amino-orbit__empty-filter');
     if (empty) empty.hidden = shown !== 0 || rows.length === 0;
@@ -228,6 +236,7 @@
           document.activeElement.matches('.amino-orbit__refresh-now');
         if (next && current.isConnected && (!focused || canRestore)) {
           current.replaceWith(next);
+          lastRenderedAt = Date.now();
           const input = next.querySelector('.amino-orbit__search');
           if (input) input.value = searchInput;
           applyFilter(next);

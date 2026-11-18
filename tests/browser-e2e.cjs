@@ -369,6 +369,27 @@ async function main() {
     await page.locator('#amino-orbit-panel .amino-orbit__filter[data-orbit-status="all"]').click();
     await page.evaluate(() => document.activeElement.blur());
 
+    // RC5: the freshness label is local to the rendered widget, not a visit log.
+    const freshness = page.locator('#amino-orbit-panel .amino-orbit__last-checked');
+    check(await freshness.count() === 1 &&
+      (await freshness.textContent()).startsWith('Checked at '),
+      'Local last-checked time is shown without extra network or storage');
+    const beforeSearch = await freshness.textContent();
+    await page.locator('#amino-orbit-panel .amino-orbit__search').fill('search-with-no-match');
+    check(await freshness.textContent() === beforeSearch,
+      'Filtering locally does not masquerade as a server check');
+    await page.locator('#amino-orbit-panel .amino-orbit__search').fill('');
+    const checkedRequest = page.waitForResponse((response) =>
+      response.url().includes('admin-ajax.php') &&
+      (response.request().postData() || '').includes('action=amino_orbit_refresh')
+    );
+    await page.locator('#amino-orbit-panel .amino-orbit__refresh-now').click();
+    check((await checkedRequest).status() === 200, 'Freshness updates after the authorized manual refresh');
+    await page.waitForFunction(() =>
+      document.querySelector('#amino-orbit-panel .amino-orbit__last-checked')?.textContent?.startsWith('Checked at ')
+    );
+    await page.evaluate(() => document.activeElement.blur());
+
     // Focus inside the widget must prevent automatic HTML replacement.
     const oldPanel = await panel.elementHandle();
     const settingsLink = page.locator('#amino-orbit-panel .amino-orbit__footer a');

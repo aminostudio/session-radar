@@ -213,3 +213,9 @@ msgstr "Pulsa Escape para borrar la búsqueda"
 
 msgid "Showing %1$s of %2$s displayed sessions"
 msgstr "Mostrando %1$s de %2$s sesiones visibles"
+
+msgid "Checked at %s"
+msgstr "Comprobado a las %s"
+
+msgid "Checked just now"
+msgstr "Comprobado ahora mismo"
