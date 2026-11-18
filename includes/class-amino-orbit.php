@@ -610,10 +610,10 @@ final class Amino_Orbit {
 					<p class="amino-orbit__empty"><?php esc_html_e( 'No open WordPress sessions detected.', 'session-radar' ); ?></p>
 				<?php else : ?>
 					<div class="amino-orbit__filters" role="group" aria-label="<?php echo esc_attr__( 'Authenticated WordPress sessions', 'session-radar' ); ?>">
-						<button type="button" class="amino-orbit__filter" data-orbit-status="all" aria-pressed="true"><?php esc_html_e( 'Sessions', 'session-radar' ); ?></button>
-						<button type="button" class="amino-orbit__filter" data-orbit-status="active" aria-pressed="false"><?php esc_html_e( 'Active', 'session-radar' ); ?></button>
-						<button type="button" class="amino-orbit__filter" data-orbit-status="idle" aria-pressed="false"><?php esc_html_e( 'Inactive', 'session-radar' ); ?></button>
-						<button type="button" class="amino-orbit__filter" data-orbit-status="session" aria-pressed="false"><?php esc_html_e( 'Session open', 'session-radar' ); ?></button>
+						<button type="button" class="amino-orbit__filter" data-orbit-status="all" aria-pressed="true"><?php esc_html_e( 'Sessions', 'session-radar' ); ?> <span class="amino-orbit__status-count" aria-label="<?php echo esc_attr__( 'Matching sessions', 'session-radar' ); ?>">0</span></button>
+						<button type="button" class="amino-orbit__filter" data-orbit-status="active" aria-pressed="false"><?php esc_html_e( 'Active', 'session-radar' ); ?> <span class="amino-orbit__status-count" aria-label="<?php echo esc_attr__( 'Matching sessions', 'session-radar' ); ?>">0</span></button>
+						<button type="button" class="amino-orbit__filter" data-orbit-status="idle" aria-pressed="false"><?php esc_html_e( 'Inactive', 'session-radar' ); ?> <span class="amino-orbit__status-count" aria-label="<?php echo esc_attr__( 'Matching sessions', 'session-radar' ); ?>">0</span></button>
+						<button type="button" class="amino-orbit__filter" data-orbit-status="session" aria-pressed="false"><?php esc_html_e( 'Session open', 'session-radar' ); ?> <span class="amino-orbit__status-count" aria-label="<?php echo esc_attr__( 'Matching sessions', 'session-radar' ); ?>">0</span></button>
 						<span class="amino-orbit__filter-count" aria-live="polite" aria-atomic="true"></span>
 					</div>
 					<div class="amino-orbit__sort-wrap">

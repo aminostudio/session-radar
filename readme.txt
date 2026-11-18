@@ -4,7 +4,7 @@ Tags: sessions, dashboard, activity, logins, privacy
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.1.0-rc.6
+Stable tag: 1.1.0-rc.7
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -88,6 +88,12 @@ The minimums are WordPress 6.4 and PHP 8.0. The plugin follows the current WordP
 * Activity pings are best-effort, not a live socket. Browser background throttling can delay updates.
 
 == Changelog ==
+
+= 1.1.0-rc.7 =
+* Shows count badges on each activity status filter, computed only from authorized session rows already displayed.
+* Counts respect role and text search, independent of the selected status, and refresh locally without extra AJAX requests or tracking.
+* Includes FR/ES accessible labels, PHP smoke assertions and Chromium regression coverage. Private candidate only.
+
 
 = 1.1.0-rc.6 =
 * Prevents an in-flight automatic AJAX refresh from replacing the widget after the user pauses automatic updates.

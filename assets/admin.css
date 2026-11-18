@@ -161,3 +161,8 @@
 /* v1.1 RC5: subtle local freshness stamp, never a tracking timeline. */
 .amino-orbit__last-checked { color: #5d526b; font-size: 12px; font-variant-numeric: tabular-nums; white-space: nowrap; }
 @media (forced-colors: active) { .amino-orbit__last-checked { color: CanvasText; } }
+
+/* 1.1 RC7: status counts cover only the already authorized, rendered rows. */
+.amino-orbit__status-count { display: inline-block; margin-inline-start: 4px; font-size: .9em; font-variant-numeric: tabular-nums; min-width: 1.2ch; text-align: center; opacity: .88; }
+.amino-orbit__filter[aria-pressed="true"] .amino-orbit__status-count { opacity: 1; }
+@media (forced-colors: active) { .amino-orbit__status-count { opacity: 1; } }
