@@ -63,6 +63,7 @@
   let autoRefreshPaused = false;
   const statuses = ['all', 'active', 'idle', 'session'];
   const sortModes = ['suggested', 'newest', 'oldest'];
+  const sortedLists = new WeakMap();
   const normalizeSearch = (value) => String(value || '').normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase().trim();
 
@@ -76,14 +77,18 @@
     }
     const list = panel.querySelector('.amino-orbit__list');
     const rows = [...panel.querySelectorAll('.amino-orbit__user[data-orbit-status]')];
-    // The initial server order is stable and can always be restored.
-    rows.sort((a, b) => {
-      const initial = Number(a.dataset.orbitOrder) - Number(b.dataset.orbitOrder);
-      if (selectedSort === 'suggested') return initial;
-      const delta = Number(b.dataset.orbitLogin) - Number(a.dataset.orbitLogin);
-      return (selectedSort === 'newest' ? delta : -delta) || initial;
-    });
-    if (list) rows.forEach((row) => list.appendChild(row));
+    // Reorder DOM only when sorting changes or when AJAX replaces the list.
+    // Typing a search term must not detach/reappend the same 40 rows each time.
+    if (list && sortedLists.get(list) !== selectedSort) {
+      rows.sort((a, b) => {
+        const initial = Number(a.dataset.orbitOrder) - Number(b.dataset.orbitOrder);
+        if (selectedSort === 'suggested') return initial;
+        const delta = Number(b.dataset.orbitLogin) - Number(a.dataset.orbitLogin);
+        return (selectedSort === 'newest' ? delta : -delta) || initial;
+      });
+      rows.forEach((row) => list.appendChild(row));
+      sortedLists.set(list, selectedSort);
+    }
     let shown = 0;
     rows.forEach((row) => {
       // Deliberately exclude native session IPs and any hidden/internal metadata.
@@ -103,7 +108,10 @@
     const sort = panel.querySelector('.amino-orbit__sort');
     if (sort) sort.value = selectedSort;
     const count = panel.querySelector('.amino-orbit__filter-count');
-    if (count) count.textContent = shown + ' / ' + rows.length;
+    if (count) {
+      const template = config.labels?.visibleCount || 'Showing %1$s of %2$s displayed sessions';
+      count.textContent = template.replace('%1$s', String(shown)).replace('%2$s', String(rows.length));
+    }
     const empty = panel.querySelector('.amino-orbit__empty-filter');
     if (empty) empty.hidden = shown !== 0 || rows.length === 0;
     panel.classList.toggle('amino-orbit--compact', compactView);
