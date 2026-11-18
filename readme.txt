@@ -4,7 +4,7 @@ Tags: sessions, dashboard, activity, logins, privacy
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 2.0.0-alpha.1
+Stable tag: 2.0.0-alpha.2
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -88,6 +88,12 @@ The minimums are WordPress 6.4 and PHP 8.0. The plugin follows the current WordP
 * Activity pings are best-effort, not a live socket. Browser background throttling can delay updates.
 
 == Changelog ==
+
+= 2.0.0-alpha.2 =
+* Switch between two-column grid and one-column list in the dedicated Sessions workspace without changing the compact dashboard widget.
+* Grid/list preference is browser-tab local, survives AJAX widget replacement, and adds no storage, tracking or extra queries.
+* Accessible toggle, French/Spanish strings, real browser layout and AJAX regression tests. Private #LAB experiment only.
+
 
 = 2.0.0-alpha.1 =
 * Adds a dedicated, full-width Sessions workspace under the WordPress Dashboard menu for authorized administrators and explicitly allowed viewer roles.
