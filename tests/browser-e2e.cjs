@@ -569,6 +569,35 @@ async function main() {
     await page.locator('.session-radar-workspace #amino-orbit-panel').waitFor({ state: 'visible' });
     check(await page.locator('.session-radar-workspace #amino-orbit-panel').count() === 1,
       'Dedicated Sessions page embeds exactly one permission-checked session renderer');
+    // 2.0 alpha.2: the read-only workspace switches grid/list locally.
+    const layoutToggle = page.locator('.session-radar-workspace .amino-orbit__workspace-list-toggle');
+    check(await layoutToggle.count() === 1 && await layoutToggle.getAttribute('aria-pressed') === 'false',
+      'Full workspace defaults to accessible grid layout');
+    await layoutToggle.click();
+    check(await layoutToggle.getAttribute('aria-pressed') === 'true' &&
+      await page.locator('.session-radar-workspace #amino-orbit-panel')
+        .evaluate((panel) => panel.classList.contains('amino-orbit--workspace-list')),
+      'Workspace list mode is keyboard/ARIA-operable and changes layout');
+    const listColumnCount = await page.locator('.session-radar-workspace .amino-orbit__list')
+      .evaluate((node) => getComputedStyle(node).gridTemplateColumns.trim().split(/\s+/).length);
+    check(listColumnCount === 1, 'Workspace list switch produces one CSS grid column');
+    const layoutRefresh = page.waitForResponse((response) =>
+      response.url().includes('admin-ajax.php') &&
+      (response.request().postData() || '').includes('action=amino_orbit_refresh')
+    );
+    await page.locator('.session-radar-workspace .amino-orbit__refresh-now').click();
+    check((await layoutRefresh).status() === 200, 'Workspace refresh remains available in list mode');
+    await page.waitForFunction(() =>
+      document.querySelector('.session-radar-workspace .amino-orbit__workspace-list-toggle')
+        ?.getAttribute('aria-pressed') === 'true'
+    );
+    check(await page.locator('.session-radar-workspace #amino-orbit-panel')
+      .evaluate((panel) => panel.classList.contains('amino-orbit--workspace-list')),
+      'List preference survives authorized AJAX panel replacement without persistence');
+    await layoutToggle.click();
+    check(await layoutToggle.getAttribute('aria-pressed') === 'false',
+      'Workspace toggle restores the responsive grid layout');
+
     check((await page.locator('.session-radar-workspace__intro').innerText())
       .includes('does not prove that someone is online'),
       'Full workspace does not describe login sessions as live presence');

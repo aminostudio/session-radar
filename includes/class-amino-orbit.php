@@ -679,6 +679,7 @@ final class Amino_Orbit {
 					<div class="amino-orbit__display-tools">
 						<button type="button" class="amino-orbit__reset"><?php esc_html_e( 'Reset filters', 'session-radar' ); ?></button>
 						<button type="button" class="amino-orbit__compact-toggle" aria-pressed="false"><?php esc_html_e( 'Compact view', 'session-radar' ); ?></button>
+						<button type="button" class="amino-orbit__workspace-list-toggle" aria-pressed="false" aria-controls="amino-orbit-list"><?php esc_html_e( 'List view', 'session-radar' ); ?></button>
 					</div>
 					<p class="amino-orbit__empty-filter" role="status" hidden><?php esc_html_e( 'No sessions match these filters.', 'session-radar' ); ?></p>
 					<ul id="amino-orbit-list" class="amino-orbit__list" aria-label="<?php echo esc_attr__( 'Authenticated WordPress sessions', 'session-radar' ); ?>">

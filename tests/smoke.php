@@ -126,6 +126,7 @@ assert_true(str_contains($html, 'class="amino-orbit__pause-refresh"'), 'Pause co
 assert_true(str_contains($html,'class="amino-orbit__refresh-now"') && str_contains($html,'role="status"'), 'Accessible manual refresh button and feedback region exist');
 assert_true(str_contains($html, 'class="amino-orbit__sort"') && str_contains($html, 'data-orbit-login=') && str_contains($html, 'data-orbit-order='), 'Local sort field and stable order keys are rendered');
 assert_true(str_contains($html, 'class="amino-orbit__filter-count"') && str_contains($html, 'aria-live="polite"'), 'Session count remains an accessible live announcement');
+assert_true(str_contains($html, 'class="amino-orbit__workspace-list-toggle"') && str_contains($html, 'aria-controls="amino-orbit-list"'), 'Workspace grid/list preference has an accessible toggle in shared renderer');
 assert_true(str_contains($html, 'class="amino-orbit__last-checked"') && str_contains($html, 'Checked just now'), 'Freshness status is rendered locally without storing a history');
 assert_true(str_contains($html, 'aria-keyshortcuts="Escape"') && str_contains($html, 'id="session-radar-search-tip"'), 'Escape hint is linked to search by accessible description');
 assert_true(str_contains($html,'class="amino-orbit__search"') && str_contains($html,'type="search"') && str_contains($html,'autocomplete="off"'), 'Search input is labeled and disables browser autofill');
