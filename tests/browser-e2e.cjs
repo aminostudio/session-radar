@@ -579,7 +579,7 @@ async function main() {
         .evaluate((panel) => panel.classList.contains('amino-orbit--workspace-list')),
       'Workspace list mode is keyboard/ARIA-operable and changes layout');
     const listColumnCount = await page.locator('.session-radar-workspace .amino-orbit__list')
-      .evaluate((node) => getComputedStyle(node).gridTemplateColumns.trim().split(/\\s+/).length);
+      .evaluate((node) => getComputedStyle(node).gridTemplateColumns.trim().split(/\s+/).length);
     check(listColumnCount === 1, 'Workspace list switch produces one CSS grid column');
     const layoutRefresh = page.waitForResponse((response) =>
       response.url().includes('admin-ajax.php') &&
