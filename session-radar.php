@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Session Radar
  * Description: See WordPress login sessions and recent admin activity in a privacy-focused dashboard widget.
- * Version: 1.1.0-rc.6
+ * Version: 1.1.0-rc.7
  * Requires at least: 6.4
  * Requires PHP: 8.0
  * Author: Amino Studio
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'AMINO_ORBIT_VERSION', '1.1.0-rc.6' );
+define( 'AMINO_ORBIT_VERSION', '1.1.0-rc.7' );
 define( 'AMINO_ORBIT_FILE', __FILE__ );
 
 require_once __DIR__ . '/includes/class-amino-orbit.php';
