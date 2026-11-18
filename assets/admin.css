@@ -157,3 +157,7 @@
 /* 1.1 RC3: visible, screen-reader-associated keyboard shortcut description. */
 .amino-orbit__search-tip { font-size: 11px; color: #554b62; flex-basis: 100%; }
 @media (forced-colors: active) { .amino-orbit__search-tip { color: CanvasText; } }
+
+/* v1.1 RC5: subtle local freshness stamp, never a tracking timeline. */
+.amino-orbit__last-checked { color: #5d526b; font-size: 12px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+@media (forced-colors: active) { .amino-orbit__last-checked { color: CanvasText; } }
