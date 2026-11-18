@@ -353,6 +353,7 @@ final class Amino_Orbit {
 					'failed'     => __( 'Refresh failed', 'session-radar' ),
                     'skipped' => __( 'Update postponed while editing', 'session-radar' ),
                     'visibleCount' => __( 'Showing %1$s of %2$s displayed sessions', 'session-radar' ),
+                    'checkedAt' => __( 'Checked at %s', 'session-radar' ),
                     'pauseRefresh' => __( 'Pause automatic refresh', 'session-radar' ),
                     'resumeRefresh' => __( 'Resume automatic refresh', 'session-radar' ),
                     'paused' => __( 'Paused', 'session-radar' ),
@@ -691,7 +692,8 @@ final class Amino_Orbit {
 			</div>
 			<div class="amino-orbit__footer">
 				<span><?php echo esc_html( sprintf( /* translators: %d: refresh interval in seconds. */ __( 'Refresh: %d s', 'session-radar' ), (int) $options['refresh_seconds'] ) ); ?></span>
-				<button type="button" class="amino-orbit__refresh-now"><?php esc_html_e( 'Refresh now', 'session-radar' ); ?></button>
+				<span class="amino-orbit__last-checked" aria-live="off"><?php esc_html_e( 'Checked just now', 'session-radar' ); ?></span>
+                <button type="button" class="amino-orbit__refresh-now"><?php esc_html_e( 'Refresh now', 'session-radar' ); ?></button>
                 <button type="button" class="amino-orbit__pause-refresh" aria-pressed="false"><?php esc_html_e( 'Pause automatic refresh', 'session-radar' ); ?></button>
 				<span class="amino-orbit__refresh-feedback" role="status" aria-live="polite" aria-atomic="true"></span>
 				<?php if ( current_user_can( 'manage_options' ) ) : ?>
