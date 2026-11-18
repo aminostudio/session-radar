@@ -29,7 +29,7 @@ def check_sources():
     readme = (ROOT / "readme.txt").read_text(encoding="utf-8")
     version = header(plugin, "Version")
     stable = re.search(r"^Stable tag:\s*(\S+)", readme, re.M)
-    require(bool(re.fullmatch(r"\d+\.\d+\.\d+(?:-rc\.\d+)?", version)), "Numeric semantic plugin version")
+    require(bool(re.fullmatch(r"\d+\.\d+\.\d+(?:-(?:alpha|beta|rc)\.\d+)?", version)), "Numeric semantic plugin version")
     require(stable is not None and stable.group(1) == version, "PHP header matches readme stable tag")
     require(f"AMINO_ORBIT_VERSION', '{version}'" in plugin, "Runtime constant matches plugin header")
     description = header(plugin, "Description")
