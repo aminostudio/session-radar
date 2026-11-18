@@ -316,6 +316,40 @@ async function main() {
       'Resuming automatic refresh restores the button state');
     await page.evaluate(() => document.activeElement.blur());
 
+    // RC6: pausing while an automatic response is still in flight must win.
+    // The already-authorized server response must not silently unpause the
+    // dashboard or change the last-checked timestamp after the user's choice.
+    await page.route('**/wp-admin/admin-ajax.php', async (route) => {
+      if ((route.request().postData() || '').includes('action=amino_orbit_refresh')) {
+        await new Promise((done) => setTimeout(done, 420));
+      }
+      return route.continue();
+    });
+    const beforePausePanel = await page.locator('#amino-orbit-panel').elementHandle();
+    const beforePauseStamp = await page.locator('#amino-orbit-panel .amino-orbit__last-checked').textContent();
+    const pendingAutoRequest = page.waitForRequest((request) =>
+      request.url().includes('admin-ajax.php') &&
+      (request.postData() || '').includes('action=amino_orbit_refresh')
+    );
+    const pendingAutoResponse = page.waitForResponse((response) =>
+      response.url().includes('admin-ajax.php') &&
+      (response.request().postData() || '').includes('action=amino_orbit_refresh')
+    );
+    await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
+    await pendingAutoRequest;
+    await page.locator('#amino-orbit-panel .amino-orbit__pause-refresh').click();
+    await page.evaluate(() => document.activeElement.blur());
+    check((await pendingAutoResponse).status() === 200,
+      'Previously dispatched automatic request may still complete after pause');
+    await page.waitForTimeout(80);
+    check(await beforePausePanel.evaluate((node) => node.isConnected) &&
+      await page.locator('#amino-orbit-panel .amino-orbit__pause-refresh').getAttribute('aria-pressed') === 'true' &&
+      await page.locator('#amino-orbit-panel .amino-orbit__last-checked').textContent() === beforePauseStamp,
+      'Pausing in flight prevents auto replacement and false freshness update');
+    await page.unroute('**/wp-admin/admin-ajax.php');
+    await page.locator('#amino-orbit-panel .amino-orbit__pause-refresh').click();
+    await page.evaluate(() => document.activeElement.blur());
+
     // RC2: the explicit refresh button remains focusable and prevents repeated
     // requests. Changing focus while the response is in flight must not erase
     // the user's editing state or report a successful request as a failure.
