@@ -4,7 +4,7 @@ Tags: sessions, dashboard, activity, logins, privacy
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.1.0-rc.2
+Stable tag: 1.1.0-rc.3
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -88,6 +88,12 @@ The minimums are WordPress 6.4 and PHP 8.0. The plugin follows the current WordP
 * Activity pings are best-effort, not a live socket. Browser background throttling can delay updates.
 
 == Changelog ==
+
+= 1.1.0-rc.3 =
+* Adds a documented, accessible Escape keyboard shortcut to clear only the session search field.
+* Preserves role, activity status, login sorting and compact-view choices when clearing the query.
+* Includes accessible HTML help, FR/ES strings and real-browser regression checks. Private development only.
+
 
 = 1.1.0-rc.2 =
 * Keeps the manual refresh button keyboard-focusable during an AJAX request while clearly exposing its busy state.

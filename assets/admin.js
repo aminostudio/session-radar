@@ -147,6 +147,16 @@
     searchQuery = normalizeSearch(searchInput);
     applyFilter(document.getElementById('amino-orbit-panel'));
   });
+  // Search-only Escape reset. Do not reset role, status, sort or display mode.
+  // Explicitly handle it because native type=search Escape behavior varies.
+  shell.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape' || !event.target.matches('.amino-orbit__search') || !event.target.value) return;
+    event.preventDefault();
+    event.target.value = '';
+    searchInput = '';
+    searchQuery = '';
+    applyFilter(document.getElementById('amino-orbit-panel'));
+  });
   shell.addEventListener('change', (event) => {
     if (event.target.matches('.amino-orbit__role-filter')) {
       selectedRole = event.target.value;
