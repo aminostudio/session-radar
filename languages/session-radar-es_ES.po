@@ -219,3 +219,6 @@ msgstr "Comprobado a las %s"
 
 msgid "Checked just now"
 msgstr "Comprobado ahora mismo"
+
+msgid "Matching sessions"
+msgstr "Sesiones coincidentes"
