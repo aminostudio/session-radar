@@ -204,3 +204,6 @@ msgstr "En pause"
 
 msgid "Automatic refresh paused"
 msgstr "Actualisation automatique suspendue"
+
+msgid "Update postponed while editing"
+msgstr "Actualisation reportée pendant la saisie"
