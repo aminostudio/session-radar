@@ -210,3 +210,6 @@ msgstr "Actualisation reportée pendant la saisie"
 
 msgid "Press Escape to clear search"
 msgstr "Appuyez sur Échap pour effacer la recherche"
+
+msgid "Showing %1$s of %2$s displayed sessions"
+msgstr "Affichage de %1$s sessions sur %2$s affichables"
