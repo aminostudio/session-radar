@@ -352,6 +352,8 @@ final class Amino_Orbit {
 					'updated'    => __( 'Sessions updated', 'session-radar' ),
 					'failed'     => __( 'Refresh failed', 'session-radar' ),
                     'skipped' => __( 'Update postponed while editing', 'session-radar' ),
+                    /* translators: 1: number of matching displayed sessions; 2: total number of session rows in the widget. */
+                    'visibleCount' => __( 'Showing %1$s of %2$s displayed sessions', 'session-radar' ),
                     'pauseRefresh' => __( 'Pause automatic refresh', 'session-radar' ),
                     'resumeRefresh' => __( 'Resume automatic refresh', 'session-radar' ),
                     'paused' => __( 'Paused', 'session-radar' ),

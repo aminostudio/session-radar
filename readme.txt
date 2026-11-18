@@ -4,7 +4,7 @@ Tags: sessions, dashboard, activity, logins, privacy
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.1.0-rc.3
+Stable tag: 1.1.0-rc.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -88,6 +88,12 @@ The minimums are WordPress 6.4 and PHP 8.0. The plugin follows the current WordP
 * Activity pings are best-effort, not a live socket. Browser background throttling can delay updates.
 
 == Changelog ==
+
+= 1.1.0-rc.4 =
+* Gives filters an explicit, localized count of matching sessions within the capped displayed list.
+* Avoids reordering/reappending WordPress session DOM rows for every search keystroke or filter change; ordering updates only after sort changes or AJAX replacement.
+* Adds Chromium and translation regression coverage; private 1.1 milestone only.
+
 
 = 1.1.0-rc.3 =
 * Adds a documented, accessible Escape keyboard shortcut to clear only the session search field.
