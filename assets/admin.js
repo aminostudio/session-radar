@@ -91,20 +91,31 @@
       sortedLists.set(list, selectedSort);
     }
     let shown = 0;
+    // Facet counts reflect existing authorized rows filtered by role and search.
+    // They intentionally ignore the selected status, so each tab shows how many
+    // rows can be reached without another network call or additional tracking.
+    const facetCounts = { all: 0, active: 0, idle: 0, session: 0 };
     rows.forEach((row) => {
       // Deliberately exclude native session IPs and any hidden/internal metadata.
       const terms = ['.amino-orbit__identity strong', '.amino-orbit__identity small', '.amino-orbit__device']
         .map((selector) => row.querySelector(selector)?.textContent || '').join(' ');
       const matchesRole = !selectedRole ||
         (row.dataset.orbitRoles || '').split(/\s+/).includes(selectedRole);
-      const visible = matchesRole &&
-        (selectedStatus === 'all' || row.dataset.orbitStatus === selectedStatus) &&
-        normalizeSearch(terms).includes(searchQuery);
+      const matchesSearch = normalizeSearch(terms).includes(searchQuery);
+      const matchesFacets = matchesRole && matchesSearch;
+      const status = row.dataset.orbitStatus;
+      if (matchesFacets) {
+        facetCounts.all += 1;
+        if (Object.prototype.hasOwnProperty.call(facetCounts, status)) facetCounts[status] += 1;
+      }
+      const visible = matchesFacets && (selectedStatus === 'all' || status === selectedStatus);
       row.hidden = !visible;
       if (visible) shown += 1;
     });
     panel.querySelectorAll('.amino-orbit__filter[data-orbit-status]').forEach((button) => {
       button.setAttribute('aria-pressed', String(button.dataset.orbitStatus === selectedStatus));
+      const count = button.querySelector('.amino-orbit__status-count');
+      if (count) count.textContent = String(facetCounts[button.dataset.orbitStatus] ?? 0);
     });
     const sort = panel.querySelector('.amino-orbit__sort');
     if (sort) sort.value = selectedSort;
