@@ -557,6 +557,43 @@ async function main() {
       .first().waitFor({ timeout: 12000 });
     check(true, 'An inactive session becomes active after actual keyboard interaction');
 
+    // v2.0: full-width Sessions workspace uses the same authorized,
+    // bounded dashboard renderer with a separate menu route.
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.emulateMedia({ forcedColors: 'none', reducedMotion: 'no-preference' });
+    await page.goto(URL + '/wp-admin/index.php', { waitUntil: 'domcontentloaded' });
+    const fullView = page.locator('#amino-orbit-panel .amino-orbit__open-workspace');
+    check(await fullView.count() === 1, 'Dashboard widget links to the dedicated sessions workspace');
+    await fullView.click();
+    await page.waitForURL(/index\.php\?page=session-radar-sessions/);
+    await page.locator('.session-radar-workspace #amino-orbit-panel').waitFor({ state: 'visible' });
+    check(await page.locator('.session-radar-workspace #amino-orbit-panel').count() === 1,
+      'Dedicated Sessions page embeds exactly one permission-checked session renderer');
+    check((await page.locator('.session-radar-workspace__intro').innerText())
+      .includes('does not prove that someone is online'),
+      'Full workspace does not describe login sessions as live presence');
+    const workspaceConfig = await page.evaluate(() => window.aminoOrbitConfig);
+    check(workspaceConfig.canView === true && workspaceConfig.ajaxUrl.includes('admin-ajax.php'),
+      'Dedicated Sessions page enqueues authorized AJAX config');
+    await page.locator('.session-radar-workspace .amino-orbit__search').fill('nonexistent-workspace-user');
+    check(await page.locator('.session-radar-workspace .amino-orbit__empty-filter').isVisible(),
+      'Full workspace filters rendered sessions without a new endpoint');
+    await page.locator('.session-radar-workspace .amino-orbit__search').fill('');
+    const fullRefresh = page.waitForResponse((response) =>
+      response.url().includes('admin-ajax.php') &&
+      (response.request().postData() || '').includes('action=amino_orbit_refresh')
+    );
+    await page.locator('.session-radar-workspace .amino-orbit__refresh-now').click();
+    check((await fullRefresh).status() === 200, 'Full sessions workspace reuses the guarded AJAX refresh');
+    await axeScan(page, '.session-radar-workspace');
+    await page.setViewportSize({ width: 375, height: 812 });
+    check(await page.locator('.session-radar-workspace #amino-orbit-panel').evaluate((panel) =>
+      panel.scrollWidth <= panel.clientWidth + 2
+    ), 'Full-width workspace reflows to a narrow mobile viewport');
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto(URL + '/wp-admin/index.php', { waitUntil: 'domcontentloaded' });
+    await page.locator('#amino-orbit-panel').waitFor({ state: 'visible' });
+
     // WordPress-admin accessibility, including accessible names and input labels.
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.emulateMedia({ forcedColors: 'none', reducedMotion: 'no-preference' });
@@ -584,6 +621,13 @@ async function main() {
     await login(editorPage, EDITOR, EDITOR_PASSWORD);
     check(await editorPage.locator('#amino_orbit_widget').count() === 0,
       'Unauthorized editor cannot see the dashboard widget');
+    const forbiddenWorkspace = await editorPage.goto(URL + '/wp-admin/index.php?page=session-radar-sessions', {
+      waitUntil: 'domcontentloaded'
+    });
+    check(forbiddenWorkspace.status() === 403 &&
+      await editorPage.locator('#amino-orbit-panel').count() === 0,
+      'Unauthorized editor cannot load the dedicated Sessions page or session rows');
+    await editorPage.goto(URL + '/wp-admin/index.php', { waitUntil: 'domcontentloaded' });
     const rejected = await editorPage.evaluate(async () => {
       const config = window.aminoOrbitConfig;
       const response = await fetch(config.ajaxUrl, {
@@ -603,6 +647,13 @@ async function main() {
     check(true, 'Explicitly allowed editor sees the widget after reload');
     check(!(await editorPage.locator('#amino-orbit-panel').innerText()).includes('192.0.2.'),
       'Non-admin editor never sees stored WordPress IP addresses');
+    await editorPage.goto(URL + '/wp-admin/index.php?page=session-radar-sessions', {
+      waitUntil: 'domcontentloaded'
+    });
+    check(await editorPage.locator('.session-radar-workspace #amino-orbit-panel').count() === 1,
+      'Explicitly authorized editor can use the full Sessions page');
+    check(!(await editorPage.locator('.session-radar-workspace #amino-orbit-panel').innerText())
+      .includes('192.0.2.'), 'Read-only editor cannot reveal WordPress session IPs in full view');
     await editorContext.close();
 
     // These are real WordPress admin page requests with the logged-in
