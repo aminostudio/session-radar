@@ -447,7 +447,7 @@ async function main() {
 
     // Focus inside the widget must prevent automatic HTML replacement.
     const oldPanel = await panel.elementHandle();
-    const settingsLink = page.locator('#amino-orbit-panel .amino-orbit__footer a');
+    const settingsLink = page.locator('#amino-orbit-panel .amino-orbit__footer a:not(.amino-orbit__open-workspace)');
     await settingsLink.focus();
     check(await settingsLink.evaluate((el) => el === document.activeElement),
       'Settings link can receive keyboard focus');
@@ -464,7 +464,7 @@ async function main() {
     // Regression: the user may focus Settings while an AJAX response is in flight.
     // The widget must not replace a newly focused link after the fetch resolves.
     const racingPanel = await page.locator('#amino-orbit-panel').elementHandle();
-    const racingLink = page.locator('#amino-orbit-panel .amino-orbit__footer a');
+    const racingLink = page.locator('#amino-orbit-panel .amino-orbit__footer a:not(.amino-orbit__open-workspace)');
     await page.route('**/wp-admin/admin-ajax.php', async (route) => {
       if ((route.request().postData() || '').includes('action=amino_orbit_refresh')) {
         await new Promise((done) => setTimeout(done, 500));
