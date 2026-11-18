@@ -631,7 +631,8 @@ final class Amino_Orbit {
 					</div>
 					<div class="amino-orbit__search-wrap">
 						<label for="amino-orbit-search"><?php esc_html_e( 'Search sessions', 'session-radar' ); ?></label>
-						<input id="amino-orbit-search" class="amino-orbit__search" type="search" aria-controls="amino-orbit-list" autocomplete="off" spellcheck="false" placeholder="<?php echo esc_attr__( 'Name, role or device', 'session-radar' ); ?>" />
+						<input id="amino-orbit-search" class="amino-orbit__search" type="search" aria-controls="amino-orbit-list" aria-describedby="session-radar-search-tip" aria-keyshortcuts="Escape" autocomplete="off" spellcheck="false" placeholder="<?php echo esc_attr__( 'Name, role or device', 'session-radar' ); ?>" />
+                        <small id="session-radar-search-tip" class="amino-orbit__search-tip"><?php esc_html_e( 'Press Escape to clear search', 'session-radar' ); ?></small>
 					</div>
 					<div class="amino-orbit__display-tools">
 						<button type="button" class="amino-orbit__reset"><?php esc_html_e( 'Reset filters', 'session-radar' ); ?></button>
