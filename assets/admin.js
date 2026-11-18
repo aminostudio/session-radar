@@ -60,6 +60,7 @@
   let searchQuery = '';
   let searchInput = '';
   let compactView = false;
+  let workspaceListView = false;
   let autoRefreshPaused = false;
   let lastRenderedAt = Date.now();
   const statuses = ['all', 'active', 'idle', 'session'];
@@ -136,6 +137,11 @@
     panel.classList.toggle('amino-orbit--compact', compactView);
     const density = panel.querySelector('.amino-orbit__compact-toggle');
     if (density) density.setAttribute('aria-pressed', String(compactView));
+    // Grid/list layout is a local presentation choice, not an account setting.
+    // The dedicated workspace is the only surface exposing this control.
+    const listToggle = panel.querySelector('.amino-orbit__workspace-list-toggle');
+    if (listToggle) listToggle.setAttribute('aria-pressed', String(workspaceListView));
+    panel.classList.toggle('amino-orbit--workspace-list', workspaceListView);
     // The pause choice belongs to this browser tab only. Neither localStorage
     // nor a WordPress option records it; manual refresh remains available.
     const pause = panel.querySelector('.amino-orbit__pause-refresh');
@@ -207,6 +213,10 @@
       applyFilter(document.getElementById('amino-orbit-panel'));
     } else if (event.target.closest('.amino-orbit__compact-toggle')) {
       compactView = !compactView;
+      applyFilter(document.getElementById('amino-orbit-panel'));
+    } else if (event.target.closest('.amino-orbit__workspace-list-toggle') &&
+      shell.closest('.session-radar-workspace')) {
+      workspaceListView = !workspaceListView;
       applyFilter(document.getElementById('amino-orbit-panel'));
     }
   });
