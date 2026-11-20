@@ -798,6 +798,12 @@ final class Amino_Orbit {
 
 	/** Prune expired presence metadata with a stable user list. */
 	public static function cleanup_presence(): void {
+		// Retry privacy cleanup after a failed settings-change deletion.
+		// Disabled monitoring must not retain historical observations.
+		if ( empty( self::options()['activity_enabled'] ) ) {
+			delete_metadata( 'user', 0, self::META, '', true );
+			return;
+		}
 		$now = time();
 		// Snapshot IDs first: deleting a meta row during offset pagination would
 		// otherwise skip accounts later in the result set.
