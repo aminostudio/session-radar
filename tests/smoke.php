@@ -27,6 +27,11 @@ function get_users($args){return $args['fields']==='ID'?array_keys($GLOBALS['sta
 function get_user_meta($id,$key,$single){return $GLOBALS['state']['meta'][$id]??[];}
 function update_user_meta($id,$key,$value){$GLOBALS['state']['meta'][$id]=$value;}
 function delete_user_meta($id,$key){unset($GLOBALS['state']['meta'][$id]);}
+function delete_metadata($type,$id,$key,$value,$delete_all){
+    if ($type !== 'user' || $key !== '_session_radar_presence' || !$delete_all) return false;
+    foreach ($GLOBALS['state']['meta'] as $user_id => $presence) unset($GLOBALS['state']['meta'][$user_id]);
+    return true;
+}
 function wp_json_encode($a){return json_encode($a);}
 function wp_salt($name){return 'smoke-secret';}
 function absint($v){return abs((int)$v);}
@@ -160,4 +165,8 @@ assert_true(str_contains($html,'Partial results: the session scan limit has been
 assert_true(str_contains($html,'>500</strong><small>Sessions'),'Session scan capped at 500');
 assert_true(substr_count($html,'class="amino-orbit__user"')===40,'40-session UI row cap remains');
 WP_Session_Tokens::$sessionsByUser=[];
+$state["options"]=["activity_enabled"=>0];
+$state["meta"]=[1=>["recent"=>time()], 2=>["recent"=>time()-60]];
+Amino_Orbit::cleanup_presence();
+assert_true($state["meta"]===[], "Scheduled cleanup removes retained activity when monitoring is disabled");
 echo "All smoke checks passed.\n";
