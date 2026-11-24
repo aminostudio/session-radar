@@ -1,6 +1,6 @@
 # Sessivue 🪐
 
-> **WordPress.org review:** Sessivue (`sessivue`) version **1.0.0** was submitted on **November 16, 2026**. The Plugin Review Team emailed a **Review in Progress** correction request on **November 20, 2026**. The plugin has not been approved or listed. Existing Sessivue installations should follow [the migration instructions](docs/SESSIVUE-MIGRATION.md) before installing the renamed plugin.
+> **WordPress.org naming proposal:** The predecessor **Session Radar** (`session-radar`) 1.0.0 was submitted on **November 16, 2026**. The Plugin Review Team requested corrections on **November 20, 2026**. This private branch proposes **Sessivue** (`sessivue`) as the new name/slug. WordPress.org has **not yet confirmed the slug or approved the plugin**. Existing Session Radar installations must follow [the safe migration guide](docs/SESSIVUE-MIGRATION.md) before switching.
 
 **A lightweight WordPress dashboard presence monitor, designed by Amino Studio.**
 
@@ -16,10 +16,10 @@ A valid WordPress session is **not proof that someone is at their keyboard**. Th
 
 ## Installation
 
-1. Install the plugin ZIP via **Plugins → Add New → Upload Plugin**, or place the `sessivue` directory under `wp-content/plugins/`.
+1. For an existing Session Radar installation, first **deactivate** the previous plugin (keep it installed to import its settings). Then install the Sessivue ZIP via **Plugins → Add New → Upload Plugin**, or place the `sessivue` directory under `wp-content/plugins/`.
 2. Activate **Sessivue**.
 3. Visit **Dashboard → Home** to see the widget.
-4. Configure viewer roles, status threshold and refresh interval in **Settings → Sessivue**.
+4. Configure viewer roles, status threshold and refresh interval in **Settings → Sessivue**. Only after confirming the imported settings, uninstall the previous inactive plugin.
 
 **Requirements:** WordPress 6.4+, PHP 8.0+.
 
