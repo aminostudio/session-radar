@@ -152,6 +152,7 @@ jobs:
           # PCP 2.2.0 emits FILE: headings and one JSON array per source file,
           # not one top-level JSON document. Parse every file section.
           errors = 0
+          warnings = 0
           for kind in ("static", "runtime"):
               raw = pathlib.Path(f"/tmp/orbit-pcp-{kind}.json").read_text(encoding="utf-8")
               findings = []
@@ -172,9 +173,11 @@ jobs:
                   counts[severity] = counts.get(severity, 0) + 1
                   print(f"PCP {kind}: {severity} {result.get('code')} line {result.get('line')}")
               errors += counts["ERROR"]
+              warnings += counts["WARNING"]
               print(f"PCP {kind}: {len(findings)} findings, {counts['ERROR']} errors and {counts['WARNING']} warnings across {sections} file sections")
-          if errors:
-              sys.exit(f"Plugin Check found {errors} error(s) across static/runtime checks")
+          if errors or warnings:
+              sys.exit(f"Plugin Check must be clean for private 2.0: {errors} error(s), {warnings} warning(s) across static/runtime")
+          print("PASS: Plugin Check zero errors and warnings (static + runtime)")
           PY
       - name: Assemble private installable candidate ZIP
         run: |
