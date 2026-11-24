@@ -86,7 +86,7 @@ final class Sessivue_Plugin {
             );
         }
 		// One-time, non-destructive settings migration from the pre-approval
-		// sessivue slug. Keep data isolated from the old uninstall routine.
+		// Session Radar slug. Keep data isolated from the old uninstall routine.
 		if ( false === get_option( self::OPTION, false ) ) {
 			$previous = get_option( 'session_radar_settings', false );
             if ( ! is_array( $previous ) ) {
