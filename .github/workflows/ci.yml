@@ -1,4 +1,4 @@
-name: Session Radar checks
+name: Sessivue checks
 
 on:
   # Run on main merges and PR updates, not twice for every feature push.
@@ -30,8 +30,8 @@ jobs:
           coverage: none
       - name: PHP syntax checks
         run: |
-          php -l session-radar.php
-          php -l includes/class-amino-orbit.php
+          php -l sessivue.php
+          php -l includes/class-sessivue.php
           php -l uninstall.php
       - name: PHP isolated smoke checks
         run: php tests/smoke.php
@@ -59,19 +59,19 @@ jobs:
       mysql:
         image: mysql:8.0
         env:
-          MYSQL_DATABASE: orbit_ci
-          MYSQL_USER: orbit_ci
-          MYSQL_PASSWORD: orbit_ci_password
-          MYSQL_ROOT_PASSWORD: orbit_ci_root
+          MYSQL_DATABASE: sessivue_ci
+          MYSQL_USER: sessivue_ci
+          MYSQL_PASSWORD: sessivue_ci_password
+          MYSQL_ROOT_PASSWORD: sessivue_ci_root
         ports:
           - 3306:3306
         options: >-
-          --health-cmd="mysqladmin ping --silent -h 127.0.0.1 -uroot -porbit_ci_root"
+          --health-cmd="mysqladmin ping --silent -h 127.0.0.1 -uroot -psessivue_ci_root"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=10
     env:
-      WP_ROOT: /tmp/orbit-wp
+      WP_ROOT: /tmp/sessivue-wp
     steps:
       - uses: actions/checkout@v5
       - name: Compile bundled FR/ES catalogs from PO
@@ -104,18 +104,18 @@ jobs:
         run: |
           set -euo pipefail
           wp core download --path="$WP_ROOT" --skip-content --quiet
-          wp config create --path="$WP_ROOT" --dbname=orbit_ci --dbuser=orbit_ci --dbpass=orbit_ci_password --dbhost=127.0.0.1 --skip-check
-          wp core install --path="$WP_ROOT" --url=http://127.0.0.1:8080 --title="Session Radar CI" --admin_user=orbit_ci_admin --admin_password="temporary-ci-password-not-reused" --admin_email=admin@orbit-ci.invalid --skip-email
-          mkdir -p "$WP_ROOT/wp-content/plugins/session-radar"
-          cp session-radar.php uninstall.php readme.txt README.md LICENSE "$WP_ROOT/wp-content/plugins/session-radar/"
-          cp -R assets includes languages "$WP_ROOT/wp-content/plugins/session-radar/"
-          wp plugin activate session-radar --path="$WP_ROOT"
+          wp config create --path="$WP_ROOT" --dbname=sessivue_ci --dbuser=sessivue_ci --dbpass=sessivue_ci_password --dbhost=127.0.0.1 --skip-check
+          wp core install --path="$WP_ROOT" --url=http://127.0.0.1:8080 --title="Sessivue CI" --admin_user=sessivue_ci_admin --admin_password="temporary-ci-password-not-reused" --admin_email=admin@sessivue-ci.invalid --skip-email
+          mkdir -p "$WP_ROOT/wp-content/plugins/sessivue"
+          cp sessivue.php uninstall.php readme.txt README.md LICENSE "$WP_ROOT/wp-content/plugins/sessivue/"
+          cp -R assets includes languages "$WP_ROOT/wp-content/plugins/sessivue/"
+          wp plugin activate sessivue --path="$WP_ROOT"
           wp language core install fr_FR es_ES --path="$WP_ROOT"
           # Reproduce WordPress.org language-pack delivery for the unapproved slug.
           # The current plugin package intentionally contains no bundled MO files.
           mkdir -p "$WP_ROOT/wp-content/languages/plugins"
-          cp languages/session-radar-fr_FR.mo "$WP_ROOT/wp-content/languages/plugins/"
-          cp languages/session-radar-es_ES.mo "$WP_ROOT/wp-content/languages/plugins/"
+          cp languages/sessivue-fr_FR.mo "$WP_ROOT/wp-content/languages/plugins/"
+          cp languages/sessivue-es_ES.mo "$WP_ROOT/wp-content/languages/plugins/"
       - name: Real WordPress session, authorization and translation checks
         run: wp eval-file "$GITHUB_WORKSPACE/tests/wordpress-integration.php" --path="$WP_ROOT"
 
@@ -126,9 +126,9 @@ jobs:
       - name: Browser AJAX, idle, keyboard and WCAG integration
         run: |
           set -euo pipefail
-          php -S 127.0.0.1:8080 -t "$WP_ROOT" > /tmp/orbit-php-server.log 2>&1 &
+          php -S 127.0.0.1:8080 -t "$WP_ROOT" > /tmp/sessivue-php-server.log 2>&1 &
           SERVER_PID=$!
-          trap 'kill "$SERVER_PID" 2>/dev/null || true; tail -n 35 /tmp/orbit-php-server.log || true' EXIT
+          trap 'kill "$SERVER_PID" 2>/dev/null || true; tail -n 35 /tmp/sessivue-php-server.log || true' EXIT
           for attempt in {1..30}; do
             if curl --silent --fail http://127.0.0.1:8080/wp-login.php > /dev/null; then break; fi
             sleep 1
@@ -140,9 +140,9 @@ jobs:
           wp eval-file "$GITHUB_WORKSPACE/tests/concurrent-fixture.php" --path="$WP_ROOT"
           # Eight worker processes are essential. A single-worker PHP -S
           # would serialize requests and invalidate the concurrency probe.
-          PHP_CLI_SERVER_WORKERS=8 php -S 127.0.0.1:8080 -t "$WP_ROOT" > /tmp/orbit-concurrent-server.log 2>&1 &
+          PHP_CLI_SERVER_WORKERS=8 php -S 127.0.0.1:8080 -t "$WP_ROOT" > /tmp/sessivue-concurrent-server.log 2>&1 &
           SERVER_PID=$!
-          trap 'kill "$SERVER_PID" 2>/dev/null || true; tail -n 20 /tmp/orbit-concurrent-server.log || true' EXIT
+          trap 'kill "$SERVER_PID" 2>/dev/null || true; tail -n 20 /tmp/sessivue-concurrent-server.log || true' EXIT
           for attempt in {1..30}; do
             if curl --silent --fail http://127.0.0.1:8080/wp-login.php > /dev/null; then break; fi
             sleep 1
@@ -155,17 +155,17 @@ jobs:
           set -euo pipefail
           wp plugin install plugin-check --activate --path="$WP_ROOT"
           set +e
-          wp plugin check session-radar --format=json --path="$WP_ROOT" > /tmp/orbit-pcp-static.json 2>/tmp/orbit-pcp-static.err
+          wp plugin check sessivue --format=json --path="$WP_ROOT" > /tmp/sessivue-pcp-static.json 2>/tmp/sessivue-pcp-static.err
           STATIC_EXIT=$?
-          wp plugin check session-radar --format=json --require="$WP_ROOT/wp-content/plugins/plugin-check/cli.php" --path="$WP_ROOT" > /tmp/orbit-pcp-runtime.json 2>/tmp/orbit-pcp-runtime.err
+          wp plugin check sessivue --format=json --require="$WP_ROOT/wp-content/plugins/plugin-check/cli.php" --path="$WP_ROOT" > /tmp/sessivue-pcp-runtime.json 2>/tmp/sessivue-pcp-runtime.err
           RUNTIME_EXIT=$?
           set -e
           echo "PLUGIN CHECK STATIC EXIT: $STATIC_EXIT"
-          cat /tmp/orbit-pcp-static.err || true
-          cat /tmp/orbit-pcp-static.json
+          cat /tmp/sessivue-pcp-static.err || true
+          cat /tmp/sessivue-pcp-static.json
           echo "PLUGIN CHECK RUNTIME EXIT: $RUNTIME_EXIT"
-          cat /tmp/orbit-pcp-runtime.err || true
-          cat /tmp/orbit-pcp-runtime.json
+          cat /tmp/sessivue-pcp-runtime.err || true
+          cat /tmp/sessivue-pcp-runtime.json
           python3 - <<'PY'
           import json
           import pathlib
@@ -175,7 +175,7 @@ jobs:
           # not one top-level JSON document. Parse every file section.
           errors = 0
           for kind in ("static", "runtime"):
-              raw = pathlib.Path(f"/tmp/orbit-pcp-{kind}.json").read_text(encoding="utf-8")
+              raw = pathlib.Path(f"/tmp/sessivue-pcp-{kind}.json").read_text(encoding="utf-8")
               findings = []
               sections = 0
               for line in raw.splitlines():
@@ -201,39 +201,39 @@ jobs:
       - name: Assemble private installable candidate ZIP
         run: |
           set -euo pipefail
-          mkdir -p /tmp/orbit-release/session-radar
-          cp session-radar.php uninstall.php readme.txt README.md LICENSE /tmp/orbit-release/session-radar/
-          cp -R assets includes /tmp/orbit-release/session-radar/
+          mkdir -p /tmp/sessivue-release/sessivue
+          cp sessivue.php uninstall.php readme.txt README.md LICENSE /tmp/sessivue-release/sessivue/
+          cp -R assets includes /tmp/sessivue-release/sessivue/
           # WordPress.org distributes translated language packs separately.
           # Keep PO sources in Git only, not in the reviewer ZIP.
-          VERSION=$(sed -n 's/^ \* Version: //p' session-radar.php | head -n 1)
+          VERSION=$(sed -n 's/^ \* Version: //p' sessivue.php | head -n 1)
           test -n "$VERSION"
           test "$(sed -n 's/^Stable tag: //p' readme.txt | head -n 1)" = "$VERSION"
-          (cd /tmp/orbit-release && zip -qr "$GITHUB_WORKSPACE/session-radar-${VERSION}.zip" session-radar)
+          (cd /tmp/sessivue-release && zip -qr "$GITHUB_WORKSPACE/sessivue-${VERSION}.zip" sessivue)
       - name: Validate private ZIP structure and bundled versions
         run: |
           set -euo pipefail
-          VERSION=$(sed -n 's/^ \* Version: //p' session-radar.php | head -n 1)
-          python3 tests/release-preflight.py "session-radar-${VERSION}.zip"
+          VERSION=$(sed -n 's/^ \* Version: //p' sessivue.php | head -n 1)
+          python3 tests/release-preflight.py "sessivue-${VERSION}.zip"
       - name: Upload private WordPress install candidate
         uses: actions/upload-artifact@v4
         with:
-          name: session-radar-private-zip
-          path: session-radar-*.zip
+          name: sessivue-private-zip
+          path: sessivue-*.zip
           if-no-files-found: error
       - name: Upload Plugin Check JSON findings
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: session-radar-plugin-check-json
-          path: /tmp/orbit-pcp-*.json
+          name: sessivue-plugin-check-json
+          path: /tmp/sessivue-pcp-*.json
           if-no-files-found: ignore
       - name: Upload browser failure screenshot
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: session-radar-browser-qa-failure
-          path: /tmp/orbit-browser-failure.png
+          name: sessivue-browser-qa-failure
+          path: /tmp/sessivue-browser-failure.png
           if-no-files-found: ignore
 
 
@@ -244,19 +244,19 @@ jobs:
       mysql:
         image: mysql:8.0
         env:
-          MYSQL_DATABASE: orbit_min
-          MYSQL_USER: orbit_min
-          MYSQL_PASSWORD: orbit_min_password
-          MYSQL_ROOT_PASSWORD: orbit_min_root
+          MYSQL_DATABASE: sessivue_min
+          MYSQL_USER: sessivue_min
+          MYSQL_PASSWORD: sessivue_min_password
+          MYSQL_ROOT_PASSWORD: sessivue_min_root
         ports:
           - 3306:3306
         options: >-
-          --health-cmd="mysqladmin ping --silent -h 127.0.0.1 -uroot -porbit_min_root"
+          --health-cmd="mysqladmin ping --silent -h 127.0.0.1 -uroot -psessivue_min_root"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=10
     env:
-      WP_ROOT: /tmp/orbit-wp-minimum
+      WP_ROOT: /tmp/sessivue-wp-minimum
     steps:
       - uses: actions/checkout@v5
       - name: Compile bundled FR/ES catalogs from PO
@@ -285,30 +285,30 @@ jobs:
             export PATH="$HOME/.local/bin:$PATH"
           fi
           wp --info
-      - name: Install disposable WordPress 6.4 and Session Radar
+      - name: Install disposable WordPress 6.4 and Sessivue
         run: |
           set -euo pipefail
           wp core download --version=6.4 --path="$WP_ROOT" --skip-content --quiet
-          wp config create --path="$WP_ROOT" --dbname=orbit_min --dbuser=orbit_min --dbpass=orbit_min_password --dbhost=127.0.0.1 --skip-check
-          wp core install --path="$WP_ROOT" --url=http://127.0.0.1:8080 --title="Session Radar CI" --admin_user=orbit_ci_admin --admin_password="temporary-ci-password-not-reused" --admin_email=admin@orbit-ci.invalid --skip-email
-          mkdir -p "$WP_ROOT/wp-content/plugins/session-radar"
-          cp session-radar.php uninstall.php readme.txt README.md LICENSE "$WP_ROOT/wp-content/plugins/session-radar/"
-          cp -R assets includes languages "$WP_ROOT/wp-content/plugins/session-radar/"
-          wp plugin activate session-radar --path="$WP_ROOT"
+          wp config create --path="$WP_ROOT" --dbname=sessivue_min --dbuser=sessivue_min --dbpass=sessivue_min_password --dbhost=127.0.0.1 --skip-check
+          wp core install --path="$WP_ROOT" --url=http://127.0.0.1:8080 --title="Sessivue CI" --admin_user=sessivue_ci_admin --admin_password="temporary-ci-password-not-reused" --admin_email=admin@sessivue-ci.invalid --skip-email
+          mkdir -p "$WP_ROOT/wp-content/plugins/sessivue"
+          cp sessivue.php uninstall.php readme.txt README.md LICENSE "$WP_ROOT/wp-content/plugins/sessivue/"
+          cp -R assets includes languages "$WP_ROOT/wp-content/plugins/sessivue/"
+          wp plugin activate sessivue --path="$WP_ROOT"
           wp language core install fr_FR es_ES --path="$WP_ROOT"
           # Reproduce WordPress.org language-pack delivery for the unapproved slug.
           # The current plugin package intentionally contains no bundled MO files.
           mkdir -p "$WP_ROOT/wp-content/languages/plugins"
-          cp languages/session-radar-fr_FR.mo "$WP_ROOT/wp-content/languages/plugins/"
-          cp languages/session-radar-es_ES.mo "$WP_ROOT/wp-content/languages/plugins/"
+          cp languages/sessivue-fr_FR.mo "$WP_ROOT/wp-content/languages/plugins/"
+          cp languages/sessivue-es_ES.mo "$WP_ROOT/wp-content/languages/plugins/"
           wp core version --path="$WP_ROOT"
       - name: Native sessions, roles and logout on WordPress 6.4
-        run: ORBIT_CHECK_LOCALE_IN_FRESH_BOOT=1 wp eval-file "$GITHUB_WORKSPACE/tests/wordpress-integration.php" --path="$WP_ROOT"
+        run: SESSIVUE_CHECK_LOCALE_IN_FRESH_BOOT=1 wp eval-file "$GITHUB_WORKSPACE/tests/wordpress-integration.php" --path="$WP_ROOT"
       - name: Real bundled translations in fresh WordPress 6.4 bootstraps
         run: |
           set -euo pipefail
           wp option update WPLANG fr_FR --path="$WP_ROOT"
-          ORBIT_MIN_TEST_LOCALE=fr_FR wp eval-file "$GITHUB_WORKSPACE/tests/minimum-locale.php" --path="$WP_ROOT"
+          SESSIVUE_MIN_TEST_LOCALE=fr_FR wp eval-file "$GITHUB_WORKSPACE/tests/minimum-locale.php" --path="$WP_ROOT"
           wp option update WPLANG es_ES --path="$WP_ROOT"
-          ORBIT_MIN_TEST_LOCALE=es_ES wp eval-file "$GITHUB_WORKSPACE/tests/minimum-locale.php" --path="$WP_ROOT"
+          SESSIVUE_MIN_TEST_LOCALE=es_ES wp eval-file "$GITHUB_WORKSPACE/tests/minimum-locale.php" --path="$WP_ROOT"
           wp option update WPLANG en_US --path="$WP_ROOT"
