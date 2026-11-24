@@ -42,7 +42,7 @@ final class Amino_Orbit {
 	}
 
 	/**
-	 * Offer bundled FR/ES translations without load_plugin_textdomain().
+	 * Offer bundled FR/ES translations using the supported WordPress loader.
 	 *
 	 * WordPress.org language packs take precedence over the packaged fallback.
 	 * Loading happens on init (or on subsequent locale switches, via Core's
