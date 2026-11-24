@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Session Radar
+ * Plugin Name: SessiVue
  * Description: See WordPress login sessions and recent admin activity in a privacy-focused dashboard widget.
  * Version: 1.0.0
  * Requires at least: 6.4
@@ -9,7 +9,7 @@
  * Author URI: https://aminostudio.fr/
  * License: GPL-2.0-or-later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: session-radar
+ * Text Domain: sessivue
  * Domain Path: /languages
  */
 

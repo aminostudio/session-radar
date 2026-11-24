@@ -1,6 +1,6 @@
 <?php
 /**
- * Session Radar core.
+ * SessiVue core.
  *
  * Session existence is supplied by WordPress itself; activity is a voluntary,
  * short-lived admin-side signal. This class does not log page views or track
@@ -14,10 +14,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 final class Amino_Orbit {
-	private const OPTION = 'session_radar_settings';
-	private const META = '_session_radar_presence';
+	private const OPTION = 'sessivue_settings';
+	private const META = '_sessivue_presence';
 	private const NONCE = 'amino_orbit_ajax';
-	private const CLEANUP_HOOK = 'session_radar_daily_cleanup';
+	private const CLEANUP_HOOK = 'sessivue_daily_cleanup';
 	private const MAX_USERS = 200;
 	private const MAX_SCANNED_SESSIONS = 500;
 	private const MAX_ROWS = 40;
@@ -31,7 +31,7 @@ final class Amino_Orbit {
 		add_action( 'admin_init', array( __CLASS__, 'register_privacy_policy_text' ) );
 		add_filter( 'wp_privacy_personal_data_exporters', array( __CLASS__, 'register_personal_data_exporter' ) );
 		add_filter( 'wp_privacy_personal_data_erasers', array( __CLASS__, 'register_personal_data_eraser' ) );
-		add_action( 'update_option_session_radar_settings', array( __CLASS__, 'clear_presence_on_disable' ), 10, 2 );
+		add_action( 'update_option_sessivue_settings', array( __CLASS__, 'clear_presence_on_disable' ), 10, 2 );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_assets' ) );
 		add_action( 'wp_ajax_amino_orbit_ping', array( __CLASS__, 'ajax_ping' ) );
 		add_action( 'wp_ajax_amino_orbit_refresh', array( __CLASS__, 'ajax_refresh' ) );
@@ -76,9 +76,13 @@ final class Amino_Orbit {
 	/** Set up the WordPress cron cleanup without modifying existing settings. */
 	public static function activate(): void {
 		// One-time, non-destructive settings migration from the pre-approval
-		// amino-orbit slug. Keep data isolated from the old uninstall routine.
+		// Session Radar and Amino Orbit settings. Isolate new storage from both
+		// previous uninstall routines so migrated SessiVue settings survive.
 		if ( false === get_option( self::OPTION, false ) ) {
-			$previous = get_option( 'amino_orbit_settings', false );
+			$previous = get_option( 'session_radar_settings', false );
+			if ( ! is_array( $previous ) ) {
+				$previous = get_option( 'amino_orbit_settings', false );
+			}
 			if ( is_array( $previous ) ) {
 				update_option( self::OPTION, $previous, false );
 			}
@@ -125,17 +129,17 @@ final class Amino_Orbit {
 	/** Only administrators may change settings. */
 	public static function register_settings_page(): void {
 		add_options_page(
-			__( 'Session Radar', 'session-radar' ),
-			__( 'Session Radar', 'session-radar' ),
+			__( 'SessiVue', 'sessivue' ),
+			__( 'SessiVue', 'sessivue' ),
 			'manage_options',
-			'session-radar',
+			'sessivue',
 			array( __CLASS__, 'settings_page' )
 		);
 	}
 
 	public static function register_settings(): void {
 		register_setting(
-			'session_radar_settings',
+			'sessivue_settings',
 			self::OPTION,
 			array(
 				'type' => 'array',
@@ -190,14 +194,14 @@ final class Amino_Orbit {
 			return;
 		}
 		$paragraphs = array(
-			__( 'If enabled, Session Radar records the time of recent interactions in the WordPress administration area for authenticated user sessions. It does not record public-site visits or send data to external services.', 'session-radar' ),
-			__( 'Activity older than 24 hours is no longer shown. Stored records are deleted on later interactions or during WordPress scheduled cleanup, which may run later. Turning monitoring off deletes Session Radar activity records immediately. WordPress manages login sessions separately.', 'session-radar' ),
+			__( 'If enabled, SessiVue records the time of recent interactions in the WordPress administration area for authenticated user sessions. It does not record public-site visits or send data to external services.', 'sessivue' ),
+			__( 'Activity older than 24 hours is no longer shown. Stored records are deleted on later interactions or during WordPress scheduled cleanup, which may run later. Turning monitoring off deletes SessiVue activity records immediately. WordPress manages login sessions separately.', 'sessivue' ),
 		);
 		$html = '';
 		foreach ( $paragraphs as $paragraph ) {
 			$html .= '<p>' . esc_html( $paragraph ) . '</p>';
 		}
-		wp_add_privacy_policy_content( 'Session Radar', $html );
+		wp_add_privacy_policy_content( 'SessiVue', $html );
 	}
 
 	/**
@@ -205,8 +209,8 @@ final class Amino_Orbit {
 	 * The plugin does not export native WordPress login session data.
 	 */
 	public static function register_personal_data_exporter( array $exporters ): array {
-		$exporters['session-radar'] = array(
-			'exporter_friendly_name' => __( 'Session Radar admin activity', 'session-radar' ),
+		$exporters['sessivue'] = array(
+			'exporter_friendly_name' => __( 'SessiVue admin activity', 'sessivue' ),
 			'callback' => array( __CLASS__, 'export_personal_data' ),
 		);
 		return $exporters;
@@ -214,8 +218,8 @@ final class Amino_Orbit {
 
 	/** Offer the corresponding eraser through the native WordPress privacy workflow. */
 	public static function register_personal_data_eraser( array $erasers ): array {
-		$erasers['session-radar'] = array(
-			'eraser_friendly_name' => __( 'Session Radar admin activity', 'session-radar' ),
+		$erasers['sessivue'] = array(
+			'eraser_friendly_name' => __( 'SessiVue admin activity', 'sessivue' ),
 			'callback' => array( __CLASS__, 'erase_personal_data' ),
 		);
 		return $erasers;
@@ -249,11 +253,11 @@ final class Amino_Orbit {
 		foreach ( array_slice( $seen, 0, 32 ) as $index => $timestamp ) {
 			$result['data'][] = array(
 				'group_id' => 'amino-orbit-activity',
-				'group_label' => __( 'Session Radar admin activity', 'session-radar' ),
+				'group_label' => __( 'SessiVue admin activity', 'sessivue' ),
 				'item_id' => 'amino-orbit-presence-' . $index,
 				'data' => array(
 					array(
-						'name' => __( 'Last observed admin interaction', 'session-radar' ),
+						'name' => __( 'Last observed admin interaction', 'sessivue' ),
 						'value' => wp_date( 'Y-m-d H:i:s T', (int) $timestamp ),
 					),
 				),
@@ -263,7 +267,7 @@ final class Amino_Orbit {
 	}
 
 	/**
-	 * Erase all Session Radar-specific metadata for the requested WordPress account.
+	 * Erase all SessiVue-specific metadata for the requested WordPress account.
 	 * Core's privacy workflow validates and authorizes the request.
 	 */
 	public static function erase_personal_data( string $email_address, int $page = 1 ): array {
@@ -288,7 +292,7 @@ final class Amino_Orbit {
 		$result['items_removed'] = (bool) delete_user_meta( $user->ID, self::META );
 		if ( ! $result['items_removed'] ) {
 			$result['items_retained'] = true;
-			$result['messages'][] = __( 'Could not remove Session Radar activity data.', 'session-radar' );
+			$result['messages'][] = __( 'Could not remove SessiVue activity data.', 'sessivue' );
 		}
 		return $result;
 	}
@@ -300,7 +304,7 @@ final class Amino_Orbit {
 		}
 		wp_add_dashboard_widget(
 			'amino_orbit_widget',
-			__( 'Session Radar · Presence', 'session-radar' ),
+			__( 'SessiVue · Presence', 'sessivue' ),
 			array( __CLASS__, 'render_widget' )
 		);
 	}
@@ -311,7 +315,7 @@ final class Amino_Orbit {
 			return;
 		}
 		$dashboard = ( 'index.php' === $hook && self::can_view() );
-		$settings  = ( 'settings_page_session-radar' === $hook );
+		$settings  = ( 'settings_page_sessivue' === $hook );
 		$options   = self::options();
 		if ( $dashboard || $settings ) {
 			wp_enqueue_style(
@@ -342,9 +346,9 @@ final class Amino_Orbit {
 				'refreshMs'     => $options['refresh_seconds'] * 1000,
 				'trackActivity' => ! empty( $options['activity_enabled'] ),
 				'labels'        => array(
-					'refreshing' => __( 'Updating sessions…', 'session-radar' ),
-					'updated'    => __( 'Sessions updated', 'session-radar' ),
-					'failed'     => __( 'Refresh failed', 'session-radar' ),
+					'refreshing' => __( 'Updating sessions…', 'sessivue' ),
+					'updated'    => __( 'Sessions updated', 'sessivue' ),
+					'failed'     => __( 'Refresh failed', 'sessivue' ),
 				),
 			)
 		);
@@ -365,7 +369,7 @@ final class Amino_Orbit {
 	 * Derive an opaque presence ID from WordPress's own hashed token verifier.
 	 *
 	 * The verifier is already a one-way SHA-256 digest in the native session
-	 * store. A second keyed digest keeps Session Radar's metadata unrelated to it.
+	 * store. A second keyed digest keeps SessiVue's metadata unrelated to it.
 	 * Even sessions created in the same second get distinct presence IDs.
 	 */
 	private static function verifier_fingerprint( string $verifier ): string {
@@ -433,9 +437,9 @@ final class Amino_Orbit {
 	/** Normalize user agent to simple labels, not a fingerprinting library. */
 	private static function device( string $ua ): string {
 		if ( '' === $ua ) {
-			return __( 'Unknown device', 'session-radar' );
+			return __( 'Unknown device', 'sessivue' );
 		}
-		$browser = __( 'Browser', 'session-radar' );
+		$browser = __( 'Browser', 'sessivue' );
 		if ( false !== stripos( $ua, 'Edg/' ) ) {
 			$browser = 'Edge';
 		} elseif ( false !== stripos( $ua, 'Firefox/' ) || false !== stripos( $ua, 'FxiOS/' ) ) {
@@ -579,53 +583,53 @@ final class Amino_Orbit {
 			<div class="amino-orbit__header">
 				<div class="amino-orbit__heading">
 					<div class="amino-orbit__symbol" aria-hidden="true"><span></span></div>
-					<div><strong>SESSION <em>RADAR</em></strong><small><?php esc_html_e( 'PRESENCE MONITOR', 'session-radar' ); ?></small></div>
+					<div><strong>SESSI<em>VUE</em></strong><small><?php esc_html_e( 'PRESENCE MONITOR', 'sessivue' ); ?></small></div>
 				</div>
-				<span class="amino-orbit__live" aria-label="<?php echo esc_attr__( 'Automatic refresh, not real-time presence', 'session-radar' ); ?>" title="<?php echo esc_attr__( 'Automatic refresh, not real-time presence', 'session-radar' ); ?>"><i aria-hidden="true"></i><?php esc_html_e( 'Auto', 'session-radar' ); ?></span>
+				<span class="amino-orbit__live" aria-label="<?php echo esc_attr__( 'Automatic refresh, not real-time presence', 'sessivue' ); ?>" title="<?php echo esc_attr__( 'Automatic refresh, not real-time presence', 'sessivue' ); ?>"><i aria-hidden="true"></i><?php esc_html_e( 'Auto', 'sessivue' ); ?></span>
 				<div class="amino-orbit__stats">
-					<div><strong><?php echo esc_html( (string) $total ); ?></strong><small><?php esc_html_e( 'Sessions', 'session-radar' ); ?></small></div>
-					<div><strong><?php echo esc_html( (string) $active ); ?></strong><small><?php esc_html_e( 'Active sessions', 'session-radar' ); ?></small></div>
-					<div><strong><?php echo esc_html( (string) count( $user_ids ) ); ?></strong><small><?php esc_html_e( 'Users', 'session-radar' ); ?></small></div>
+					<div><strong><?php echo esc_html( (string) $total ); ?></strong><small><?php esc_html_e( 'Sessions', 'sessivue' ); ?></small></div>
+					<div><strong><?php echo esc_html( (string) $active ); ?></strong><small><?php esc_html_e( 'Active sessions', 'sessivue' ); ?></small></div>
+					<div><strong><?php echo esc_html( (string) count( $user_ids ) ); ?></strong><small><?php esc_html_e( 'Users', 'sessivue' ); ?></small></div>
 				</div>
 			</div>
 			<div class="amino-orbit__body">
 				<?php if ( ! $rows ) : ?>
-					<p class="amino-orbit__empty"><?php esc_html_e( 'No open WordPress sessions detected.', 'session-radar' ); ?></p>
+					<p class="amino-orbit__empty"><?php esc_html_e( 'No open WordPress sessions detected.', 'sessivue' ); ?></p>
 				<?php else : ?>
-					<div class="amino-orbit__filters" role="group" aria-label="<?php echo esc_attr__( 'Authenticated WordPress sessions', 'session-radar' ); ?>">
-						<button type="button" class="amino-orbit__filter" data-orbit-status="all" aria-pressed="true"><?php esc_html_e( 'Sessions', 'session-radar' ); ?></button>
-						<button type="button" class="amino-orbit__filter" data-orbit-status="active" aria-pressed="false"><?php esc_html_e( 'Active', 'session-radar' ); ?></button>
-						<button type="button" class="amino-orbit__filter" data-orbit-status="idle" aria-pressed="false"><?php esc_html_e( 'Inactive', 'session-radar' ); ?></button>
-						<button type="button" class="amino-orbit__filter" data-orbit-status="session" aria-pressed="false"><?php esc_html_e( 'Session open', 'session-radar' ); ?></button>
+					<div class="amino-orbit__filters" role="group" aria-label="<?php echo esc_attr__( 'Authenticated WordPress sessions', 'sessivue' ); ?>">
+						<button type="button" class="amino-orbit__filter" data-orbit-status="all" aria-pressed="true"><?php esc_html_e( 'Sessions', 'sessivue' ); ?></button>
+						<button type="button" class="amino-orbit__filter" data-orbit-status="active" aria-pressed="false"><?php esc_html_e( 'Active', 'sessivue' ); ?></button>
+						<button type="button" class="amino-orbit__filter" data-orbit-status="idle" aria-pressed="false"><?php esc_html_e( 'Inactive', 'sessivue' ); ?></button>
+						<button type="button" class="amino-orbit__filter" data-orbit-status="session" aria-pressed="false"><?php esc_html_e( 'Session open', 'sessivue' ); ?></button>
 						<span class="amino-orbit__filter-count" aria-live="polite" aria-atomic="true"></span>
 					</div>
 					<div class="amino-orbit__sort-wrap">
-						<label for="amino-orbit-sort"><?php esc_html_e( 'Sort sessions', 'session-radar' ); ?></label>
+						<label for="amino-orbit-sort"><?php esc_html_e( 'Sort sessions', 'sessivue' ); ?></label>
 						<select id="amino-orbit-sort" class="amino-orbit__sort" aria-controls="amino-orbit-list">
-							<option value="suggested"><?php esc_html_e( 'Suggested order', 'session-radar' ); ?></option>
-							<option value="newest"><?php esc_html_e( 'Newest login', 'session-radar' ); ?></option>
-							<option value="oldest"><?php esc_html_e( 'Oldest login', 'session-radar' ); ?></option>
+							<option value="suggested"><?php esc_html_e( 'Suggested order', 'sessivue' ); ?></option>
+							<option value="newest"><?php esc_html_e( 'Newest login', 'sessivue' ); ?></option>
+							<option value="oldest"><?php esc_html_e( 'Oldest login', 'sessivue' ); ?></option>
 						</select>
 					</div>
 					<div class="amino-orbit__role-wrap">
-						<label for="amino-orbit-role"><?php esc_html_e( 'Filter by role', 'session-radar' ); ?></label>
+						<label for="amino-orbit-role"><?php esc_html_e( 'Filter by role', 'sessivue' ); ?></label>
 						<select id="amino-orbit-role" class="amino-orbit__role-filter" aria-controls="amino-orbit-list">
-							<option value=""><?php esc_html_e( 'All roles', 'session-radar' ); ?></option>
+							<option value=""><?php esc_html_e( 'All roles', 'sessivue' ); ?></option>
 							<?php foreach ( $visible_roles as $role_slug => $role_label ) : ?>
 								<option value="<?php echo esc_attr( sanitize_key( $role_slug ) ); ?>"><?php echo esc_html( $role_label ); ?></option>
 							<?php endforeach; ?>
 						</select>
 					</div>
 					<div class="amino-orbit__search-wrap">
-						<label for="amino-orbit-search"><?php esc_html_e( 'Search sessions', 'session-radar' ); ?></label>
-						<input id="amino-orbit-search" class="amino-orbit__search" type="search" aria-controls="amino-orbit-list" autocomplete="off" spellcheck="false" placeholder="<?php echo esc_attr__( 'Name, role or device', 'session-radar' ); ?>" />
+						<label for="amino-orbit-search"><?php esc_html_e( 'Search sessions', 'sessivue' ); ?></label>
+						<input id="amino-orbit-search" class="amino-orbit__search" type="search" aria-controls="amino-orbit-list" autocomplete="off" spellcheck="false" placeholder="<?php echo esc_attr__( 'Name, role or device', 'sessivue' ); ?>" />
 					</div>
 					<div class="amino-orbit__display-tools">
-						<button type="button" class="amino-orbit__reset"><?php esc_html_e( 'Reset filters', 'session-radar' ); ?></button>
-						<button type="button" class="amino-orbit__compact-toggle" aria-pressed="false"><?php esc_html_e( 'Compact view', 'session-radar' ); ?></button>
+						<button type="button" class="amino-orbit__reset"><?php esc_html_e( 'Reset filters', 'sessivue' ); ?></button>
+						<button type="button" class="amino-orbit__compact-toggle" aria-pressed="false"><?php esc_html_e( 'Compact view', 'sessivue' ); ?></button>
 					</div>
-					<p class="amino-orbit__empty-filter" role="status" hidden><?php esc_html_e( 'No sessions match these filters.', 'session-radar' ); ?></p>
-					<ul id="amino-orbit-list" class="amino-orbit__list" aria-label="<?php echo esc_attr__( 'Authenticated WordPress sessions', 'session-radar' ); ?>">
+					<p class="amino-orbit__empty-filter" role="status" hidden><?php esc_html_e( 'No sessions match these filters.', 'sessivue' ); ?></p>
+					<ul id="amino-orbit-list" class="amino-orbit__list" aria-label="<?php echo esc_attr__( 'Authenticated WordPress sessions', 'sessivue' ); ?>">
 						<?php foreach ( array_slice( $rows, 0, self::MAX_ROWS ) as $row_index => $row ) : ?>
 							<?php
 							$user = $row['user'];
@@ -635,9 +639,9 @@ final class Amino_Orbit {
 								$role_labels[] = is_array( $role_definition ) ? translate_user_role( $role_definition['name'] ) : $role;
 							}
 							$label = array(
-								'active' => __( 'Active', 'session-radar' ),
-								'idle' => __( 'Inactive', 'session-radar' ),
-								'session' => __( 'Session open', 'session-radar' ),
+								'active' => __( 'Active', 'sessivue' ),
+								'idle' => __( 'Inactive', 'sessivue' ),
+								'session' => __( 'Session open', 'sessivue' ),
 							);
 							$initials = function_exists( 'mb_substr' ) ? mb_strtoupper( mb_substr( (string) $user->display_name, 0, 2 ) ) : strtoupper( substr( (string) $user->display_name, 0, 2 ) );
 							?>
@@ -654,10 +658,10 @@ final class Amino_Orbit {
 								<div class="amino-orbit__timing">
 									<span class="amino-orbit__status amino-orbit__status--<?php echo esc_attr( $row['status'] ); ?>"><?php echo esc_html( $label[ $row['status'] ] ); ?></span>
 									<?php if ( $row['login'] ) : ?>
-										<small title="<?php echo esc_attr( wp_date( 'd/m/Y H:i:s T', $row['login'] ) ); ?>"><?php echo esc_html( sprintf( /* translators: %s: WordPress login time in site timezone. */ __( 'Logged in: %s', 'session-radar' ), wp_date( 'd/m H:i', $row['login'] ) ) ); ?></small>
+										<small title="<?php echo esc_attr( wp_date( 'd/m/Y H:i:s T', $row['login'] ) ); ?>"><?php echo esc_html( sprintf( /* translators: %s: WordPress login time in site timezone. */ __( 'Logged in: %s', 'sessivue' ), wp_date( 'd/m H:i', $row['login'] ) ) ); ?></small>
 									<?php endif; ?>
 									<?php if ( $row['last_seen'] ) : ?>
-										<small title="<?php echo esc_attr__( 'Last activity detected in WordPress admin', 'session-radar' ); ?>"><?php echo esc_html( sprintf( /* translators: %s: human-readable time difference. */ __( 'Seen %s ago', 'session-radar' ), human_time_diff( $row['last_seen'], time() ) ) ); ?></small>
+										<small title="<?php echo esc_attr__( 'Last activity detected in WordPress admin', 'sessivue' ); ?>"><?php echo esc_html( sprintf( /* translators: %s: human-readable time difference. */ __( 'Seen %s ago', 'sessivue' ), human_time_diff( $row['last_seen'], time() ) ) ); ?></small>
 									<?php endif; ?>
 								</div>
 							</li>
@@ -665,24 +669,24 @@ final class Amino_Orbit {
 					</ul>
 				<?php endif; ?>
 				<?php if ( $truncated || $total > self::MAX_ROWS ) : ?>
-					<p class="amino-orbit__note"><?php esc_html_e( 'Filters and sorting apply only to displayed sessions.', 'session-radar' ); ?></p>
+					<p class="amino-orbit__note"><?php esc_html_e( 'Filters and sorting apply only to displayed sessions.', 'sessivue' ); ?></p>
 				<?php endif; ?>
 				<?php if ( $truncated ) : ?>
-					<p class="amino-orbit__note"><?php esc_html_e( 'Partial results: the session scan limit has been reached.', 'session-radar' ); ?></p>
+					<p class="amino-orbit__note"><?php esc_html_e( 'Partial results: the session scan limit has been reached.', 'sessivue' ); ?></p>
 				<?php endif; ?>
 				<?php if ( $total > self::MAX_ROWS ) : ?>
-					<p class="amino-orbit__note"><?php echo esc_html( sprintf( /* translators: %d: maximum number of displayed sessions. */ __( 'Showing up to %d sessions.', 'session-radar' ), self::MAX_ROWS ) ); ?></p>
+					<p class="amino-orbit__note"><?php echo esc_html( sprintf( /* translators: %d: maximum number of displayed sessions. */ __( 'Showing up to %d sessions.', 'sessivue' ), self::MAX_ROWS ) ); ?></p>
 				<?php endif; ?>
 			</div>
 			<div class="amino-orbit__footer">
-				<span><?php echo esc_html( sprintf( /* translators: %d: refresh interval in seconds. */ __( 'Refresh: %d s', 'session-radar' ), (int) $options['refresh_seconds'] ) ); ?></span>
-				<button type="button" class="amino-orbit__refresh-now"><?php esc_html_e( 'Refresh now', 'session-radar' ); ?></button>
+				<span><?php echo esc_html( sprintf( /* translators: %d: refresh interval in seconds. */ __( 'Refresh: %d s', 'sessivue' ), (int) $options['refresh_seconds'] ) ); ?></span>
+				<button type="button" class="amino-orbit__refresh-now"><?php esc_html_e( 'Refresh now', 'sessivue' ); ?></button>
 				<span class="amino-orbit__refresh-feedback" role="status" aria-live="polite" aria-atomic="true"></span>
 				<?php if ( current_user_can( 'manage_options' ) ) : ?>
-					<a href="<?php echo esc_url( admin_url( 'options-general.php?page=session-radar' ) ); ?>"><?php esc_html_e( 'Settings', 'session-radar' ); ?> <span aria-hidden="true">↗</span></a>
+					<a href="<?php echo esc_url( admin_url( 'options-general.php?page=sessivue' ) ); ?>"><?php esc_html_e( 'Settings', 'sessivue' ); ?> <span aria-hidden="true">↗</span></a>
 				<?php endif; ?>
 			</div>
-			<p class="amino-orbit__disclaimer"><?php esc_html_e( 'Active means recent activity in wp-admin. An open session does not mean the user is at their screen.', 'session-radar' ); ?></p>
+			<p class="amino-orbit__disclaimer"><?php esc_html_e( 'Active means recent activity in wp-admin. An open session does not mean the user is at their screen.', 'sessivue' ); ?></p>
 		</div>
 		<?php
 	}
@@ -695,14 +699,14 @@ final class Amino_Orbit {
 		$options = self::options();
 		?>
 		<div class="wrap amino-orbit-settings">
-			<h1><?php esc_html_e( 'Session Radar', 'session-radar' ); ?></h1>
-			<p><?php esc_html_e( 'WordPress sessions and recent admin activity, without tracking public-site browsing.', 'session-radar' ); ?></p>
+			<h1><?php esc_html_e( 'SessiVue', 'sessivue' ); ?></h1>
+			<p><?php esc_html_e( 'WordPress sessions and recent admin activity, without tracking public-site browsing.', 'sessivue' ); ?></p>
 			<form method="post" action="options.php">
-				<?php settings_fields( 'session_radar_settings' ); ?>
+				<?php settings_fields( 'sessivue_settings' ); ?>
 				<div class="amino-orbit-settings__card">
-					<h2><?php esc_html_e( 'Who can see the widget?', 'session-radar' ); ?></h2>
-					<p><?php esc_html_e( 'Administrators always have access. Optionally grant access to additional roles.', 'session-radar' ); ?></p>
-					<fieldset class="amino-orbit-settings__roles"><legend class="screen-reader-text"><?php esc_html_e( 'Additional roles allowed to see the widget', 'session-radar' ); ?></legend>
+					<h2><?php esc_html_e( 'Who can see the widget?', 'sessivue' ); ?></h2>
+					<p><?php esc_html_e( 'Administrators always have access. Optionally grant access to additional roles.', 'sessivue' ); ?></p>
+					<fieldset class="amino-orbit-settings__roles"><legend class="screen-reader-text"><?php esc_html_e( 'Additional roles allowed to see the widget', 'sessivue' ); ?></legend>
 						<?php foreach ( wp_roles()->roles as $slug => $details ) : ?>
 							<?php if ( 'administrator' !== $slug ) : ?>
 								<label><input type="checkbox" name="<?php echo esc_attr( self::OPTION ); ?>[viewer_roles][]" value="<?php echo esc_attr( $slug ); ?>" <?php checked( in_array( $slug, (array) $options['viewer_roles'], true ) ); ?> /> <?php echo esc_html( translate_user_role( $details['name'] ) ); ?></label>
@@ -711,26 +715,26 @@ final class Amino_Orbit {
 					</fieldset>
 				</div>
 				<div class="amino-orbit-settings__card">
-					<h2><?php esc_html_e( 'Presence and refresh', 'session-radar' ); ?></h2>
-					<p><label for="amino-orbit-inactive"><?php esc_html_e( 'Inactivity threshold', 'session-radar' ); ?></label></p>
+					<h2><?php esc_html_e( 'Presence and refresh', 'sessivue' ); ?></h2>
+					<p><label for="amino-orbit-inactive"><?php esc_html_e( 'Inactivity threshold', 'sessivue' ); ?></label></p>
 					<select id="amino-orbit-inactive" name="<?php echo esc_attr( self::OPTION ); ?>[inactive_minutes]">
-						<?php foreach ( array( 5, 10, 15, 30 ) as $minute ) : ?><option value="<?php echo esc_attr( (string) $minute ); ?>" <?php selected( (int) $options['inactive_minutes'], $minute ); ?>><?php echo esc_html( sprintf( /* translators: %d: number of minutes. */ __( '%d minutes', 'session-radar' ), $minute ) ); ?></option><?php endforeach; ?>
+						<?php foreach ( array( 5, 10, 15, 30 ) as $minute ) : ?><option value="<?php echo esc_attr( (string) $minute ); ?>" <?php selected( (int) $options['inactive_minutes'], $minute ); ?>><?php echo esc_html( sprintf( /* translators: %d: number of minutes. */ __( '%d minutes', 'sessivue' ), $minute ) ); ?></option><?php endforeach; ?>
 					</select>
-					<p><label for="amino-orbit-refresh"><?php esc_html_e( 'Widget refresh interval', 'session-radar' ); ?></label></p>
+					<p><label for="amino-orbit-refresh"><?php esc_html_e( 'Widget refresh interval', 'sessivue' ); ?></label></p>
 					<select id="amino-orbit-refresh" name="<?php echo esc_attr( self::OPTION ); ?>[refresh_seconds]">
-						<?php foreach ( array( 30, 60, 120, 180 ) as $second ) : ?><option value="<?php echo esc_attr( (string) $second ); ?>" <?php selected( (int) $options['refresh_seconds'], $second ); ?>><?php echo esc_html( sprintf( /* translators: %d: number of seconds. */ __( '%d seconds', 'session-radar' ), $second ) ); ?></option><?php endforeach; ?>
+						<?php foreach ( array( 30, 60, 120, 180 ) as $second ) : ?><option value="<?php echo esc_attr( (string) $second ); ?>" <?php selected( (int) $options['refresh_seconds'], $second ); ?>><?php echo esc_html( sprintf( /* translators: %d: number of seconds. */ __( '%d seconds', 'sessivue' ), $second ) ); ?></option><?php endforeach; ?>
 					</select>
 				</div>
 				<div class="amino-orbit-settings__card">
-					<h2><?php esc_html_e( 'Privacy', 'session-radar' ); ?></h2>
-					<label><input type="checkbox" name="<?php echo esc_attr( self::OPTION ); ?>[activity_enabled]" value="1" <?php checked( ! empty( $options['activity_enabled'] ) ); ?> /> <?php esc_html_e( 'Enable admin activity signals', 'session-radar' ); ?></label>
-					<p class="description"><?php esc_html_e( 'When enabled, this site stores a last-interaction timestamp for authenticated WordPress admin sessions. Inform affected users before activating this feature.', 'session-radar' ); ?></p>
-					<p class="description"><?php esc_html_e( 'Activity signals are disabled until an administrator explicitly enables them. Authentication sessions remain visible without activity tracking.', 'session-radar' ); ?></p>
-					<label><input type="checkbox" name="<?php echo esc_attr( self::OPTION ); ?>[show_ip]" value="1" <?php checked( ! empty( $options['show_ip'] ) ); ?> /> <?php esc_html_e( 'Show session IP addresses to administrators only', 'session-radar' ); ?></label>
-					<p class="description"><?php esc_html_e( 'Disabled by default. Session Radar does not collect additional IP addresses; it reads data already associated with WordPress sessions.', 'session-radar' ); ?></p>
-					<p class="description"><?php esc_html_e( 'Activity timestamps expire after 24 hours and are cleaned daily by WP-Cron. Anonymous visitors are not tracked.', 'session-radar' ); ?></p>
+					<h2><?php esc_html_e( 'Privacy', 'sessivue' ); ?></h2>
+					<label><input type="checkbox" name="<?php echo esc_attr( self::OPTION ); ?>[activity_enabled]" value="1" <?php checked( ! empty( $options['activity_enabled'] ) ); ?> /> <?php esc_html_e( 'Enable admin activity signals', 'sessivue' ); ?></label>
+					<p class="description"><?php esc_html_e( 'When enabled, this site stores a last-interaction timestamp for authenticated WordPress admin sessions. Inform affected users before activating this feature.', 'sessivue' ); ?></p>
+					<p class="description"><?php esc_html_e( 'Activity signals are disabled until an administrator explicitly enables them. Authentication sessions remain visible without activity tracking.', 'sessivue' ); ?></p>
+					<label><input type="checkbox" name="<?php echo esc_attr( self::OPTION ); ?>[show_ip]" value="1" <?php checked( ! empty( $options['show_ip'] ) ); ?> /> <?php esc_html_e( 'Show session IP addresses to administrators only', 'sessivue' ); ?></label>
+					<p class="description"><?php esc_html_e( 'Disabled by default. SessiVue does not collect additional IP addresses; it reads data already associated with WordPress sessions.', 'sessivue' ); ?></p>
+					<p class="description"><?php esc_html_e( 'Activity timestamps expire after 24 hours and are cleaned daily by WP-Cron. Anonymous visitors are not tracked.', 'sessivue' ); ?></p>
 				</div>
-				<?php submit_button( __( 'Save settings', 'session-radar' ) ); ?>
+				<?php submit_button( __( 'Save settings', 'sessivue' ) ); ?>
 			</form>
 		</div>
 		<?php

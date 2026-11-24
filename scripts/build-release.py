@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Reproducible, plugin-only Session Radar build without GitHub Actions.
+"""Reproducible, plugin-only SessiVue build without GitHub Actions.
 
 Usage: python3 scripts/build-release.py
-Generates dist/session-radar-<version>.zip and dist/SHA256SUMS.txt.
+Generates dist/sessivue-<version>.zip and dist/SHA256SUMS.txt.
 Requires Python 3 only; all source files are read from this repository.
 """
 from pathlib import Path
@@ -13,7 +13,7 @@ import sys
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
-SLUG = "session-radar"
+SLUG = "sessivue"
 ENTRY = ROOT / f"{SLUG}.php"
 DIST = ROOT / "dist"
 
@@ -28,15 +28,15 @@ def main():
         raise SystemExit("Missing Plugin Version header")
     version = match.group(1)
 
-    # Build MO catalogs from the tracked human-readable PO files.
+    # Compile gettext catalogs for tests; exclude them from the reviewer ZIP.
     run("scripts/build-i18n.py")
     # Validate source metadata, package names, translations, and opt-in default.
     run("tests/release-preflight.py")
 
     package_files = [
-        "session-radar.php", "readme.txt", "README.md", "uninstall.php", "LICENSE"
+        "sessivue.php", "readme.txt", "README.md", "uninstall.php", "LICENSE"
     ]
-    for directory in ("assets", "includes", "languages"):
+    for directory in ("assets", "includes"):
         package_files.extend(
             str(p.relative_to(ROOT)) for p in (ROOT / directory).rglob("*") if p.is_file()
         )
