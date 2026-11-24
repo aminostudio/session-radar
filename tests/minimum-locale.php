@@ -9,12 +9,12 @@
 if ( ! defined( 'WP_CLI' ) || ! WP_CLI ) {
     exit( 1 );
 }
-if ( 'Session Radar CI' !== get_option( 'blogname' ) ||
+if ( 'Sessivue CI' !== get_option( 'blogname' ) ||
     'http://127.0.0.1:8080' !== untrailingslashit( home_url() ) ) {
     WP_CLI::error( 'Refusing minimum locale test outside disposable CI.' );
 }
 
-$locale = (string) getenv( 'ORBIT_MIN_TEST_LOCALE' );
+$locale = (string) getenv( 'SESSIVUE_MIN_TEST_LOCALE' );
 $expected = array(
     'fr_FR' => array(
         'session' => 'Session ouverte',
@@ -32,7 +32,7 @@ if ( get_locale() !== $locale ) {
     WP_CLI::error( 'WordPress is not booted in the requested locale: ' . get_locale() );
 }
 
-$actual = __( 'Session open', 'session-radar' );
+$actual = __( 'Session open', 'sessivue' );
 if ( $expected[ $locale ]['session'] !== $actual ) {
     WP_CLI::error(
         sprintf(
@@ -45,13 +45,13 @@ if ( $expected[ $locale ]['session'] !== $actual ) {
 }
 WP_CLI::log( 'PASS: WordPress 6.4 loads language-pack ' . $locale . ' locale in a fresh bootstrap.' );
 
-$admin = get_user_by( 'login', 'orbit_ci_admin' );
+$admin = get_user_by( 'login', 'sessivue_ci_admin' );
 if ( ! $admin instanceof WP_User ) {
     WP_CLI::error( 'Missing disposable CI administrator.' );
 }
 wp_set_current_user( (int) $admin->ID );
 ob_start();
-Amino_Orbit::render_widget();
+Sessivue_Plugin::render_widget();
 $html = (string) ob_get_clean();
 if ( ! str_contains( $html, $expected[ $locale ]['refresh'] ) ) {
     WP_CLI::error( 'Widget refresh label was not translated in ' . $locale );
