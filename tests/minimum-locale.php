@@ -9,7 +9,7 @@
 if ( ! defined( 'WP_CLI' ) || ! WP_CLI ) {
     exit( 1 );
 }
-if ( 'Session Radar CI' !== get_option( 'blogname' ) ||
+if ( 'SessiVue CI' !== get_option( 'blogname' ) ||
     'http://127.0.0.1:8080' !== untrailingslashit( home_url() ) ) {
     WP_CLI::error( 'Refusing minimum locale test outside disposable CI.' );
 }
@@ -32,7 +32,7 @@ if ( get_locale() !== $locale ) {
     WP_CLI::error( 'WordPress is not booted in the requested locale: ' . get_locale() );
 }
 
-$actual = __( 'Session open', 'session-radar' );
+$actual = __( 'Session open', 'sessivue' );
 if ( $expected[ $locale ]['session'] !== $actual ) {
     WP_CLI::error(
         sprintf(

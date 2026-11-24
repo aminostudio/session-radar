@@ -1,4 +1,4 @@
-=== Session Radar ===
+=== SessiVue ===
 Contributors: aminostudiofr
 Tags: sessions, dashboard, activity, logins, privacy
 Requires at least: 6.4
@@ -12,16 +12,16 @@ See authenticated WordPress login sessions and recent admin activity in one ligh
 
 == Description ==
 
-Session Radar shows currently valid WordPress authentication sessions, their user and role, WordPress login time, browser/OS (when available), and recent interaction with wp-admin.
+SessiVue shows currently valid WordPress authentication sessions, their user and role, WordPress login time, browser/OS (when available), and recent interaction with wp-admin.
 
 It distinguishes between:
 * Active: a browser reported recent interaction with wp-admin.
 * Inactive: previously observed activity, but not within the configured threshold.
 * Session open: WordPress authentication is still valid, but no recent activity signal was collected.
 
-"Session open" does not mean the user is online. Session Radar does not follow anonymous visitors or frontend behavior. It stores no extra IP address or raw authentication token. An administrator can optionally display the IP recorded by WordPress in each session.
+"Session open" does not mean the user is online. SessiVue does not follow anonymous visitors or frontend behavior. It stores no extra IP address or raw authentication token. An administrator can optionally display the IP recorded by WordPress in each session.
 
-The dashboard widget is visible to administrators by default. Under Settings > Session Radar, administrators can permit other roles to see it, adjust the inactivity threshold, change the refresh interval (30/60/120/180s), and show IP addresses to administrators only.
+The dashboard widget is visible to administrators by default. Under Settings > SessiVue, administrators can permit other roles to see it, adjust the inactivity threshold, change the refresh interval (30/60/120/180s), and show IP addresses to administrators only.
 
 == Languages ==
 
@@ -29,27 +29,27 @@ English (en_US) is the source language and works without a translation pack. Fre
 
 == Installation ==
 
-1. Upload the `session-radar` directory or its ZIP to `/wp-content/plugins/` using Plugins > Add New > Upload Plugin.
-2. Activate Session Radar.
-3. Visit Dashboard > Home, then Settings > Session Radar.
+1. Upload the `sessivue` directory or its ZIP to `/wp-content/plugins/` using Plugins > Add New > Upload Plugin.
+2. Activate SessiVue.
+3. Visit Dashboard > Home, then Settings > SessiVue.
 
 == Privacy ==
 
-Session Radar reads the existing WordPress session manager. The only plugin-specific user metadata is an HMAC-derived session fingerprint with the last observed admin interaction timestamp; it never stores raw session tokens. Activity pings are batched and limited. Data is logically expired after 24 hours and is pruned during the user's next interaction and through a daily WP-Cron event. Actual cleanup time depends on WP-Cron execution. All plugin-specific data is removed on uninstall.
+SessiVue reads the existing WordPress session manager. The only plugin-specific user metadata is an HMAC-derived session fingerprint with the last observed admin interaction timestamp; it never stores raw session tokens. Activity pings are batched and limited. Data is logically expired after 24 hours and is pruned during the user's next interaction and through a daily WP-Cron event. Actual cleanup time depends on WP-Cron execution. All plugin-specific data is removed on uninstall.
 
 Activity signals are OFF by default until a site administrator explicitly enables them. Native WordPress authentication sessions remain visible to authorized viewers without activity tracking. When monitoring is enabled, only authenticated wp-admin sessions send updates. Disabling monitoring removes plugin-specific activity metadata and blocks further writes, without destroying WordPress authentication sessions. Site owners are responsible for informing affected users and determining an appropriate legal basis. WordPress's Privacy Policy Guide provides editable suggested disclosure text.
 
 Nothing is sent to external providers. Viewer permissions are checked server-side on every data refresh.
 
-Data retention of native WordPress session information is managed by WordPress, not Session Radar.
+Data retention of native WordPress session information is managed by WordPress, not SessiVue.
 
-Use **Tools > Export Personal Data** or **Tools > Erase Personal Data** to process a confirmed personal-data request. Session Radar participates using the user's registered WordPress email address, exporting only recent activity timestamps or deleting only the person's Session Radar activity records. Native WordPress login sessions are never removed by Session Radar's privacy eraser.
+Use **Tools > Export Personal Data** or **Tools > Erase Personal Data** to process a confirmed personal-data request. SessiVue participates using the user's registered WordPress email address, exporting only recent activity timestamps or deleting only the person's SessiVue activity records. Native WordPress login sessions are never removed by SessiVue's privacy eraser.
 
 == Frequently Asked Questions ==
 
-= Does Session Radar show who is online right now? =
+= Does SessiVue show who is online right now? =
 
-No. Session Radar displays WordPress authentication sessions. A valid login session does not prove someone is currently using the site. Optional admin activity signals only indicate recently detected interactions, not live presence.
+No. SessiVue displays WordPress authentication sessions. A valid login session does not prove someone is currently using the site. Optional admin activity signals only indicate recently detected interactions, not live presence.
 
 = Does it monitor public visitors or send information elsewhere? =
 
@@ -57,19 +57,19 @@ No. There is no public-visitor tracking or third-party telemetry. When explicitl
 
 = Is activity monitoring enabled automatically? =
 
-No. It is disabled by default. An administrator must explicitly enable it in Settings > Session Radar. The site operator is responsible for informing affected users and establishing any necessary legal basis.
+No. It is disabled by default. An administrator must explicitly enable it in Settings > SessiVue. The site operator is responsible for informing affected users and establishing any necessary legal basis.
 
 = Who can see session information? =
 
 Administrators have access. An administrator may grant read-only widget access to additional roles. IP addresses from native WordPress sessions are hidden by default and can only be revealed to administrators.
 
-= Can Session Radar log users out or revoke their sessions? =
+= Can SessiVue log users out or revoke their sessions? =
 
 No. The widget is read-only. Native WordPress authentication sessions and logout are managed by WordPress.
 
 = What happens when I turn off monitoring or uninstall? =
 
-Disabling activity monitoring deletes Session Radar-specific activity records while retaining native WordPress sessions. Uninstall removes Session Radar settings and plugin-specific metadata. WP-Cron cleanup may run later than its scheduled time.
+Disabling activity monitoring deletes SessiVue-specific activity records while retaining native WordPress sessions. Uninstall removes SessiVue settings and plugin-specific metadata. WP-Cron cleanup may run later than its scheduled time.
 
 = Why can the visible list be smaller than the session count? =
 
@@ -90,7 +90,7 @@ The minimums are WordPress 6.4 and PHP 8.0. English is available by default. Fre
 == Changelog ==
 
 = 1.0.0 =
-* Prepared the initial Session Radar submission candidate for WordPress.org review.
+* Prepared the initial SessiVue submission candidate for WordPress.org review.
 * Adds a documented FAQ and strict integrity and version checks to the private build process.
 * Carries forward all session controls, default-off activity monitoring and native WordPress privacy tools from 0.9.0.
 * This changelog records the initial release candidate, not confirmation of WordPress.org directory approval.

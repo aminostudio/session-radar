@@ -61,7 +61,7 @@ def compile_mo(entries):
 
 if __name__ == "__main__":
     for locale in ("fr_FR", "es_ES"):
-        po = ROOT / "languages" / f"session-radar-{locale}.po"
+        po = ROOT / "languages" / f"sessivue-{locale}.po"
         mo = po.with_suffix(".mo")
         entries = parse_po(po)
         if not entries.get("") or "charset=UTF-8" not in entries[""]:

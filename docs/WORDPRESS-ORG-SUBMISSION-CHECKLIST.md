@@ -1,3 +1,5 @@
+> **Archive historique (14 novembre 2026) :** ce document concerne l’ancien Amino Orbit avant soumission et n’est plus une procédure actuelle. Pour SessiVue 1.0.0, utiliser [les critères de livraison actualisés](RELEASE-GATES-1.0.md). Aucun nouveau dépôt WordPress.org ne doit être créé.
+
 # Amino Orbit · Préparation à une première soumission WordPress.org
 
 **État au 14 novembre 2026 :** dépôt privé, version publiée sur GitHub `0.3.7`, correctif `0.3.8` en PR #5, **aucune soumission WordPress.org effectuée**. Ce document est une vérification préalable, pas une autorisation de publication.

@@ -1,5 +1,5 @@
 msgid ""
-msgstr "Project-Id-Version: Session Radar 1.0.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=2; plural=(n != 1);\n"
+msgstr "Project-Id-Version: SessiVue 1.0.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=2; plural=(n != 1);\n"
 
 
 #, php-format
@@ -28,11 +28,11 @@ msgstr "Rôles supplémentaires autorisés à voir le widget"
 msgid "Administrators always have access. Optionally grant access to additional roles."
 msgstr "Les administrateurs ont toujours accès. Autorisez, si besoin, des rôles supplémentaires."
 
-msgid "Session Radar"
-msgstr "Session Radar"
+msgid "SessiVue"
+msgstr "SessiVue"
 
-msgid "Session Radar · Presence"
-msgstr "Session Radar · Présence"
+msgid "SessiVue · Presence"
+msgstr "SessiVue · Présence"
 
 msgid "Authenticated WordPress sessions"
 msgstr "Sessions WordPress authentifiées"
@@ -46,8 +46,8 @@ msgstr "Rafraîchissement automatique, pas de connexion en temps réel"
 msgid "Browser"
 msgstr "Navigateur"
 
-msgid "Disabled by default. Session Radar does not collect additional IP addresses; it reads data already associated with WordPress sessions."
-msgstr "Désactivé par défaut. Session Radar ne collecte pas d’IP supplémentaires ; il lit les informations déjà associées aux sessions WordPress."
+msgid "Disabled by default. SessiVue does not collect additional IP addresses; it reads data already associated with WordPress sessions."
+msgstr "Désactivé par défaut. SessiVue ne collecte pas d’IP supplémentaires ; il lit les informations déjà associées aux sessions WordPress."
 
 msgid "Inactive"
 msgstr "Inactif"
@@ -129,20 +129,20 @@ msgstr "Une fois activée, cette fonction enregistre l’heure de la dernière i
 msgid "Activity signals are disabled until an administrator explicitly enables them. Authentication sessions remain visible without activity tracking."
 msgstr "Les signaux d’activité restent désactivés tant qu’un administrateur ne les active pas explicitement. Les sessions authentifiées restent visibles sans suivi d’activité."
 
-msgid "If enabled, Session Radar records the time of recent interactions in the WordPress administration area for authenticated user sessions. It does not record public-site visits or send data to external services."
-msgstr "Lorsque cette fonction est activée, Session Radar enregistre l’heure des interactions récentes dans l’administration WordPress pour les sessions authentifiées. Il ne suit pas les visites du site public et n’envoie aucune donnée à des services externes."
+msgid "If enabled, SessiVue records the time of recent interactions in the WordPress administration area for authenticated user sessions. It does not record public-site visits or send data to external services."
+msgstr "Lorsque cette fonction est activée, SessiVue enregistre l’heure des interactions récentes dans l’administration WordPress pour les sessions authentifiées. Il ne suit pas les visites du site public et n’envoie aucune donnée à des services externes."
 
-msgid "Activity older than 24 hours is no longer shown. Stored records are deleted on later interactions or during WordPress scheduled cleanup, which may run later. Turning monitoring off deletes Session Radar activity records immediately. WordPress manages login sessions separately."
-msgstr "L’activité datant de plus de 24 heures n’est plus affichée. Les données stockées sont supprimées lors d’interactions ultérieures ou du nettoyage programmé de WordPress, qui peut s’exécuter plus tard. La désactivation du suivi supprime immédiatement les données d’activité de Session Radar. WordPress gère séparément les sessions de connexion."
+msgid "Activity older than 24 hours is no longer shown. Stored records are deleted on later interactions or during WordPress scheduled cleanup, which may run later. Turning monitoring off deletes SessiVue activity records immediately. WordPress manages login sessions separately."
+msgstr "L’activité datant de plus de 24 heures n’est plus affichée. Les données stockées sont supprimées lors d’interactions ultérieures ou du nettoyage programmé de WordPress, qui peut s’exécuter plus tard. La désactivation du suivi supprime immédiatement les données d’activité de SessiVue. WordPress gère séparément les sessions de connexion."
 
-msgid "Session Radar admin activity"
-msgstr "Activité d’administration Session Radar"
+msgid "SessiVue admin activity"
+msgstr "Activité d’administration SessiVue"
 
 msgid "Last observed admin interaction"
 msgstr "Dernière interaction observée dans l’administration"
 
-msgid "Could not remove Session Radar activity data."
-msgstr "Impossible de supprimer les données d’activité de Session Radar."
+msgid "Could not remove SessiVue activity data."
+msgstr "Impossible de supprimer les données d’activité de SessiVue."
 
 
 msgid "Search sessions"

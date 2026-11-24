@@ -1,4 +1,4 @@
-/** Session Radar: minimal activity beacon and accessible widget refresh. */
+/** SessiVue: minimal activity beacon and accessible widget refresh. */
 (() => {
   'use strict';
   const config = window.aminoOrbitConfig;
@@ -17,7 +17,7 @@
       body: body.toString(),
       cache: 'no-store'
     }).then((response) => {
-      if (!response.ok) throw new Error('Session Radar request failed');
+      if (!response.ok) throw new Error('SessiVue request failed');
       return response.json();
     });
   }
