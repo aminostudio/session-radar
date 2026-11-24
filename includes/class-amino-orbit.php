@@ -197,7 +197,7 @@ final class Amino_Orbit {
 		}
 		$paragraphs = array(
 			__( 'If enabled, Session Radar records the time of recent interactions in the WordPress administration area for authenticated user sessions. It does not record public-site visits or send data to external services.', 'session-radar' ),
-			__( 'Activity older than 24 hours is no longer shown. Stored records are deleted on later interactions or during WordPress scheduled cleanup, which may run later. Turning monitoring off deletes Orbit activity records immediately. WordPress manages login sessions separately.', 'session-radar' ),
+			__( 'Activity older than 24 hours is no longer shown. Stored records are deleted on later interactions or during WordPress scheduled cleanup, which may run later. Turning monitoring off deletes Session Radar activity records immediately. WordPress manages login sessions separately.', 'session-radar' ),
 		);
 		$html = '';
 		foreach ( $paragraphs as $paragraph ) {
@@ -269,7 +269,7 @@ final class Amino_Orbit {
 	}
 
 	/**
-	 * Erase all Orbit-specific metadata for the requested WordPress account.
+	 * Erase all Session Radar-specific metadata for the requested WordPress account.
 	 * Core's privacy workflow validates and authorizes the request.
 	 */
 	public static function erase_personal_data( string $email_address, int $page = 1 ): array {
@@ -371,7 +371,7 @@ final class Amino_Orbit {
 	 * Derive an opaque presence ID from WordPress's own hashed token verifier.
 	 *
 	 * The verifier is already a one-way SHA-256 digest in the native session
-	 * store. A second keyed digest keeps Orbit's metadata unrelated to it.
+	 * store. A second keyed digest keeps Session Radar's metadata unrelated to it.
 	 * Even sessions created in the same second get distinct presence IDs.
 	 */
 	private static function verifier_fingerprint( string $verifier ): string {
