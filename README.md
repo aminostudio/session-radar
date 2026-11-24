@@ -1,10 +1,10 @@
-# Session Radar 🪐
+# Sessivue 🪐
 
-> **WordPress.org review:** Session Radar (`session-radar`) version **1.0.0** was submitted on **November 16, 2026**. The Plugin Review Team emailed a **Review in Progress** correction request on **November 20, 2026**. The plugin has not been approved or listed. Existing Amino ORBIT installations should follow [the migration instructions](docs/SESSION-RADAR-MIGRATION.md) before installing the renamed plugin.
+> **WordPress.org review:** Sessivue (`sessivue`) version **1.0.0** was submitted on **November 16, 2026**. The Plugin Review Team emailed a **Review in Progress** correction request on **November 20, 2026**. The plugin has not been approved or listed. Existing Sessivue installations should follow [the migration instructions](docs/SESSIVUE-MIGRATION.md) before installing the renamed plugin.
 
 **A lightweight WordPress dashboard presence monitor, designed by Amino Studio.**
 
-Session Radar is a GPL-2.0-or-later WordPress plugin that distinguishes **valid authentication sessions** from **recent activity in wp-admin**. It adds an elegant, responsive widget to the WordPress Dashboard with sessions, users, roles, login times, device labels, and configurable viewer permissions.
+Sessivue is a GPL-2.0-or-later WordPress plugin that distinguishes **valid authentication sessions** from **recent activity in wp-admin**. It adds an elegant, responsive widget to the WordPress Dashboard with sessions, users, roles, login times, device labels, and configurable viewer permissions.
 
 ## Presence status
 
@@ -16,10 +16,10 @@ A valid WordPress session is **not proof that someone is at their keyboard**. Th
 
 ## Installation
 
-1. Install the plugin ZIP via **Plugins → Add New → Upload Plugin**, or place the `session-radar` directory under `wp-content/plugins/`.
-2. Activate **Session Radar**.
+1. Install the plugin ZIP via **Plugins → Add New → Upload Plugin**, or place the `sessivue` directory under `wp-content/plugins/`.
+2. Activate **Sessivue**.
 3. Visit **Dashboard → Home** to see the widget.
-4. Configure viewer roles, status threshold and refresh interval in **Settings → Session Radar**.
+4. Configure viewer roles, status threshold and refresh interval in **Settings → Sessivue**.
 
 **Requirements:** WordPress 6.4+, PHP 8.0+.
 
@@ -38,7 +38,7 @@ A valid WordPress session is **not proof that someone is at their keyboard**. Th
 
 **Upgrading from pre-opt-in versions:** v0.3.8 removes existing legacy plugin activity records once when no explicit monitoring choice was ever saved, then records monitoring as OFF. Existing session visibility and dashboard settings are preserved.
 
-**Recent activity signals are disabled by default** until a site administrator explicitly enables them in **Settings → Session Radar → Privacy**. The widget can still list native WordPress sessions without tracking activity. Disabling previously enabled monitoring immediately removes plugin-only activity metadata and prevents future server writes.
+**Recent activity signals are disabled by default** until a site administrator explicitly enables them in **Settings → Sessivue → Privacy**. The widget can still list native WordPress sessions without tracking activity. Disabling previously enabled monitoring immediately removes plugin-only activity metadata and prevents future server writes.
 
 This is site-owner authorization, **not a declaration of consent or legal compliance on behalf of every user**. The site operator must inform affected team members and establish an appropriate legal basis where required. The WordPress Privacy Policy Guide receives editable suggested disclosure text.
 
@@ -59,9 +59,9 @@ This is site-owner authorization, **not a declaration of consent or legal compli
 ## Repository layout
 
 ~~~text
-session-radar/
-├── session-radar.php
-├── includes/class-amino-orbit.php
+sessivue/
+├── sessivue.php
+├── includes/class-sessivue.php
 ├── assets/admin.css
 ├── assets/admin.js
 ├── uninstall.php
