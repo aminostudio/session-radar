@@ -518,4 +518,4 @@ async function main() {
   }
 }
 
-main().catch(() => { process.exitCode = 1; });
+main().catch((error) => { console.error('FAIL: browser bootstrap or test:', error.stack || String(error)); process.exitCode = 1; });
