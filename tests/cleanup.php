@@ -2,9 +2,11 @@
 /** Isolated regression tests for daily cleanup. No live WordPress required. */
 define( 'ABSPATH', '/tmp/' );
 define( 'DAY_IN_SECONDS', 86400 );
-$GLOBALS['state'] = array( 'meta' => array(), 'updates' => 0, 'deletes' => 0 );
+$GLOBALS['state'] = array( 'meta' => array(), 'updates' => 0, 'deletes' => 0, 'options' => array( 'activity_enabled' => 1 ) );
+function get_option( $key, $default = array() ) { return $GLOBALS['state']['options']; }
+function wp_parse_args( $a, $b ) { return array_merge( $b, $a ); }
 function get_users( $args ) {
-    assert( $args['meta_key'] === '_session_radar_presence' );
+    assert( $args['meta_query'][0]['key'] === '_session_radar_presence' && $args['meta_query'][0]['compare'] === 'EXISTS' );
     assert( $args['fields'] === 'ID' );
     return array_slice( array_keys( $GLOBALS['state']['meta'] ), 0, $args['number'] );
 }
@@ -48,4 +50,13 @@ $previous = $GLOBALS['state']['meta'][1];
 $GLOBALS['state']['meta'][1]['new_ping'] = $now;
 verify( false === update_user_meta( 1, '_session_radar_presence', array( 'old' => $now ), $previous ), 'Conditional update does not overwrite newer pings' );
 verify( isset( $GLOBALS['state']['meta'][1]['new_ping'] ), 'New ping is preserved' );
+// Monitoring opt-out must purge plugin-only records on the scheduled retry.
+function delete_metadata( $type, $id, $key, $value, $all ) {
+    if ( 'user' !== $type || '_session_radar_presence' !== $key || ! $all ) return false;
+    $GLOBALS['state']['meta'] = array();
+    return true;
+}
+$GLOBALS['state']['options']['activity_enabled'] = 0;
+Amino_Orbit::cleanup_presence();
+verify( $GLOBALS['state']['meta'] === array(), 'Disabled monitoring retries complete presence purge' );
 echo "All daily cleanup tests passed.\n";
