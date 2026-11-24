@@ -83,6 +83,23 @@ jobs:
           extensions: mysqli
           coverage: none
           tools: wp-cli
+      - name: Ensure WP-CLI is available (setup-php fallback)
+        run: |
+          set -euo pipefail
+          if ! command -v wp >/dev/null 2>&1; then
+            echo "::warning::setup-php did not install WP-CLI; using official wp-cli.phar fallback"
+            mkdir -p "$HOME/.local/bin"
+            curl --fail --location --silent --show-error --retry 4 --retry-all-errors --retry-delay 3 \
+              https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
+              -o "$HOME/.local/bin/wp-cli.phar"
+            php "$HOME/.local/bin/wp-cli.phar" --info
+            # Replace HOME at generation time so a POSIX shell resolves it reliably.
+            printf '#!/bin/sh\nexec php "%s/.local/bin/wp-cli.phar" "$@"\n' "$HOME" > "$HOME/.local/bin/wp"
+            chmod +x "$HOME/.local/bin/wp"
+            echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+            export PATH="$HOME/.local/bin:$PATH"
+          fi
+          wp --info
       - name: Install disposable WordPress and the plugin
         run: |
           set -euo pipefail
@@ -244,6 +261,23 @@ jobs:
           extensions: mysqli
           coverage: none
           tools: wp-cli
+      - name: Ensure WP-CLI is available (setup-php fallback)
+        run: |
+          set -euo pipefail
+          if ! command -v wp >/dev/null 2>&1; then
+            echo "::warning::setup-php did not install WP-CLI; using official wp-cli.phar fallback"
+            mkdir -p "$HOME/.local/bin"
+            curl --fail --location --silent --show-error --retry 4 --retry-all-errors --retry-delay 3 \
+              https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
+              -o "$HOME/.local/bin/wp-cli.phar"
+            php "$HOME/.local/bin/wp-cli.phar" --info
+            # Replace HOME at generation time so a POSIX shell resolves it reliably.
+            printf '#!/bin/sh\nexec php "%s/.local/bin/wp-cli.phar" "$@"\n' "$HOME" > "$HOME/.local/bin/wp"
+            chmod +x "$HOME/.local/bin/wp"
+            echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+            export PATH="$HOME/.local/bin:$PATH"
+          fi
+          wp --info
       - name: Install disposable WordPress 6.4 and Session Radar
         run: |
           set -euo pipefail

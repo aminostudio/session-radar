@@ -132,8 +132,8 @@ msgstr "Les signaux d’activité restent désactivés tant qu’un administrate
 msgid "If enabled, Session Radar records the time of recent interactions in the WordPress administration area for authenticated user sessions. It does not record public-site visits or send data to external services."
 msgstr "Lorsque cette fonction est activée, Session Radar enregistre l’heure des interactions récentes dans l’administration WordPress pour les sessions authentifiées. Il ne suit pas les visites du site public et n’envoie aucune donnée à des services externes."
 
-msgid "Activity older than 24 hours is no longer shown. Stored records are deleted on later interactions or during WordPress scheduled cleanup, which may run later. Turning monitoring off deletes Orbit activity records immediately. WordPress manages login sessions separately."
-msgstr "L’activité datant de plus de 24 heures n’est plus affichée. Les données stockées sont supprimées lors d’interactions ultérieures ou du nettoyage programmé de WordPress, qui peut s’exécuter plus tard. La désactivation du suivi supprime immédiatement les données d’activité d’Orbit. WordPress gère séparément les sessions de connexion."
+msgid "Activity older than 24 hours is no longer shown. Stored records are deleted on later interactions or during WordPress scheduled cleanup, which may run later. Turning monitoring off deletes Session Radar activity records immediately. WordPress manages login sessions separately."
+msgstr "L’activité datant de plus de 24 heures n’est plus affichée. Les données stockées sont supprimées lors d’interactions ultérieures ou du nettoyage programmé de WordPress, qui peut s’exécuter plus tard. La désactivation du suivi supprime immédiatement les données d’activité de Session Radar. WordPress gère séparément les sessions de connexion."
 
 msgid "Session Radar admin activity"
 msgstr "Activité d’administration Session Radar"
@@ -142,7 +142,7 @@ msgid "Last observed admin interaction"
 msgstr "Dernière interaction observée dans l’administration"
 
 msgid "Could not remove Session Radar activity data."
-msgstr "Impossible de supprimer les données d’activité d’Session Radar."
+msgstr "Impossible de supprimer les données d’activité de Session Radar."
 
 
 msgid "Search sessions"
