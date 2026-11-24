@@ -29,7 +29,7 @@ function quantile(sorted, p) {
 async function authenticate(browser, index) {
   const context = await browser.newContext({ viewport: { width: 1280, height: 800 } });
   const page = await context.newPage();
-  const login = 'orbit_load_admin_' + String(index).padStart(2, '0');
+  const login = 'sessivue_load_admin_' + String(index).padStart(2, '0');
   try {
     await page.goto(ORIGIN + '/wp-login.php', { waitUntil: 'domcontentloaded' });
     await page.locator('#user_login').fill(login);
@@ -38,8 +38,8 @@ async function authenticate(browser, index) {
       page.waitForURL(/\/wp-admin(?:\/|\/index\.php)/, { timeout: 15000 }),
       page.locator('#wp-submit').click()
     ]);
-    await page.locator('#amino-orbit-panel').waitFor({ state: 'visible', timeout: 15000 });
-    const config = await page.evaluate(() => window.aminoOrbitConfig);
+    await page.locator('#sessivue-panel').waitFor({ state: 'visible', timeout: 15000 });
+    const config = await page.evaluate(() => window.sessivueConfig);
     check(Number(config?.refreshMs) === POLL_MS, login + ': configured 30-second poll');
     check(typeof config?.nonce === 'string' && !!config.nonce,
       login + ': WordPress supplies session-specific nonce');
@@ -62,7 +62,7 @@ async function requestWave(clients, waveNumber) {
     const response = await client.context.request.post(
       ORIGIN + '/wp-admin/admin-ajax.php',
       {
-        form: { action: 'amino_orbit_refresh', nonce: client.nonce },
+        form: { action: 'sessivue_refresh', nonce: client.nonce },
         timeout: 25000
       }
     );
@@ -70,7 +70,7 @@ async function requestWave(clients, waveNumber) {
     const payload = await response.json();
     check(response.status() === 200 && payload?.success === true &&
       typeof payload.data?.html === 'string' &&
-      payload.data.html.includes('id="amino-orbit-panel"'),
+      payload.data.html.includes('id="sessivue-panel"'),
     client.login + ': wave ' + waveNumber + ' returned valid authorized widget');
     check(!payload.data.html.includes('192.0.2.'),
       client.login + ': wave ' + waveNumber + ' did not expose an IP address');
