@@ -4,7 +4,7 @@ Tags: sessions, dashboard, activity, logins, privacy
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 2.0.0-alpha.2
+Stable tag: 2.0.0-alpha.3
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -88,6 +88,13 @@ The minimums are WordPress 6.4 and PHP 8.0. The plugin follows the current WordP
 * Activity pings are best-effort, not a live socket. Browser background throttling can delay updates.
 
 == Changelog ==
+
+= 2.0.0-alpha.3 =
+* Replace discouraged manual textdomain registration with locale-safe WordPress language-pack preference and bundled FR/ES MO fallback.
+* Use bounded, native WordPress user queries with explicit EXISTS metadata clauses for native session enumeration and privacy cleanup.
+* Include retry of disabled-monitoring cleanup after a failed settings transition, plus regression tests.
+* Private GitHub testing only. No changes to the WordPress.org 1.0.0 submission or LAB deployment.
+
 
 = 2.0.0-alpha.2 =
 * Switch between two-column grid and one-column list in the dedicated Sessions workspace without changing the compact dashboard widget.
