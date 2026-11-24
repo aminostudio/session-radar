@@ -111,6 +111,11 @@ jobs:
           cp -R assets includes languages "$WP_ROOT/wp-content/plugins/session-radar/"
           wp plugin activate session-radar --path="$WP_ROOT"
           wp language core install fr_FR es_ES --path="$WP_ROOT"
+          # Reproduce WordPress.org language-pack delivery for the unapproved slug.
+          # The current plugin package intentionally contains no bundled MO files.
+          mkdir -p "$WP_ROOT/wp-content/languages/plugins"
+          cp languages/session-radar-fr_FR.mo "$WP_ROOT/wp-content/languages/plugins/"
+          cp languages/session-radar-es_ES.mo "$WP_ROOT/wp-content/languages/plugins/"
       - name: Real WordPress session, authorization and translation checks
         run: wp eval-file "$GITHUB_WORKSPACE/tests/wordpress-integration.php" --path="$WP_ROOT"
 
@@ -198,7 +203,9 @@ jobs:
           set -euo pipefail
           mkdir -p /tmp/orbit-release/session-radar
           cp session-radar.php uninstall.php readme.txt README.md LICENSE /tmp/orbit-release/session-radar/
-          cp -R assets includes languages /tmp/orbit-release/session-radar/
+          cp -R assets includes /tmp/orbit-release/session-radar/
+          # WordPress.org distributes translated language packs separately.
+          # Keep PO sources in Git only, not in the reviewer ZIP.
           VERSION=$(sed -n 's/^ \* Version: //p' session-radar.php | head -n 1)
           test -n "$VERSION"
           test "$(sed -n 's/^Stable tag: //p' readme.txt | head -n 1)" = "$VERSION"
@@ -289,6 +296,11 @@ jobs:
           cp -R assets includes languages "$WP_ROOT/wp-content/plugins/session-radar/"
           wp plugin activate session-radar --path="$WP_ROOT"
           wp language core install fr_FR es_ES --path="$WP_ROOT"
+          # Reproduce WordPress.org language-pack delivery for the unapproved slug.
+          # The current plugin package intentionally contains no bundled MO files.
+          mkdir -p "$WP_ROOT/wp-content/languages/plugins"
+          cp languages/session-radar-fr_FR.mo "$WP_ROOT/wp-content/languages/plugins/"
+          cp languages/session-radar-es_ES.mo "$WP_ROOT/wp-content/languages/plugins/"
           wp core version --path="$WP_ROOT"
       - name: Native sessions, roles and logout on WordPress 6.4
         run: ORBIT_CHECK_LOCALE_IN_FRESH_BOOT=1 wp eval-file "$GITHUB_WORKSPACE/tests/wordpress-integration.php" --path="$WP_ROOT"

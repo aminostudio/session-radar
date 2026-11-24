@@ -3,7 +3,7 @@
  * Validate true WordPress 6.4 locale loading in a FRESH WP-CLI bootstrap.
  *
  * Unlike switch_to_locale() in an existing CLI process, starting WordPress
- * with WPLANG already set exercises normal pre-6.7 gettext registration.
+ * with WPLANG already set exercises normal pre-6.7 gettext registration with WordPress language packs.
  * This fixture is strictly forbidden against production or LAB.
  */
 if ( ! defined( 'WP_CLI' ) || ! WP_CLI ) {
@@ -43,7 +43,7 @@ if ( $expected[ $locale ]['session'] !== $actual ) {
         )
     );
 }
-WP_CLI::log( 'PASS: WordPress 6.4 loads bundled ' . $locale . ' locale in a fresh bootstrap.' );
+WP_CLI::log( 'PASS: WordPress 6.4 loads language-pack ' . $locale . ' locale in a fresh bootstrap.' );
 
 $admin = get_user_by( 'login', 'orbit_ci_admin' );
 if ( ! $admin instanceof WP_User ) {

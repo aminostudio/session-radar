@@ -66,7 +66,7 @@ session-radar/
 ├── assets/admin.js
 ├── uninstall.php
 ├── readme.txt
-├── languages/ (gettext POT, French and Spanish PO/MO)
+├── languages/ (Git-only gettext template and FR/ES catalogs; excluded from WordPress.org ZIP)
 ├── tests/ (isolated smoke checks, gettext and manual QA)
 ├── README.md
 └── LICENSE
@@ -83,7 +83,7 @@ session-radar/
 
 ## Internationalization
 
-English is the source language. Bundled gettext catalogs provide French (`fr_FR`) and Spanish (`es_ES`) translations. The plugin follows the WordPress admin user locale; it does not force the site language. `.po` files can be edited by translators; `.mo` files are compiled for WordPress. A `.pot` template is included.
+English (`en_US`) is the source language and needs no pack. French (`fr_FR`) and Spanish (`es_ES`) catalogs remain editable in Git for contribution to WordPress Polyglots. A WordPress.org submission ZIP omits `.po`/`.mo` files, and the plugin relies on WordPress core's language-pack loading rather than `load_plugin_textdomain()`. WordPress.org language packs are distributed only when the corresponding translations have been reviewed and published. Private CI exercises FR/ES through a simulated `wp-content/languages/plugins/` directory for both modern WordPress and the declared 6.4 minimum.
 
 ## Changelog
 

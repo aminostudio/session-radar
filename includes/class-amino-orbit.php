@@ -25,7 +25,6 @@ final class Amino_Orbit {
 	/** Register WordPress hooks. */
 	public static function init(): void {
 		add_action( 'init', array( __CLASS__, 'migrate_legacy_privacy' ), 0 );
-		add_action( 'init', array( __CLASS__, 'load_translations' ) );
 		add_action( 'wp_dashboard_setup', array( __CLASS__, 'register_widget' ) );
 		add_action( 'admin_menu', array( __CLASS__, 'register_settings_page' ) );
 		add_action( 'admin_init', array( __CLASS__, 'register_settings' ) );
@@ -37,11 +36,6 @@ final class Amino_Orbit {
 		add_action( 'wp_ajax_amino_orbit_ping', array( __CLASS__, 'ajax_ping' ) );
 		add_action( 'wp_ajax_amino_orbit_refresh', array( __CLASS__, 'ajax_refresh' ) );
 		add_action( self::CLEANUP_HOOK, array( __CLASS__, 'cleanup_presence' ) );
-	}
-
-	/** Register bundled locale files at init, never before. */
-	public static function load_translations(): void {
-		load_plugin_textdomain( 'session-radar', false, dirname( plugin_basename( AMINO_ORBIT_FILE ) ) . '/languages' );
 	}
 
 	/**

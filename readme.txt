@@ -25,7 +25,7 @@ The dashboard widget is visible to administrators by default. Under Settings > S
 
 == Languages ==
 
-The plugin follows the WordPress user locale in wp-admin. English is the default source language; the bundled translations cover fr_FR and es_ES.
+English (en_US) is the source language and works without a translation pack. French (fr_FR) and Spanish (es_ES) translation catalogs are maintained in the public GitHub repository for contribution to translate.wordpress.org. Once the plugin is approved and its translations are validated by the WordPress translation community, WordPress automatically downloads language packs according to the user's selected admin language. The WordPress.org distribution ZIP does not ship PO/MO files or manually load the text domain.
 
 == Installation ==
 
@@ -77,7 +77,7 @@ To keep dashboard queries bounded, the widget shows at most 40 session rows and 
 
 = Which WordPress and PHP versions are supported? =
 
-The minimums are WordPress 6.4 and PHP 8.0. The plugin follows the current WordPress user's admin locale, with bundled French and Spanish translations.
+The minimums are WordPress 6.4 and PHP 8.0. English is available by default. French and Spanish translations are prepared for WordPress.org language-pack delivery once reviewed and approved.
 
 == Limitations ==
 
