@@ -45,7 +45,7 @@ jobs:
         run: php tests/privacy.php
       - name: Personal data export and erasure regression tests
         run: php tests/privacy-data.php
-      - name: Compiled translation catalog tests
+      - name: EN/FR/ES gettext source, catalogs and placeholder parity
         run: python3 tests/i18n.py
       - name: JavaScript syntax check
         run: node --check assets/admin.js
@@ -292,9 +292,11 @@ jobs:
           wp core version --path="$WP_ROOT"
       - name: Native sessions, roles and logout on WordPress 6.4
         run: ORBIT_CHECK_LOCALE_IN_FRESH_BOOT=1 wp eval-file "$GITHUB_WORKSPACE/tests/wordpress-integration.php" --path="$WP_ROOT"
-      - name: Real bundled translations in fresh WordPress 6.4 bootstraps
+      - name: Real English source and French/Spanish translations on WordPress 6.4
         run: |
           set -euo pipefail
+          wp option update WPLANG en_US --path="$WP_ROOT"
+          ORBIT_MIN_TEST_LOCALE=en_US wp eval-file "$GITHUB_WORKSPACE/tests/minimum-locale.php" --path="$WP_ROOT"
           wp option update WPLANG fr_FR --path="$WP_ROOT"
           ORBIT_MIN_TEST_LOCALE=fr_FR wp eval-file "$GITHUB_WORKSPACE/tests/minimum-locale.php" --path="$WP_ROOT"
           wp option update WPLANG es_ES --path="$WP_ROOT"
