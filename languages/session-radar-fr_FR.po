@@ -142,7 +142,7 @@ msgid "Last observed admin interaction"
 msgstr "Dernière interaction observée dans l’administration"
 
 msgid "Could not remove Session Radar activity data."
-msgstr "Impossible de supprimer les données d’activité d’Session Radar."
+msgstr "Impossible de supprimer les données d’activité de Session Radar."
 
 
 msgid "Search sessions"
