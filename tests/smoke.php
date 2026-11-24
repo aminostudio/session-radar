@@ -46,11 +46,9 @@ function selected($value,$match=null){if($value===$match)echo ' selected';}
 function settings_fields($a){}
 function submit_button($a){}
 function plugin_basename($f){return 'session-radar/session-radar.php';}
-function load_plugin_textdomain($domain,$unused,$path){$GLOBALS['state']['textdomain']=$path;return true;}
 function assert_true($condition,$message){if(!$condition){fwrite(STDERR,"FAIL: $message\n");exit(1);} echo "PASS: $message\n";}
 require dirname( __DIR__ ) . '/includes/class-amino-orbit.php';
-Amino_Orbit::load_translations();
-assert_true($state['textdomain']==='session-radar/languages','Localized catalog load path is correct');
+assert_true(!method_exists('Amino_Orbit', 'load_translations'), 'WordPress.org translations use native JIT loading without a manual loader');
 $state['users']=[new WP_User(1,'Amino Test',['administrator'])];
 $session=['login'=>time()-120,'expiration'=>time()+3600,'ua'=>'Mozilla/5.0 Firefox/159 Windows NT 10.0','ip'=>'192.0.2.10'];
 WP_Session_Tokens::$sessions=[$session];
