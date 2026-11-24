@@ -4,7 +4,7 @@ Tags: sessions, dashboard, activity, logins, privacy
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 2.0.0-alpha.3
+Stable tag: 2.0.0-alpha.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -88,6 +88,13 @@ The minimums are WordPress 6.4 and PHP 8.0. The plugin follows the current WordP
 * Activity pings are best-effort, not a live socket. Browser background throttling can delay updates.
 
 == Changelog ==
+
+= 2.0.0-alpha.4 =
+* Requires WordPress Plugin Check to report zero errors and warnings in both static and runtime modes before a private release candidate ZIP is built.
+* Adds release-preflight safeguards against deprecated textdomain calls, direct database access and changes to bounded WordPress session scans.
+* Retains the privacy cleanup and translations of alpha.3; no new tracking, user data or external requests.
+* Private GitHub candidate only. Do not replace the submitted WordPress.org 1.0.0 package.
+
 
 = 2.0.0-alpha.3 =
 * Replace discouraged manual textdomain registration with locale-safe WordPress language-pack preference and bundled FR/ES MO fallback.
