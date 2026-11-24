@@ -17,14 +17,14 @@ class WP_User {
 }
 
 $now = time();
-$GLOBALS['orbit_personal_data'] = array(
+$GLOBALS['sessivue_personal_data'] = array(
     'users' => array(
         'admin@example.test' => new WP_User( 5, 'admin@example.test' ),
         'editor@example.test' => new WP_User( 9, 'editor@example.test' ),
     ),
     'metadata' => array(
         5 => array(
-            '_session_radar_presence' => array(
+            '_sessivue_presence' => array(
                 'hmac-not-a-real-session-token-1' => $now - 10,
                 'hmac-not-a-real-session-token-2' => $now - 60,
                 'expired' => $now - 90000,
@@ -33,36 +33,36 @@ $GLOBALS['orbit_personal_data'] = array(
             ),
             'session_tokens' => array( 'native-token-verifier' => array( 'expiration' => $now + 3600 ) ),
         ),
-        9 => array( '_session_radar_presence' => array( 'another-user' => $now - 20 ) ),
+        9 => array( '_sessivue_presence' => array( 'another-user' => $now - 20 ) ),
     ),
     'delete_failure' => false,
     'hooks' => array(),
 );
 function add_action( $hook, $callback, $priority = 10, $args = 1 ) {
-    $GLOBALS['orbit_personal_data']['hooks'][$hook][] = $callback;
+    $GLOBALS['sessivue_personal_data']['hooks'][$hook][] = $callback;
 }
 function add_filter( $hook, $callback, $priority = 10, $args = 1 ) {
-    $GLOBALS['orbit_personal_data']['hooks'][$hook][] = $callback;
+    $GLOBALS['sessivue_personal_data']['hooks'][$hook][] = $callback;
 }
 function __( $text, $domain ) { return $text; }
 function get_user_by( $field, $value ) {
-    return 'email' === $field ? ( $GLOBALS['orbit_personal_data']['users'][$value] ?? false ) : false;
+    return 'email' === $field ? ( $GLOBALS['sessivue_personal_data']['users'][$value] ?? false ) : false;
 }
 function get_user_meta( $user_id, $key, $single ) {
-    $metadata = $GLOBALS['orbit_personal_data']['metadata'][$user_id] ?? array();
+    $metadata = $GLOBALS['sessivue_personal_data']['metadata'][$user_id] ?? array();
     if ( ! array_key_exists( $key, $metadata ) ) {
         return $single ? '' : array();
     }
     return $single ? $metadata[$key] : array( $metadata[$key] );
 }
 function delete_user_meta( $user_id, $key ) {
-    if ( $GLOBALS['orbit_personal_data']['delete_failure'] ) {
+    if ( $GLOBALS['sessivue_personal_data']['delete_failure'] ) {
         return false;
     }
-    if ( ! isset( $GLOBALS['orbit_personal_data']['metadata'][$user_id][$key] ) ) {
+    if ( ! isset( $GLOBALS['sessivue_personal_data']['metadata'][$user_id][$key] ) ) {
         return false;
     }
-    unset( $GLOBALS['orbit_personal_data']['metadata'][$user_id][$key] );
+    unset( $GLOBALS['sessivue_personal_data']['metadata'][$user_id][$key] );
     return true;
 }
 function wp_date( $format, $timestamp ) { return gmdate( $format, $timestamp ); }
@@ -74,30 +74,30 @@ function check( bool $ok, string $message ): void {
     echo "PASS: $message\n";
 }
 
-require dirname( __DIR__ ) . '/includes/class-amino-orbit.php';
-Amino_Orbit::init();
+require dirname( __DIR__ ) . '/includes/class-sessivue.php';
+Sessivue_Plugin::init();
 check(
-    count( $GLOBALS['orbit_personal_data']['hooks']['wp_privacy_personal_data_exporters'] ?? array() ) === 1 &&
-    count( $GLOBALS['orbit_personal_data']['hooks']['wp_privacy_personal_data_erasers'] ?? array() ) === 1,
+    count( $GLOBALS['sessivue_personal_data']['hooks']['wp_privacy_personal_data_exporters'] ?? array() ) === 1 &&
+    count( $GLOBALS['sessivue_personal_data']['hooks']['wp_privacy_personal_data_erasers'] ?? array() ) === 1,
     'WordPress privacy exporter and eraser filters registered exactly once'
 );
 
-$exporters = Amino_Orbit::register_personal_data_exporter( array() );
-$erasers   = Amino_Orbit::register_personal_data_eraser( array() );
+$exporters = Sessivue_Plugin::register_personal_data_exporter( array() );
+$erasers   = Sessivue_Plugin::register_personal_data_eraser( array() );
 check(
-    isset( $exporters['session-radar']['exporter_friendly_name'], $exporters['session-radar']['callback'] ) &&
-    is_callable( $exporters['session-radar']['callback'] ),
+    isset( $exporters['sessivue']['exporter_friendly_name'], $exporters['sessivue']['callback'] ) &&
+    is_callable( $exporters['sessivue']['callback'] ),
     'Core exporter registration has callable and friendly name'
 );
 check(
-    isset( $erasers['session-radar']['eraser_friendly_name'], $erasers['session-radar']['callback'] ) &&
-    is_callable( $erasers['session-radar']['callback'] ),
+    isset( $erasers['sessivue']['eraser_friendly_name'], $erasers['sessivue']['callback'] ) &&
+    is_callable( $erasers['sessivue']['callback'] ),
     'Core eraser registration has callable and friendly name'
 );
 
-$missing = Amino_Orbit::export_personal_data( 'unknown@example.test' );
+$missing = Sessivue_Plugin::export_personal_data( 'unknown@example.test' );
 check( array() === $missing['data'] && true === $missing['done'], 'Unknown email exports no metadata' );
-$export = Amino_Orbit::export_personal_data( 'admin@example.test' );
+$export = Sessivue_Plugin::export_personal_data( 'admin@example.test' );
 check( true === $export['done'] && 2 === count( $export['data'] ), 'Only two unexpired valid timestamps are exported' );
 check(
     $export['data'][0]['item_id'] !== $export['data'][1]['item_id'] &&
@@ -112,35 +112,35 @@ check(
     'Export never includes HMAC IDs, native session tokens or IP information'
 );
 check(
-    array() === Amino_Orbit::export_personal_data( 'admin@example.test', 2 )['data'],
+    array() === Sessivue_Plugin::export_personal_data( 'admin@example.test', 2 )['data'],
     'Exporter declares done after its sole bounded page'
 );
 check(
-    1 === count( Amino_Orbit::export_personal_data( 'editor@example.test' )['data'] ),
+    1 === count( Sessivue_Plugin::export_personal_data( 'editor@example.test' )['data'] ),
     'Other user receives only their own presence observations'
 );
 
-$result = Amino_Orbit::erase_personal_data( 'unknown@example.test' );
+$result = Sessivue_Plugin::erase_personal_data( 'unknown@example.test' );
 check( ! $result['items_removed'] && ! $result['items_retained'] && $result['done'],
     'Unknown email has no data to erase' );
-$result = Amino_Orbit::erase_personal_data( 'admin@example.test' );
+$result = Sessivue_Plugin::erase_personal_data( 'admin@example.test' );
 check( $result['items_removed'] && ! $result['items_retained'] && $result['done'],
     'Eraser reports successful metadata removal' );
 check(
-    ! isset( $GLOBALS['orbit_personal_data']['metadata'][5]['_session_radar_presence'] ) &&
-    isset( $GLOBALS['orbit_personal_data']['metadata'][5]['session_tokens'] ) &&
-    isset( $GLOBALS['orbit_personal_data']['metadata'][9]['_session_radar_presence'] ),
+    ! isset( $GLOBALS['sessivue_personal_data']['metadata'][5]['_sessivue_presence'] ) &&
+    isset( $GLOBALS['sessivue_personal_data']['metadata'][5]['session_tokens'] ) &&
+    isset( $GLOBALS['sessivue_personal_data']['metadata'][9]['_sessivue_presence'] ),
     'Eraser preserves native login sessions and other users activity'
 );
-$result = Amino_Orbit::erase_personal_data( 'admin@example.test' );
+$result = Sessivue_Plugin::erase_personal_data( 'admin@example.test' );
 check( ! $result['items_removed'] && ! $result['items_retained'], 'Repeated erasure is harmless' );
 check(
-    ! Amino_Orbit::erase_personal_data( 'editor@example.test', 2 )['items_removed'],
+    ! Sessivue_Plugin::erase_personal_data( 'editor@example.test', 2 )['items_removed'],
     'Eraser handles a later page without deleting anything'
 );
 
-$GLOBALS['orbit_personal_data']['delete_failure'] = true;
-$result = Amino_Orbit::erase_personal_data( 'editor@example.test' );
+$GLOBALS['sessivue_personal_data']['delete_failure'] = true;
+$result = Sessivue_Plugin::erase_personal_data( 'editor@example.test' );
 check(
     ! $result['items_removed'] && $result['items_retained'] &&
     1 === count( $result['messages'] ) && $result['done'],
