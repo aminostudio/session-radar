@@ -9,7 +9,7 @@ define( 'ABSPATH', '/tmp/' );
 define( 'DAY_IN_SECONDS', 86400 );
 define( 'MINUTE_IN_SECONDS', 60 );
 
-final class Orbit_Ajax_Response extends RuntimeException {
+final class Sessivue_Ajax_Response extends RuntimeException {
     public bool $success;
     public array $data;
     public int $http_status;
@@ -31,7 +31,7 @@ class WP_User {
         $this->roles        = $roles;
     }
 }
-class Orbit_Test_Roles {
+class Sessivue_Test_Roles {
     public array $roles = array(
         'administrator' => array( 'name' => 'Administrator' ),
         'editor'        => array( 'name' => 'Editor' ),
@@ -81,7 +81,7 @@ function check_ajax_referer( $action, $arg, $die ) { return $GLOBALS['orbit']['n
 function wp_get_session_token() { return $GLOBALS['orbit']['token']; }
 function get_option( $name, $fallback = array() ) { return $GLOBALS['orbit']['settings']; }
 function wp_parse_args( $settings, $defaults ) { return array_merge( $defaults, $settings ); }
-function wp_roles() { return new Orbit_Test_Roles(); }
+function wp_roles() { return new Sessivue_Test_Roles(); }
 function get_users( $args ) { return $GLOBALS['orbit']['sessions'] ? array( $GLOBALS['orbit']['user'] ) : array(); }
 function get_user_meta( $id, $key, $single ) { return $GLOBALS['orbit']['presence'][ $id ] ?? array(); }
 function update_user_meta( $id, $key, $value ) {
@@ -103,10 +103,10 @@ function esc_attr__( $text, $domain ) { return esc_attr( $text ); }
 function admin_url( $url ) { return 'https://example.test/wp-admin/' . $url; }
 function translate_user_role( $role ) { return $role; }
 function wp_send_json_error( $data, $http_status = 200 ) {
-    throw new Orbit_Ajax_Response( false, $data, $http_status );
+    throw new Sessivue_Ajax_Response( false, $data, $http_status );
 }
 function wp_send_json_success( $data, $http_status = 200 ) {
-    throw new Orbit_Ajax_Response( true, $data, $http_status );
+    throw new Sessivue_Ajax_Response( true, $data, $http_status );
 }
 function verify( bool $condition, string $description ): void {
     if ( ! $condition ) {
@@ -115,16 +115,16 @@ function verify( bool $condition, string $description ): void {
     }
     echo "PASS: $description\n";
 }
-function response( string $method ): Orbit_Ajax_Response {
+function response( string $method ): Sessivue_Ajax_Response {
     try {
-        call_user_func( array( 'Amino_Orbit', $method ) );
-    } catch ( Orbit_Ajax_Response $response ) {
+        call_user_func( array( 'Sessivue_Plugin', $method ) );
+    } catch ( Sessivue_Ajax_Response $response ) {
         return $response;
     }
     throw new RuntimeException( 'Missing JSON response from ' . $method );
 }
 
-require dirname( __DIR__ ) . '/includes/class-amino-orbit.php';
+require dirname( __DIR__ ) . '/includes/class-sessivue.php';
 
 // Unauthorized reads must fail even when the AJAX nonce is valid.
 $r = response( 'ajax_refresh' );
