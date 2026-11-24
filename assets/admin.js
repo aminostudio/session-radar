@@ -1,7 +1,7 @@
-/** Session Radar: minimal activity beacon and accessible widget refresh. */
+/** Sessivue: minimal activity beacon and accessible widget refresh. */
 (() => {
   'use strict';
-  const config = window.aminoOrbitConfig;
+  const config = window.sessivueConfig;
   if (!config || !config.ajaxUrl || !config.nonce) return;
 
   let lastInteraction = Date.now();
@@ -17,7 +17,7 @@
       body: body.toString(),
       cache: 'no-store'
     }).then((response) => {
-      if (!response.ok) throw new Error('Session Radar request failed');
+      if (!response.ok) throw new Error('Sessivue request failed');
       return response.json();
     });
   }
@@ -37,7 +37,7 @@
     if (lastInteraction <= lastReported || Date.now() - lastInteraction > 5 * 60 * 1000) return;
     sending = true;
     const interactionAtSend = lastInteraction;
-    post('amino_orbit_ping')
+    post('sessivue_ping')
       .then((result) => { if (result.success) lastReported = interactionAtSend; })
       .catch(() => { /* Non-critical telemetry: fail silently. */ })
       .finally(() => { sending = false; });
@@ -49,7 +49,7 @@
   }
 
   if (!config.canView) return;
-  const shell = document.getElementById('amino_orbit_widget');
+  const shell = document.getElementById('sessivue_widget');
   if (!shell) return;
   let refreshing = false;
   // Only already-authorized, rendered rows are filtered and sorted locally.
@@ -67,14 +67,14 @@
 
   function applyFilter(panel) {
     if (!panel) return;
-    const roleField = panel.querySelector('.amino-orbit__role-filter');
+    const roleField = panel.querySelector('.sessivue__role-filter');
     // Never keep a stale role selection after refreshed data removes that role.
     if (roleField) {
       if (![...roleField.options].some((option) => option.value === selectedRole)) selectedRole = '';
       roleField.value = selectedRole;
     }
-    const list = panel.querySelector('.amino-orbit__list');
-    const rows = [...panel.querySelectorAll('.amino-orbit__user[data-orbit-status]')];
+    const list = panel.querySelector('.sessivue__list');
+    const rows = [...panel.querySelectorAll('.sessivue__user[data-sessivue-status]')];
     // The initial server order is stable and can always be restored.
     rows.sort((a, b) => {
       const initial = Number(a.dataset.orbitOrder) - Number(b.dataset.orbitOrder);
@@ -86,7 +86,7 @@
     let shown = 0;
     rows.forEach((row) => {
       // Deliberately exclude native session IPs and any hidden/internal metadata.
-      const terms = ['.amino-orbit__identity strong', '.amino-orbit__identity small', '.amino-orbit__device']
+      const terms = ['.sessivue__identity strong', '.sessivue__identity small', '.sessivue__device']
         .map((selector) => row.querySelector(selector)?.textContent || '').join(' ');
       const matchesRole = !selectedRole ||
         (row.dataset.orbitRoles || '').split(/\s+/).includes(selectedRole);
@@ -96,76 +96,76 @@
       row.hidden = !visible;
       if (visible) shown += 1;
     });
-    panel.querySelectorAll('.amino-orbit__filter[data-orbit-status]').forEach((button) => {
+    panel.querySelectorAll('.sessivue__filter[data-sessivue-status]').forEach((button) => {
       button.setAttribute('aria-pressed', String(button.dataset.orbitStatus === selectedStatus));
     });
-    const sort = panel.querySelector('.amino-orbit__sort');
+    const sort = panel.querySelector('.sessivue__sort');
     if (sort) sort.value = selectedSort;
-    const count = panel.querySelector('.amino-orbit__filter-count');
+    const count = panel.querySelector('.sessivue__filter-count');
     if (count) count.textContent = shown + ' / ' + rows.length;
-    const empty = panel.querySelector('.amino-orbit__empty-filter');
+    const empty = panel.querySelector('.sessivue__empty-filter');
     if (empty) empty.hidden = shown !== 0 || rows.length === 0;
-    panel.classList.toggle('amino-orbit--compact', compactView);
-    const density = panel.querySelector('.amino-orbit__compact-toggle');
+    panel.classList.toggle('sessivue--compact', compactView);
+    const density = panel.querySelector('.sessivue__compact-toggle');
     if (density) density.setAttribute('aria-pressed', String(compactView));
   }
 
   shell.addEventListener('click', (event) => {
-    const button = event.target.closest('.amino-orbit__filter[data-orbit-status]');
+    const button = event.target.closest('.sessivue__filter[data-sessivue-status]');
     if (!button || !shell.contains(button) || !statuses.includes(button.dataset.orbitStatus)) return;
     selectedStatus = button.dataset.orbitStatus;
-    applyFilter(document.getElementById('amino-orbit-panel'));
+    applyFilter(document.getElementById('sessivue-panel'));
   });
   // This listener must not be nested under a filter click: search works immediately.
   shell.addEventListener('input', (event) => {
-    if (!event.target.matches('.amino-orbit__search')) return;
+    if (!event.target.matches('.sessivue__search')) return;
     searchInput = event.target.value;
     searchQuery = normalizeSearch(searchInput);
-    applyFilter(document.getElementById('amino-orbit-panel'));
+    applyFilter(document.getElementById('sessivue-panel'));
   });
   shell.addEventListener('change', (event) => {
-    if (event.target.matches('.amino-orbit__role-filter')) {
+    if (event.target.matches('.sessivue__role-filter')) {
       selectedRole = event.target.value;
-      applyFilter(document.getElementById('amino-orbit-panel'));
+      applyFilter(document.getElementById('sessivue-panel'));
       return;
     }
-    if (!event.target.matches('.amino-orbit__sort') || !sortModes.includes(event.target.value)) return;
+    if (!event.target.matches('.sessivue__sort') || !sortModes.includes(event.target.value)) return;
     selectedSort = event.target.value;
-    applyFilter(document.getElementById('amino-orbit-panel'));
+    applyFilter(document.getElementById('sessivue-panel'));
   });
   // v0.9: reset the existing local controls without losing the dashboard focus.
   shell.addEventListener('click', (event) => {
-    if (event.target.closest('.amino-orbit__reset')) {
+    if (event.target.closest('.sessivue__reset')) {
       selectedStatus = 'all';
       selectedSort = 'suggested';
       selectedRole = '';
       searchQuery = '';
       searchInput = '';
-      const field = document.querySelector('#amino-orbit-panel .amino-orbit__search');
+      const field = document.querySelector('#sessivue-panel .sessivue__search');
       if (field) field.value = '';
-      applyFilter(document.getElementById('amino-orbit-panel'));
-    } else if (event.target.closest('.amino-orbit__compact-toggle')) {
+      applyFilter(document.getElementById('sessivue-panel'));
+    } else if (event.target.closest('.sessivue__compact-toggle')) {
       compactView = !compactView;
-      applyFilter(document.getElementById('amino-orbit-panel'));
+      applyFilter(document.getElementById('sessivue-panel'));
     }
   });
-  applyFilter(document.getElementById('amino-orbit-panel'));
+  applyFilter(document.getElementById('sessivue-panel'));
 
   function refresh(manual = false) {
     if (refreshing || (!manual && document.visibilityState !== 'visible')) return;
-    const current = document.getElementById('amino-orbit-panel');
+    const current = document.getElementById('sessivue-panel');
     if (!current) return;
     // Background refresh never replaces focused controls, inputs or links.
     if (!manual && current.contains(document.activeElement)) return;
-    const feedback = current.querySelector('.amino-orbit__refresh-feedback');
+    const feedback = current.querySelector('.sessivue__refresh-feedback');
     const labels = config.labels || {};
     const announce = (panel, message) => {
-      const target = panel.querySelector('.amino-orbit__refresh-feedback');
+      const target = panel.querySelector('.sessivue__refresh-feedback');
       if (target) target.textContent = message;
     };
     if (manual && feedback) announce(current, labels.refreshing || 'Updating…');
     refreshing = true;
-    post('amino_orbit_refresh')
+    post('sessivue_refresh')
       .then((result) => {
         if (!result.success || !result.data || typeof result.data.html !== 'string') {
           if (manual && current.isConnected) announce(current, labels.failed || 'Refresh failed');
@@ -173,18 +173,18 @@
         }
         const template = document.createElement('template');
         template.innerHTML = result.data.html.trim();
-        const next = template.content.querySelector('#amino-orbit-panel');
+        const next = template.content.querySelector('#sessivue-panel');
         const focused = current.contains(document.activeElement);
         const canRestore = manual && focused &&
-          document.activeElement.matches('.amino-orbit__refresh-now');
+          document.activeElement.matches('.sessivue__refresh-now');
         if (next && current.isConnected && (!focused || canRestore)) {
           current.replaceWith(next);
-          const input = next.querySelector('.amino-orbit__search');
+          const input = next.querySelector('.sessivue__search');
           if (input) input.value = searchInput;
           applyFilter(next);
           if (manual) {
             announce(next, labels.updated || 'Updated');
-            if (canRestore) next.querySelector('.amino-orbit__refresh-now')?.focus();
+            if (canRestore) next.querySelector('.sessivue__refresh-now')?.focus();
           }
         } else if (manual && current.isConnected) {
           announce(current, labels.failed || 'Refresh failed');
@@ -197,7 +197,7 @@
   }
 
   shell.addEventListener('click', (event) => {
-    if (!event.target.closest('.amino-orbit__refresh-now')) return;
+    if (!event.target.closest('.sessivue__refresh-now')) return;
     refresh(true);
   });
   // Refresh promptly when returning to a backgrounded tab, without polling hidden tabs.
