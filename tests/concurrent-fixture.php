@@ -7,7 +7,7 @@ if ( ! defined( 'WP_CLI' ) || ! WP_CLI ) {
     exit( 1 );
 }
 
-if ( 'Session Radar CI' !== get_option( 'blogname' ) ||
+if ( 'Sessivue CI' !== get_option( 'blogname' ) ||
     'http://127.0.0.1:8080' !== untrailingslashit( home_url() ) ) {
     WP_CLI::error( 'Refusing to create load-test users outside disposable CI WordPress.' );
 }
@@ -15,7 +15,7 @@ if ( 'Session Radar CI' !== get_option( 'blogname' ) ||
 // The preceding browser suite explicitly enabled IP display for a privacy
 // test. Restore the production-like privacy defaults before load testing.
 update_option(
-    'session_radar_settings',
+    'sessivue_settings',
     array(
         'viewer_roles'     => array(),
         'inactive_minutes' => 5,
@@ -27,7 +27,7 @@ update_option(
 
 $created = 0;
 for ( $i = 1; $i <= 8; $i++ ) {
-    $login = sprintf( 'orbit_load_admin_%02d', $i );
+    $login = sprintf( 'sessivue_load_admin_%02d', $i );
     if ( get_user_by( 'login', $login ) ) {
         WP_CLI::error( 'Load-test admin already exists; fixture must run only once.' );
     }
@@ -36,7 +36,7 @@ for ( $i = 1; $i <= 8; $i++ ) {
         array(
             'user_login' => $login,
             'user_pass'  => 'temporary-ci-load-password-not-reused',
-            'user_email' => sprintf( 'orbit-load-%02d@orbit-ci.invalid', $i ),
+            'user_email' => sprintf( 'sessivue-load-%02d@sessivue-ci.invalid', $i ),
             'role'       => 'administrator',
         )
     );
