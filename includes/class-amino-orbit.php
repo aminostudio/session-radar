@@ -26,6 +26,7 @@ final class Amino_Orbit {
 	public static function init(): void {
 		add_action( 'init', array( __CLASS__, 'migrate_legacy_privacy' ), 0 );
 		add_action( 'init', array( __CLASS__, 'load_translations' ) );
+		add_action( 'change_locale', array( __CLASS__, 'load_translations' ) );
 		add_action( 'wp_dashboard_setup', array( __CLASS__, 'register_widget' ) );
 		add_action( 'admin_menu', array( __CLASS__, 'register_settings_page' ) );
 		add_action( 'admin_init', array( __CLASS__, 'register_settings' ) );
@@ -39,9 +40,29 @@ final class Amino_Orbit {
 		add_action( self::CLEANUP_HOOK, array( __CLASS__, 'cleanup_presence' ) );
 	}
 
-	/** Register bundled locale files at init, never before. */
-	public static function load_translations(): void {
-		load_plugin_textdomain( 'session-radar', false, dirname( plugin_basename( AMINO_ORBIT_FILE ) ) . '/languages' );
+	/**
+	 * Prefer WordPress.org language packs; use the packaged FR/ES catalog only
+	 * while an official language pack has not yet been installed.
+	 *
+	 * English is the source language and never needs an additional catalog.
+	 * The fallback is deliberately executed on init / after locale changes,
+	 * never while plugin files are being included.
+	 *
+	 * @param string|null $locale Locale supplied by WordPress on change_locale.
+	 */
+	public static function load_translations( $locale = null ): void {
+		$locale = is_string( $locale ) && $locale ? $locale : determine_locale();
+		if ( 'en_US' === $locale || 'en_GB' === $locale || is_textdomain_loaded( 'session-radar' ) ) {
+			return;
+		}
+		$pack = WP_LANG_DIR . '/plugins/session-radar-' . $locale;
+		if ( is_readable( $pack . '.mo' ) || is_readable( $pack . '.l10n.php' ) ) {
+			return; // Let WordPress load its managed translation just in time.
+		}
+		$catalog = plugin_dir_path( AMINO_ORBIT_FILE ) . 'languages/session-radar-' . $locale . '.mo';
+		if ( is_readable( $catalog ) ) {
+			load_textdomain( 'session-radar', $catalog, $locale );
+		}
 	}
 
 	/**
