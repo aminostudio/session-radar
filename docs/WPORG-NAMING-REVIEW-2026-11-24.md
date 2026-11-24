@@ -1,6 +1,6 @@
 # Session Radar · WordPress.org naming review
 Date: 2026-11-24
-Status: RESEARCH ONLY — no name/slug change authorized
+Status: MAINTAINER SELECTED SessiVue on 2026-11-24; staged in a separate draft PR, no upload/merge/LAB
 
 ## Source of the request
 The Plugin Review Team's 2026-11-20 email about the already-submitted 1.0.0 ZIP flags the display name "Session Radar" and slug `session-radar` as possibly generic and confusing. The email explicitly identifies this as an AI-assisted finding, not a proven trademark infringement.
@@ -17,9 +17,9 @@ The review team requires the author to choose one of two approaches: establish t
 
 Different tools/markets do not by themselves establish trademark infringement or rejection, but the exact phrase is demonstrably not unique. Search results are not a professional trademark-clearance opinion, do not establish plugin-slug availability, and do not reserve a WordPress.org slug.
 
-## Exploratory, non-brand-prefixed identities (not selected)
+## Naming candidates reviewed (SessiVue selected)
 The author explicitly prefers that a newly named plugin NOT begin with "Amino". These are creative candidates to *research further*, not cleared or approved names:
-- **Sessivue** · possible slug `sessivue`: short coined name with a clear view-of-sessions connotation.
+- **SessiVue** · selected display name, target slug `sessivue`: short coined name with a clear view-of-sessions connotation.
 - **Sessentra** · possible slug `sessentra`: session-centred coined term, but visually close to "Essentra"; this resemblance needs additional clearance.
 - **Sesspectra** · possible slug `sesspectra`: coined "session" + "spectra"; easy to explain as a view of distinct WordPress login sessions, but requires the same clearance.
 
@@ -30,9 +30,9 @@ Choose only after a final search for software/plugin/product names, WordPress.or
 - [x] Public Privacy Policy Guide message and matching FR/ES PO sources refer to Session Radar.
 - [x] GitHub README reflects the reviewer email, instead of saying no submission has happened.
 - [x] Release preflight checks old public-brand regressions.
-- [ ] Maintainer chooses retain/defend or change display name and slug.
-- [ ] If changing slug: update main plugin filename/root folder/header, readme title, text domain, JS/CSS asset handles as appropriate, translations, source strings, install/migration guide, tests, docs and CI package checks; guard existing settings/privacy migrations.
-- [ ] Resolve reviewer translation-pack recommendation while supporting the declared WP 6.4 minimum.
+- [x] Maintainer selected **SessiVue** / `sessivue` on November 24, 2026. Slug reservation remains pending.
+- [x] Draft renamed entrypoint, text domain, catalogs, release ZIP naming, readmes, CI and isolated settings migration; existing internal DOM/AJAX hooks deliberately retained for compatibility.
+- [x] Draft native WordPress.org language-pack approach supports EN/FR/ES, including WordPress 6.4 tests (CI result pending).
 - [ ] Obtain green PHP, WordPress 6.4 and real WordPress/Chromium tests.
 - [ ] Build a dedicated corrected 1.0.x submission ZIP; do not submit a 2.0 experimental branch.
 - [ ] Maintainer uploads the tested ZIP to the *existing* application and replies concisely to the *existing review email thread*.
