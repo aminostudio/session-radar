@@ -35,6 +35,10 @@ def check_sources():
     description = header(plugin, "Description")
     require(len(description) < 140, "Description fits WordPress.org plugin header guideline")
     require(header(plugin, "Text Domain") == "sessivue", "Plugin text domain matches slug")
+    require(header(plugin, "Plugin Name") == "Sessivue", "Public display name matches the proposed identity")
+    require((ROOT / "sessivue.php").is_file() and not (ROOT / "session-radar.php").exists(),
+            "Only the Sessivue public entrypoint exists")
+
     require(header(plugin, "Domain Path") == "/languages", "Bundled language path is declared")
     require(header(plugin, "License") == "GPL-2.0-or-later", "License header is GPL-compatible")
     require("License: GPL-2.0-or-later" in readme, "Readme license matches header")
@@ -48,8 +52,8 @@ def check_sources():
                 for locale in ("fr_FR", "es_ES")),
             "French and Spanish PO sources retained for WordPress Polyglots")
 
-    require(not re.search(r"\bSessivue\b", readme, re.I),
-            "Public WordPress.org readme uses only the Sessivue name")
+    require(not re.search(r"\b(?:Orbit|Session Radar)\b", readme, re.I),
+            "Public WordPress.org readme has no previous-brand text")
     require("No WordPress.org submission has occurred" not in readme,
             "Public changelog does not contradict the existing WordPress.org submission")
 
