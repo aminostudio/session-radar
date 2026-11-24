@@ -58,6 +58,16 @@ def check_sources():
         require((ROOT / relative).is_file(), f"Required plugin file: {relative}")
     require("activity_enabled' => 0" in (ROOT / "includes/class-amino-orbit.php").read_text(encoding="utf-8"),
             "Activity collection default is OFF")
+    runtime = (ROOT / "includes/class-amino-orbit.php").read_text(encoding="utf-8")
+    require("load_plugin_textdomain(" not in runtime,
+            "Deprecated manual plugin textdomain loader is not reintroduced")
+    require("$wpdb->get_var(" not in runtime and "$wpdb->query(" not in runtime,
+            "No raw DB reads/writes in the sessions or privacy code")
+    require("'compare' => 'EXISTS'" in runtime and "'meta_key' =>" not in runtime,
+            "User metadata enumeration uses bounded WordPress query APIs")
+    require("private const MAX_USERS = 200" in runtime and "private const MAX_SCANNED_SESSIONS = 500" in runtime,
+            "Session scans retain their bounded work limits")
+
     return version
 
 
