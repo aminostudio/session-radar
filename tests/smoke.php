@@ -3,7 +3,7 @@
 define('ABSPATH', '/tmp/');
 define('DAY_IN_SECONDS', 86400);
 define('MINUTE_IN_SECONDS', 60);
-define('AMINO_ORBIT_FILE', '/test/plugins/session-radar/session-radar.php');
+define('SESSIVUE_FILE', '/test/plugins/sessivue/sessivue.php');
 $state = [ 'admin'=>true, 'roles'=>['administrator'], 'options'=>['activity_enabled'=>1], 'meta'=>[], 'users'=>[] ];
 class WP_User { public int $ID; public string $display_name; public array $roles; public function __construct($id,$name,$roles){$this->ID=$id;$this->display_name=$name;$this->roles=$roles;} }
 class Test_Roles {public array $roles=['administrator'=>['name'=>'Administrator'],'editor'=>['name'=>'Editor'],'author'=>['name'=>'Author']];}
@@ -45,32 +45,32 @@ function checked($value,$match=null){if($value===$match)echo ' checked';}
 function selected($value,$match=null){if($value===$match)echo ' selected';}
 function settings_fields($a){}
 function submit_button($a){}
-function plugin_basename($f){return 'session-radar/session-radar.php';}
+function plugin_basename($f){return 'sessivue/sessivue.php';}
 function assert_true($condition,$message){if(!$condition){fwrite(STDERR,"FAIL: $message\n");exit(1);} echo "PASS: $message\n";}
-require dirname( __DIR__ ) . '/includes/class-amino-orbit.php';
-assert_true(!method_exists('Amino_Orbit', 'load_translations'), 'WordPress.org translations use native JIT loading without a manual loader');
+require dirname( __DIR__ ) . '/includes/class-sessivue.php';
+assert_true(!method_exists('Sessivue_Plugin', 'load_translations'), 'WordPress.org translations use native JIT loading without a manual loader');
 $state['users']=[new WP_User(1,'Amino Test',['administrator'])];
 $session=['login'=>time()-120,'expiration'=>time()+3600,'ua'=>'Mozilla/5.0 Firefox/159 Windows NT 10.0','ip'=>'192.0.2.10'];
 WP_Session_Tokens::$sessions=[$session];
-$s=Amino_Orbit::sanitize_settings(['viewer_roles'=>['editor','administrator',['nested'], 'INVALID'], 'inactive_minutes'=>'9999','refresh_seconds'=>'7', 'show_ip'=>'1', 'activity_enabled'=>'1']);
+$s=Sessivue_Plugin::sanitize_settings(['viewer_roles'=>['editor','administrator',['nested'], 'INVALID'], 'inactive_minutes'=>'9999','refresh_seconds'=>'7', 'show_ip'=>'1', 'activity_enabled'=>'1']);
 assert_true($s['viewer_roles']===['editor'], 'Role configuration restricted to known non-admin roles');
 assert_true($s['inactive_minutes']===5 && $s['refresh_seconds']===60, 'Numeric settings constrained to safe values');
-$s30=Amino_Orbit::sanitize_settings(['refresh_seconds'=>30]);
+$s30=Sessivue_Plugin::sanitize_settings(['refresh_seconds'=>30]);
 assert_true($s30['refresh_seconds']===30, 'Accepts optional 30-second refresh interval');
-function panel(){ob_start();Amino_Orbit::render_widget();return ob_get_clean();}
+function panel(){ob_start();Sessivue_Plugin::render_widget();return ob_get_clean();}
 $html=panel();
-assert_true(str_contains($html,'SESSION <em>RADAR</em>'), 'Renders Session Radar branding');
+assert_true(str_contains($html,'SESSI<em>VUE</em>'), 'Renders Sessivue branding');
 assert_true(str_contains($html,'Amino Test') && str_contains($html,'Session open'), 'Shows native session without falsely marking active');
 assert_true(!str_contains($html,'192.0.2.10'), 'IP hidden by default');
 assert_true(str_contains($html,'aria-label="Authenticated WordPress sessions"'),'Session list has accessible name');
-$method=(new ReflectionClass('Amino_Orbit'))->getMethod('fingerprint');
+$method=(new ReflectionClass('Sessivue_Plugin'))->getMethod('fingerprint');
 // PHP 8.0 requires explicitly opening private methods; PHP 8.1+ ignores this call.
 $method->setAccessible(true);
 $key=$method->invoke(null,$session);
 $state['meta'][1]=[$key=>time()];
-assert_true(str_contains(panel(),'amino-orbit__status--active'), 'Marks recent admin interaction as active');
+assert_true(str_contains(panel(),'sessivue__status--active'), 'Marks recent admin interaction as active');
 $state['meta'][1]=[$key=>time()-1000];
-assert_true(str_contains(panel(),'amino-orbit__status--idle'), 'Marks stale interaction as inactive, without logging the user out');
+assert_true(str_contains(panel(),'sessivue__status--idle'), 'Marks stale interaction as inactive, without logging the user out');
 $state['options']=['activity_enabled'=>1, 'show_ip'=>1];
 assert_true(str_contains(panel(),'192.0.2.10'), 'Optional IP visible to administrator');
 $state['admin']=false;
@@ -80,7 +80,7 @@ $state['options']=['viewer_roles'=>['editor'],'activity_enabled'=>1, 'show_ip'=>
 assert_true(str_contains(panel(),'Amino Test'), 'Configured viewer role can see the widget');
 assert_true(!str_contains(panel(),'192.0.2.10'), 'Non-admin never sees IP even with IP setting enabled');
 $state['meta'][2]=['expired'=>time()-90000];
-Amino_Orbit::cleanup_presence();
+Sessivue_Plugin::cleanup_presence();
 assert_true(!isset($state['meta'][2]), 'Expired per-session data removed on scheduled cleanup');
 assert_true(isset($state['meta'][1]), 'Recent per-session data preserved on cleanup');
 // v0.2: visual semantics and multi-user simulation without writing site accounts.
@@ -104,19 +104,19 @@ $key3=$method->invoke(null,$s3);
 $state['meta'][1]=[$key1=>$now-10,$key2=>$now-900];
 $state['meta'][2]=[$key3=>$now-120];
 $html=panel();
-assert_true(substr_count($html,'data-orbit-status="')===7, 'Accessible filter toolbar and session status data are present');
+assert_true(substr_count($html,'data-sessivue-status="')===7, 'Accessible filter toolbar and session status data are present');
 assert_true(str_contains($html, 'aria-pressed="true"') && str_contains($html, 'aria-live="polite"'), 'Filter state and visible-count announcement are accessible');
-assert_true(str_contains($html, 'data-orbit-status="idle"') && str_contains($html, 'data-orbit-status="active"'), 'Filter metadata uses established activity categories');
-assert_true(str_contains($html, 'class="amino-orbit__reset"') && str_contains($html, 'class="amino-orbit__compact-toggle"') && str_contains($html, 'class="amino-orbit__empty-filter"'), 'Reset, compact toggle and no-matches status are present');
-assert_true(str_contains($html, 'class="amino-orbit__role-filter"') && str_contains($html, 'data-orbit-roles='), 'Authorized role filter and row role metadata are rendered');
-assert_true(str_contains($html,'class="amino-orbit__refresh-now"') && str_contains($html,'role="status"'), 'Accessible manual refresh button and feedback region exist');
-assert_true(str_contains($html, 'class="amino-orbit__sort"') && str_contains($html, 'data-orbit-login=') && str_contains($html, 'data-orbit-order='), 'Local sort field and stable order keys are rendered');
-assert_true(str_contains($html,'class="amino-orbit__search"') && str_contains($html,'type="search"') && str_contains($html,'autocomplete="off"'), 'Search input is labeled and disables browser autofill');
-assert_true(substr_count($html,'class="amino-orbit__user"')===3,'Three valid sessions displayed, expired session ignored');
+assert_true(str_contains($html, 'data-sessivue-status="idle"') && str_contains($html, 'data-sessivue-status="active"'), 'Filter metadata uses established activity categories');
+assert_true(str_contains($html, 'class="sessivue__reset"') && str_contains($html, 'class="sessivue__compact-toggle"') && str_contains($html, 'class="sessivue__empty-filter"'), 'Reset, compact toggle and no-matches status are present');
+assert_true(str_contains($html, 'class="sessivue__role-filter"') && str_contains($html, 'data-sessivue-roles='), 'Authorized role filter and row role metadata are rendered');
+assert_true(str_contains($html,'class="sessivue__refresh-now"') && str_contains($html,'role="status"'), 'Accessible manual refresh button and feedback region exist');
+assert_true(str_contains($html, 'class="sessivue__sort"') && str_contains($html, 'data-sessivue-login=') && str_contains($html, 'data-sessivue-order='), 'Local sort field and stable order keys are rendered');
+assert_true(str_contains($html,'class="sessivue__search"') && str_contains($html,'type="search"') && str_contains($html,'autocomplete="off"'), 'Search input is labeled and disables browser autofill');
+assert_true(substr_count($html,'class="sessivue__user"')===3,'Three valid sessions displayed, expired session ignored');
 assert_true(str_contains($html,'Morgan &lt;script&gt;alert(1)&lt;/script&gt;') && !str_contains($html,'<script>alert(1)</script>'),'Display names are HTML-escaped');
 assert_true(str_contains($html,'Firefox · Windows') && str_contains($html,'Chrome · Android'),'Device labels derived from user agents');
 assert_true(str_contains($html,'Logged in: ') && str_contains($html,'title="Automatic refresh'),'Login times clarified and auto-refresh identified without live claim');
-assert_true(substr_count($html,'amino-orbit__status--active')===2 && substr_count($html,'amino-orbit__status--idle')===1,'Mixed sessions correctly classified by recent activity');
+assert_true(substr_count($html,'sessivue__status--active')===2 && substr_count($html,'sessivue__status--idle')===1,'Mixed sessions correctly classified by recent activity');
 $state['admin']=false;
 $state['roles']=['author'];
 $state['options']=['viewer_roles'=>['editor'], 'activity_enabled'=>1, 'show_ip'=>1];
@@ -140,6 +140,6 @@ WP_Session_Tokens::$sessionsByUser=[1=>$lots];
 $html=panel();
 assert_true(str_contains($html,'Partial results: the session scan limit has been reached.'),'510 sessions disclose truncated scan');
 assert_true(str_contains($html,'>500</strong><small>Sessions'),'Session scan capped at 500');
-assert_true(substr_count($html,'class="amino-orbit__user"')===40,'40-session UI row cap remains');
+assert_true(substr_count($html,'class="sessivue__user"')===40,'40-session UI row cap remains');
 WP_Session_Tokens::$sessionsByUser=[];
 echo "All smoke checks passed.\n";
