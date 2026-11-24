@@ -43,13 +43,13 @@ Nothing is sent to external providers. Viewer permissions are checked server-sid
 
 Data retention of native WordPress session information is managed by WordPress, not Session Radar.
 
-Use **Tools > Export Personal Data** or **Tools > Erase Personal Data** to process a confirmed personal-data request. Session Radar participates using the user's registered WordPress email address, exporting only recent activity timestamps or deleting only the person's Session Radar activity records. Native WordPress login sessions are never removed by Orbit's privacy eraser.
+Use **Tools > Export Personal Data** or **Tools > Erase Personal Data** to process a confirmed personal-data request. Session Radar participates using the user's registered WordPress email address, exporting only recent activity timestamps or deleting only the person's Session Radar activity records. Native WordPress login sessions are never removed by Session Radar's privacy eraser.
 
 == Frequently Asked Questions ==
 
 = Does Session Radar show who is online right now? =
 
-No. Orbit displays WordPress authentication sessions. A valid login session does not prove someone is currently using the site. Optional admin activity signals only indicate recently detected interactions, not live presence.
+No. Session Radar displays WordPress authentication sessions. A valid login session does not prove someone is currently using the site. Optional admin activity signals only indicate recently detected interactions, not live presence.
 
 = Does it monitor public visitors or send information elsewhere? =
 
@@ -63,13 +63,13 @@ No. It is disabled by default. An administrator must explicitly enable it in Set
 
 Administrators have access. An administrator may grant read-only widget access to additional roles. IP addresses from native WordPress sessions are hidden by default and can only be revealed to administrators.
 
-= Can Orbit log users out or revoke their sessions? =
+= Can Session Radar log users out or revoke their sessions? =
 
 No. The widget is read-only. Native WordPress authentication sessions and logout are managed by WordPress.
 
 = What happens when I turn off monitoring or uninstall? =
 
-Disabling activity monitoring deletes Orbit-specific activity records while retaining native WordPress sessions. Uninstall removes Orbit settings and Orbit-specific metadata. WP-Cron cleanup may run later than its scheduled time.
+Disabling activity monitoring deletes Session Radar-specific activity records while retaining native WordPress sessions. Uninstall removes Session Radar settings and plugin-specific metadata. WP-Cron cleanup may run later than its scheduled time.
 
 = Why can the visible list be smaller than the session count? =
 
@@ -90,10 +90,10 @@ The minimums are WordPress 6.4 and PHP 8.0. The plugin follows the current WordP
 == Changelog ==
 
 = 1.0.0 =
-* Prepared stable milestone for final acceptance review; WordPress.org submission remains separate and requires explicit authorization.
+* Prepared the initial Session Radar submission candidate for WordPress.org review.
 * Adds a documented FAQ and strict integrity and version checks to the private build process.
 * Carries forward all session controls, default-off activity monitoring and native WordPress privacy tools from 0.9.0.
-* No WordPress.org submission has occurred; installation and manual acceptance remain required.
+* This changelog records the initial release candidate, not confirmation of WordPress.org directory approval.
 
 
 = 0.9.0 =
@@ -139,21 +139,21 @@ The minimums are WordPress 6.4 and PHP 8.0. The plugin follows the current WordP
 
 
 = 0.3.9 =
-* Retries the legacy privacy migration if historic Orbit activity records could not be deleted due to a database error.
+* Retries the legacy privacy migration if historic legacy activity records could not be deleted due to a database error.
 * Treats an empty legacy activity dataset as a completed migration without unnecessary repeated operations.
 * Adds regression tests for failed deletion, subsequent recovery, and empty legacy datasets.
 
 
 = 0.3.8 =
 * Performs a one-time privacy migration for installations upgraded from versions before the explicit activity opt-in.
-* Removes previously saved Orbit activity metadata when no explicit monitoring preference exists, while preserving WordPress login sessions and other site settings.
+* Removes previously saved legacy activity metadata when no explicit monitoring preference exists, while preserving WordPress login sessions and other site settings.
 * Runs once per legacy installation and includes isolated PHP and real WordPress migration regression tests.
 
 
 = 0.3.7 =
-* Integrates WordPress's native Export Personal Data and Erase Personal Data tools for Orbit-specific session activity.
+* Integrates WordPress's native Export Personal Data and Erase Personal Data tools for plugin-specific session activity.
 * Exports only recent interaction timestamps, never session fingerprints, IP addresses or native authentication tokens.
-* Erases only the requested WordPress account's Orbit activity metadata, preserving native WordPress login sessions.
+* Erases only the requested WordPress account's plugin activity metadata, preserving native WordPress login sessions.
 * Includes FR/ES translations and explicit PHP/WordPress integration tests for both privacy callbacks.
 
 
