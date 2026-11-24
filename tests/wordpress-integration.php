@@ -155,11 +155,15 @@ orbit_integration_assert(
 if ( '1' === getenv( 'ORBIT_CHECK_LOCALE_IN_FRESH_BOOT' ) ) {
     WP_CLI::log( 'INFO: Dynamic locale switch assertions replaced by independent FR/ES WordPress bootstrap tests in CI.' );
 } else {
-// WordPress locale switching exercises actual bundled .mo files, not mocks.
+// WordPress locale switching exercises standard WordPress.org-style language packs, not mocks.
+orbit_integration_assert(
+    'Session open' === __( 'Session open', 'session-radar' ),
+    'English source messages are always available without an extra language pack'
+);
 orbit_integration_assert( switch_to_locale( 'fr_FR' ), 'WordPress switches to the installed French locale' );
 orbit_integration_assert(
     'Session ouverte' === __( 'Session open', 'session-radar' ),
-    'Bundled French translations load through WordPress gettext'
+    'French language-pack translations load through WordPress gettext'
 );
 orbit_integration_assert(
     str_contains( orbit_integration_render(), 'Actualisation : 30 s' ),
@@ -170,7 +174,7 @@ restore_previous_locale();
 orbit_integration_assert( switch_to_locale( 'es_ES' ), 'WordPress switches to the installed Spanish locale' );
 orbit_integration_assert(
     'Sesión abierta' === __( 'Session open', 'session-radar' ),
-    'Bundled Spanish translations load through WordPress gettext'
+    'Spanish language-pack translations load through WordPress gettext'
 );
 orbit_integration_assert(
     str_contains( orbit_integration_render(), 'Actualización: 30 s' ),
