@@ -1,6 +1,6 @@
 # Session Radar 🪐
 
-> **WordPress.org submission:** Session Radar (`session-radar`) version **1.0.0** was submitted on **November 16, 2026**. The maintainer's WordPress.org portal showed **Awaiting Review** on November 17, 2026. This is not an approval or directory listing. Existing Amino ORBIT installations should follow [the migration instructions](docs/SESSION-RADAR-MIGRATION.md) before installing the renamed plugin.
+> **WordPress.org review:** Session Radar (`session-radar`) version **1.0.0** was submitted on **November 16, 2026**. The Plugin Review Team emailed a **Review in Progress** correction request on **November 20, 2026**. The plugin has not been approved or listed. Existing Amino ORBIT installations should follow [the migration instructions](docs/SESSION-RADAR-MIGRATION.md) before installing the renamed plugin.
 
 **A lightweight WordPress dashboard presence monitor, designed by Amino Studio.**
 
@@ -36,7 +36,7 @@ A valid WordPress session is **not proof that someone is at their keyboard**. Th
 
 ## Site-wide activity opt-in
 
-**Upgrading from pre-opt-in versions:** v0.3.8 removes existing Orbit-only activity records once when no explicit monitoring choice was ever saved, then records monitoring as OFF. Existing session visibility and dashboard settings are preserved.
+**Upgrading from pre-opt-in versions:** v0.3.8 removes existing legacy plugin activity records once when no explicit monitoring choice was ever saved, then records monitoring as OFF. Existing session visibility and dashboard settings are preserved.
 
 **Recent activity signals are disabled by default** until a site administrator explicitly enables them in **Settings → Session Radar → Privacy**. The widget can still list native WordPress sessions without tracking activity. Disabling previously enabled monitoring immediately removes plugin-only activity metadata and prevents future server writes.
 
@@ -88,13 +88,13 @@ English is the source language. Bundled gettext catalogs provide French (`fr_FR`
 ## Changelog
 
 ### 1.0.0 (stable candidate, awaiting final acceptance)
-- First pre-submission stable candidate, pending human accessibility, identity, notice and #LAB acceptance gates.
+- Initial 1.0.0 build submitted for review on November 16, 2026; the WordPress.org Plugin Review Team requested corrections on November 20, 2026.
 - Do not submit publicly until an explicit approval after all release gates pass.
 
 
 ### v0.9.0 (private development candidate)
 - Reset all local session filters, show no-match feedback and offer compact view, with a11y checks.
-- No WordPress.org submission before v1.0.0.
+- The official directory submission remains under review; GitHub releases are not an approval.
 
 ### v0.8.0 (private development)
 - Restrict local role selection to already-rendered authorized sessions.
@@ -119,15 +119,15 @@ English is the source language. Bundled gettext catalogs provide French (`fr_FR`
 - This version remains private pending CI verification and deployment review.
 
 ### v0.3.8 (private development release)
-- One-time privacy migration: an existing installation without the explicit monitoring preference purges old Orbit-only activity and saves `activity_enabled=0`.
+- One-time privacy migration: an existing installation without the explicit monitoring preference purges old legacy plugin activity and saves `activity_enabled=0`.
 - Keeps existing viewer roles, IP display choice, inactivity threshold and refresh interval; never deletes native WordPress authentication sessions.
 - Additional isolated and genuine WordPress regression tests check first boot, idempotence and consent already enabled.
 
 
 ### v0.3.7 (private development)
-- Adds WordPress core privacy exporter and eraser callbacks for Orbit-specific, per-user activity metadata.
+- Adds WordPress core privacy exporter and eraser callbacks for plugin-specific, per-user activity metadata.
 - Exports at most 32 valid interaction timestamps from the previous 24 hours, without revealing HMAC fingerprints, authentication tokens or IP addresses.
-- Erases only the requested user's Orbit data, preserving WordPress's native login sessions and unrelated user metadata.
+- Erases only the requested user's plugin activity data, preserving WordPress's native login sessions and unrelated user metadata.
 - Adds PHP 8.0/8.2/8.4 and real WordPress integration regression tests; French and Spanish catalogs updated.
 
 
