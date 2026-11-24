@@ -93,7 +93,6 @@ jobs:
               https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
               -o "$HOME/.local/bin/wp-cli.phar"
             php "$HOME/.local/bin/wp-cli.phar" --info
-            printf '#!/bin/sh\nexec php "$HOME/.local/bin/wp-cli.phar" "$@"\n' > "$HOME/.local/bin/wp"
             # Replace HOME at generation time so a POSIX shell resolves it reliably.
             printf '#!/bin/sh\nexec php "%s/.local/bin/wp-cli.phar" "$@"\n' "$HOME" > "$HOME/.local/bin/wp"
             chmod +x "$HOME/.local/bin/wp"
@@ -272,7 +271,6 @@ jobs:
               https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
               -o "$HOME/.local/bin/wp-cli.phar"
             php "$HOME/.local/bin/wp-cli.phar" --info
-            printf '#!/bin/sh\nexec php "$HOME/.local/bin/wp-cli.phar" "$@"\n' > "$HOME/.local/bin/wp"
             # Replace HOME at generation time so a POSIX shell resolves it reliably.
             printf '#!/bin/sh\nexec php "%s/.local/bin/wp-cli.phar" "$@"\n' "$HOME" > "$HOME/.local/bin/wp"
             chmod +x "$HOME/.local/bin/wp"
