@@ -1,5 +1,5 @@
 msgid ""
-msgstr "Project-Id-Version: Session Radar 1.0.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=2; plural=(n != 1);\n"
+msgstr "Project-Id-Version: SessiVue 1.0.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgid "%d minutes"
 msgstr ""
@@ -25,10 +25,10 @@ msgstr ""
 msgid "Administrators always have access. Optionally grant access to additional roles."
 msgstr ""
 
-msgid "Session Radar"
+msgid "SessiVue"
 msgstr ""
 
-msgid "Session Radar · Presence"
+msgid "SessiVue · Presence"
 msgstr ""
 
 msgid "Authenticated WordPress sessions"
@@ -43,7 +43,7 @@ msgstr ""
 msgid "Browser"
 msgstr ""
 
-msgid "Disabled by default. Session Radar does not collect additional IP addresses; it reads data already associated with WordPress sessions."
+msgid "Disabled by default. SessiVue does not collect additional IP addresses; it reads data already associated with WordPress sessions."
 msgstr ""
 
 msgid "Inactive"
@@ -122,18 +122,18 @@ msgstr ""
 msgid "Activity signals are disabled until an administrator explicitly enables them. Authentication sessions remain visible without activity tracking."
 msgstr ""
 
-msgid "If enabled, Session Radar records the time of recent interactions in the WordPress administration area for authenticated user sessions. It does not record public-site visits or send data to external services."
+msgid "If enabled, SessiVue records the time of recent interactions in the WordPress administration area for authenticated user sessions. It does not record public-site visits or send data to external services."
 msgstr ""
 
 msgid "Activity older than 24 hours is no longer shown. Stored records are deleted on later interactions or during WordPress scheduled cleanup, which may run later. Turning monitoring off deletes Orbit activity records immediately. WordPress manages login sessions separately."
 msgstr ""
 
-msgid "Session Radar admin activity"
+msgid "SessiVue admin activity"
 msgstr ""
 
 msgid "Last observed admin interaction"
 msgstr ""
 
-msgid "Could not remove Session Radar activity data."
+msgid "Could not remove SessiVue activity data."
 msgstr ""
 
