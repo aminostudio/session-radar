@@ -41,6 +41,13 @@ def check_sources():
     require((ROOT / "LICENSE").is_file(), "License file included")
     require("Contributors: aminostudio" in readme, "WordPress.org contributor name is documented for manual verification")
     require("== Privacy ==" in readme and "== Installation ==" in readme, "Readme documents privacy and installation")
+    core = (ROOT / "includes/class-amino-orbit.php").read_text(encoding="utf-8")
+    require("load_plugin_textdomain" not in core and "load_textdomain(" not in core,
+            "WordPress.org runtime relies on native translation packs")
+    require(all((ROOT / "languages" / f"session-radar-{locale}.po").is_file()
+                for locale in ("fr_FR", "es_ES")),
+            "French and Spanish PO sources retained for WordPress Polyglots")
+
     require(not re.search(r"\bOrbit\b", readme, re.I),
             "Public WordPress.org readme uses only the Session Radar name")
     require("No WordPress.org submission has occurred" not in readme,
@@ -78,10 +85,10 @@ def check_zip(path, version):
         required = {"session-radar/session-radar.php", "session-radar/readme.txt",
                     "session-radar/uninstall.php", "session-radar/LICENSE",
                     "session-radar/includes/class-amino-orbit.php",
-                    "session-radar/assets/admin.js", "session-radar/assets/admin.css",
-                    "session-radar/languages/session-radar-fr_FR.mo",
-                    "session-radar/languages/session-radar-es_ES.mo"}
-        require(required.issubset(set(names)), "Required runtime and translation files included")
+                    "session-radar/assets/admin.js", "session-radar/assets/admin.css"}
+        require(required.issubset(set(names)), "Required English runtime files included")
+        require(not any(name.endswith((".po", ".mo", ".pot")) for name in names),
+                "WordPress.org candidate contains no bundled language catalogs")
         forbidden = ("tests/", "docs/", ".git/", ".github/", "__pycache__/", "node_modules/",
                      "scripts/", ".env", "wp-config.php")
         require(not any(any(fragment in name for fragment in forbidden) for name in names),
