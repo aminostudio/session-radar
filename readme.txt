@@ -90,7 +90,7 @@ The minimums are WordPress 6.4 and PHP 8.0. English is available by default. Fre
 == Changelog ==
 
 = 1.0.0 =
-* Prepared the initial Sessivue submission candidate for WordPress.org review.
+* Prepared the renamed Sessivue candidate for the ongoing WordPress.org review of the former Session Radar submission; this is not an approval or a published directory entry.
 * Adds a documented FAQ and strict integrity and version checks to the private build process.
 * Carries forward all session controls, default-off activity monitoring and native WordPress privacy tools from 0.9.0.
 * This changelog records the initial release candidate, not confirmation of WordPress.org directory approval.
