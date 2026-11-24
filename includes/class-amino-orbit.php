@@ -40,9 +40,27 @@ final class Amino_Orbit {
 		add_action( self::CLEANUP_HOOK, array( __CLASS__, 'cleanup_presence' ) );
 	}
 
-	/** Register bundled locale files at init, never before. */
+	/**
+	 * Offer bundled FR/ES translations without load_plugin_textdomain().
+	 *
+	 * WordPress.org language packs take precedence over the packaged fallback.
+	 * Loading happens on init (or on subsequent locale switches, via Core's
+	 * standard translation registry); no translation is loaded before init.
+	 */
 	public static function load_translations(): void {
-		load_plugin_textdomain( 'session-radar', false, dirname( plugin_basename( AMINO_ORBIT_FILE ) ) . '/languages' );
+		$locale = determine_locale();
+		$domain = 'session-radar';
+		if ( is_textdomain_loaded( $domain ) ) {
+			return;
+		}
+		$language_pack = WP_LANG_DIR . '/plugins/' . $domain . '-' . $locale . '.mo';
+		if ( is_readable( $language_pack ) ) {
+			return; // Let WordPress's normal JIT loader use the official pack.
+		}
+		$bundled = plugin_dir_path( AMINO_ORBIT_FILE ) . 'languages/' . $domain . '-' . $locale . '.mo';
+		if ( is_readable( $bundled ) ) {
+			load_textdomain( $domain, $bundled );
+		}
 	}
 
 	/**
@@ -63,16 +81,17 @@ final class Amino_Orbit {
 		if ( ! delete_metadata( 'user', 0, self::META, '', true ) ) {
 			// A failed deletion can also mean that no matching metadata exists.
 			// Check only one user through WordPress's standard query API.
-			global $wpdb;
 			$remaining = get_users(
 				array(
-					'meta_key' => self::META,
+					'meta_query' => array(
+						array( 'key' => self::META, 'compare' => 'EXISTS' ),
+					),
 					'fields' => 'ID',
 					'number' => 1,
 					'count_total' => false,
 				)
 			);
-			if ( ! empty( $remaining ) || $wpdb->last_error ) {
+			if ( ! empty( $remaining ) ) {
 				return; // Keep the missing-key sentinel so the next request retries.
 			}
 		}
@@ -522,7 +541,10 @@ final class Amino_Orbit {
 		$options = self::options();
 		$users = get_users(
 			array(
-				'meta_key' => 'session_tokens',
+				// Use the native WP_User_Query API and an indexed meta-key EXISTS lookup.
+				'meta_query' => array(
+					array( 'key' => 'session_tokens', 'compare' => 'EXISTS' ),
+				),
 				'fields' => 'all',
 				'count_total' => false,
 				'number' => self::MAX_USERS + 1,
@@ -809,7 +831,9 @@ final class Amino_Orbit {
 		// otherwise skip accounts later in the result set.
 		$ids = get_users(
 			array(
-				'meta_key' => self::META,
+				'meta_query' => array(
+					array( 'key' => self::META, 'compare' => 'EXISTS' ),
+				),
 				'fields' => 'ID',
 				'number' => 5000,
 				'orderby' => 'ID',
