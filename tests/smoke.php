@@ -3,7 +3,7 @@
 define('ABSPATH', '/tmp/');
 define('DAY_IN_SECONDS', 86400);
 define('MINUTE_IN_SECONDS', 60);
-define('AMINO_ORBIT_FILE', '/test/plugins/session-radar/session-radar.php');
+define('AMINO_ORBIT_FILE', '/test/plugins/sessivue/sessivue.php');
 $state = [ 'admin'=>true, 'roles'=>['administrator'], 'options'=>['activity_enabled'=>1], 'meta'=>[], 'users'=>[] ];
 class WP_User { public int $ID; public string $display_name; public array $roles; public function __construct($id,$name,$roles){$this->ID=$id;$this->display_name=$name;$this->roles=$roles;} }
 class Test_Roles {public array $roles=['administrator'=>['name'=>'Administrator'],'editor'=>['name'=>'Editor'],'author'=>['name'=>'Author']];}
@@ -45,7 +45,7 @@ function checked($value,$match=null){if($value===$match)echo ' checked';}
 function selected($value,$match=null){if($value===$match)echo ' selected';}
 function settings_fields($a){}
 function submit_button($a){}
-function plugin_basename($f){return 'session-radar/session-radar.php';}
+function plugin_basename($f){return 'sessivue/sessivue.php';}
 function assert_true($condition,$message){if(!$condition){fwrite(STDERR,"FAIL: $message\n");exit(1);} echo "PASS: $message\n";}
 require dirname( __DIR__ ) . '/includes/class-amino-orbit.php';
 assert_true(!method_exists('Amino_Orbit', 'load_translations'), 'WordPress.org translations use native JIT loading without a manual loader');
@@ -59,7 +59,7 @@ $s30=Amino_Orbit::sanitize_settings(['refresh_seconds'=>30]);
 assert_true($s30['refresh_seconds']===30, 'Accepts optional 30-second refresh interval');
 function panel(){ob_start();Amino_Orbit::render_widget();return ob_get_clean();}
 $html=panel();
-assert_true(str_contains($html,'SESSION <em>RADAR</em>'), 'Renders Session Radar branding');
+assert_true(str_contains($html,'SESSI<em>VUE</em>'), 'Renders SessiVue branding');
 assert_true(str_contains($html,'Amino Test') && str_contains($html,'Session open'), 'Shows native session without falsely marking active');
 assert_true(!str_contains($html,'192.0.2.10'), 'IP hidden by default');
 assert_true(str_contains($html,'aria-label="Authenticated WordPress sessions"'),'Session list has accessible name');
