@@ -41,7 +41,7 @@ def check_sources():
     require((ROOT / "LICENSE").is_file(), "License file included")
     require("Contributors: aminostudio" in readme, "WordPress.org contributor name is documented for manual verification")
     require("== Privacy ==" in readme and "== Installation ==" in readme, "Readme documents privacy and installation")
-    require(not re.search(r"\\bOrbit\\b", readme, re.I),
+    require(not re.search(r"\bOrbit\b", readme, re.I),
             "Public WordPress.org readme uses only the Session Radar name")
     require("No WordPress.org submission has occurred" not in readme,
             "Public changelog does not contradict the existing WordPress.org submission")
