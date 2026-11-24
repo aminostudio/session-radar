@@ -25,7 +25,7 @@ The dashboard widget is visible to administrators by default. Under Settings > S
 
 == Languages ==
 
-The plugin follows the WordPress user locale in wp-admin. English is the default source language; the bundled translations cover fr_FR and es_ES.
+English (en_US) is the source language. French (fr_FR) and Spanish (es_ES) catalogs are provided as a fallback for installations without a WordPress.org language pack. When an official WordPress translation pack is available, it takes precedence. In wp-admin, translations follow the WordPress user's language preference.
 
 == Installation ==
 
@@ -90,6 +90,7 @@ The minimums are WordPress 6.4 and PHP 8.0. The plugin follows the current WordP
 == Changelog ==
 
 = 1.0.0 =
+* Supports English source text and tested French/Spanish gettext catalogs, preferring official WordPress.org packs when present.
 * Prepared the initial Session Radar submission candidate for WordPress.org review.
 * Adds a documented FAQ and strict integrity and version checks to the private build process.
 * Carries forward all session controls, default-off activity monitoring and native WordPress privacy tools from 0.9.0.
