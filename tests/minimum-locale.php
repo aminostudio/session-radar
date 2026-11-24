@@ -16,6 +16,10 @@ if ( 'Session Radar CI' !== get_option( 'blogname' ) ||
 
 $locale = (string) getenv( 'ORBIT_MIN_TEST_LOCALE' );
 $expected = array(
+    'en_US' => array(
+        'session' => 'Session open',
+        'refresh' => 'Refresh: 30 s',
+    ),
     'fr_FR' => array(
         'session' => 'Session ouverte',
         'refresh' => 'Actualisation : 30 s',
@@ -26,7 +30,7 @@ $expected = array(
     ),
 );
 if ( ! isset( $expected[ $locale ] ) ) {
-    WP_CLI::error( 'A supported FR/ES locale must be requested by CI.' );
+    WP_CLI::error( 'A supported EN/FR/ES locale must be requested by CI.' );
 }
 if ( get_locale() !== $locale ) {
     WP_CLI::error( 'WordPress is not booted in the requested locale: ' . get_locale() );
@@ -43,7 +47,7 @@ if ( $expected[ $locale ]['session'] !== $actual ) {
         )
     );
 }
-WP_CLI::log( 'PASS: WordPress 6.4 loads bundled ' . $locale . ' locale in a fresh bootstrap.' );
+WP_CLI::log( 'PASS: WordPress 6.4 loads the appropriate ' . $locale . ' locale in a fresh bootstrap.' );
 
 $admin = get_user_by( 'login', 'orbit_ci_admin' );
 if ( ! $admin instanceof WP_User ) {
