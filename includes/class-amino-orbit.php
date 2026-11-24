@@ -26,6 +26,7 @@ final class Amino_Orbit {
 	public static function init(): void {
 		add_action( 'init', array( __CLASS__, 'migrate_legacy_privacy' ), 0 );
 		add_action( 'init', array( __CLASS__, 'load_translations' ) );
+		add_action( 'change_locale', array( __CLASS__, 'load_translations' ) );
 		add_action( 'wp_dashboard_setup', array( __CLASS__, 'register_widget' ) );
 		add_action( 'admin_menu', array( __CLASS__, 'register_settings_page' ) );
 		add_action( 'admin_menu', array( __CLASS__, 'register_sessions_page' ) );
@@ -47,8 +48,8 @@ final class Amino_Orbit {
 	 * Loading happens on init (or on subsequent locale switches, via Core's
 	 * standard translation registry); no translation is loaded before init.
 	 */
-	public static function load_translations(): void {
-		$locale = determine_locale();
+	public static function load_translations( $locale = null ): void {
+		$locale = is_string( $locale ) && $locale ? $locale : determine_locale();
 		$domain = 'session-radar';
 		if ( is_textdomain_loaded( $domain ) ) {
 			return;
