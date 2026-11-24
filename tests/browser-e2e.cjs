@@ -387,7 +387,7 @@ async function main() {
     // WordPress-admin accessibility, including accessible names and input labels.
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.emulateMedia({ forcedColors: 'none', reducedMotion: 'no-preference' });
-    await page.goto(URL + '/wp-admin/options-general.php?page=session-radar');
+    await page.goto(URL + '/wp-admin/options-general.php?page=sessivue');
     await page.locator('.amino-orbit-settings').waitFor({ state: 'visible' });
     check(await page.locator('.amino-orbit-settings fieldset legend').count() > 0,
       'Settings roles use a real fieldset and legend');
@@ -459,7 +459,7 @@ async function main() {
       await page.locator('#amino-orbit-panel').waitFor({ state: 'visible' });
       check((await page.locator('#amino-orbit-panel').innerText()).includes(locale.refresh),
         'WordPress dashboard renders ' + locale.mode + ' locale in the real browser');
-      await page.goto(URL + '/wp-admin/options-general.php?page=session-radar', {
+      await page.goto(URL + '/wp-admin/options-general.php?page=sessivue', {
         waitUntil: 'domcontentloaded'
       });
       await page.locator('.amino-orbit-settings').waitFor({ state: 'visible' });
