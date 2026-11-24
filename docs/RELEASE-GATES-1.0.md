@@ -1,30 +1,36 @@
-# SessiVue 1.0.0 | WordPress.org correction gates
+# SessiVue 1.0.0 | WordPress.org release gates
 
-Status: **draft rebrand / CI pending** (November 24, 2026). This supersedes earlier distribution instructions in the historical Session Radar release-gate document.
+**Status as of 2026-11-25 (Europe/Paris): GitHub integration complete; WordPress.org review still pending.** The plugin is not approved or published in the WordPress.org directory.
 
-## Proven submission history
+## Submission and integration history
 
-- November 16, 2026: the 1.0.0 candidate was submitted on the same WordPress.org application under `session-radar` (confirmed by the maintainer's portal screenshot). Not approved.
-- November 20, 2026: the Plugin Review Team requested corrections including public copy, name/slug, and WordPress.org-native translations.
-- November 24, 2026: maintainer chose **SessiVue** and target slug `sessivue`. The new slug is not reserved yet. Do not claim approval.
-- GitHub stacked draft PRs: #36 (editorial), #38 (native EN/FR/ES language packs), successor SessiVue rename PR. Never merge/release automatically.
+- 2026-11-16: initial WordPress.org application submitted as `session-radar`.
+- 2026-11-20: Plugin Review Team requested editorial, identity and translation corrections.
+- 2026-11-24: maintainer selected **SessiVue**; requested slug is `sessivue` (not confirmed or reserved).
+- 2026-11-24: candidate PR #40 CI succeeded in all 5 jobs, including PHP 8.0/8.2/8.4, WordPress 6.4/PHP 8.0, real WordPress/Chromium QA and packaging.
+- 2026-11-25 CET: #36 (editorial), #38 (WordPress.org-native translations) and #40 (SessiVue identity and settings migration) merged to `main`; alternative PRs #37 and #39 closed without deleting their branch history.
+- 2026-11-25 CET: connected LAB verified to have `sessivue/sessivue.php` active at 1.0.0 on WordPress 7.1.5 / PHP 8.4.28. `sessivue_settings` exists; activity monitoring is OFF; `sessivue_daily_cleanup` is scheduled. This is a smoke check, not proof of a complete manual migration test.
 
-## Engineering gates
+## Completed checks
 
-- [ ] SessiVue renaming branch CI all green under modern WordPress, minimum WordPress 6.4/PHP 8.0, and supported PHP versions.
-- [ ] WordPress Plugin Check reviewed with zero errors. Record each warning and rationale.
-- [ ] Real multi-user session/role/nonce tests, Chromium keyboard/zoom/manual accessibility and privacy validation.
-- [ ] SessiVue settings migration from both Session Radar and Amino Orbit, including uninstall isolation, opt-in preservation, and a rollback plan.
-- [ ] Native `sessivue-fr_FR.mo` and `sessivue-es_ES.mo` packs tested in `wp-content/languages/plugins/`; English works without translations.
-- [ ] ZIP `sessivue-1.0.0.zip` with `sessivue/sessivue.php`, no bundled PO/MO/POT, no test/development files, valid SHA-256.
-- [ ] Test LAB only after explicit maintainer go-ahead and confirmed database backup.
-- [ ] Request `sessivue` reservation from Plugin Review Team in the **same existing application/review email thread**, then submit precisely one reviewed ZIP if allowed.
-- [ ] Record written WordPress.org acceptance and SVN access separately from GitHub checks.
+- [x] Candidate CI: all five jobs green, including minimum supported environment and browser/keyboard/privacy/scale checks.
+- [x] Plugin Check 2.2.0: 0 errors; 3 recorded `slow_db_query_meta_key` warnings (bounded WordPress usermeta queries, not hidden or waived).
+- [x] Verified private reviewer ZIP from CI run #164: `sessivue-1.0.0.zip` under a single `sessivue/` root with matching entrypoint and text domain, without PO/MO/POT files.
+- [x] English source and WordPress.org-native FR/ES pack path tested in CI; translation source catalogs retained in Git.
+- [x] GitHub review-correction PRs integrated into `main`.
+- [x] Basic LAB plugin, settings and cleanup schedule confirmed read-only.
 
-## Privacy
+## Outstanding release gates
 
-Widget shows WordPress-authenticated sessions, not presence certainty. Only authenticated wp-admin activity signals, optional and OFF by default. IP display OFF by default. No anonymous-visitor tracking or external telemetry. Native WordPress sessions are never invalidated by disabling monitoring.
+- [ ] Complete **manual** LAB check for at least two user roles, activity opt-in/revocation, settings persistence, browser refresh, and accessibility. Make a database backup before any destructive migration tests.
+- [ ] If migrating an existing older install, validate import from `session_radar_settings` or `amino_orbit_settings`, the old-plugin deactivation/uninstall path and rollback. The LAB currently has neither legacy options nor an older active plugin; do not claim this was manually tested.
+- [ ] In the **same existing WordPress.org reviewer email/application thread**, request confirmation that the candidate may be reviewed as **SessiVue** with slug `sessivue`. Do **not** start a second application.
+- [ ] Upload the corrected ZIP only once the review team confirms the appropriate slug/process and the maintainer authorizes upload. Never claim that CI success grants approval.
+- [ ] Record WordPress.org acceptance and SVN access independently.
+- [ ] Optionally rename the GitHub repository from `aminostudio/session-radar` to `aminostudio/sessivue` in repository Settings (not the same as WordPress.org slug assignment). Update remote clones, release scripts and external integrations afterward.
 
-See [SessiVue migration notes](SESSIVUE-MIGRATION.md) for the exact install and old-option fallback sequence. Historical pre-submission data remain in the original commit history.
+## Distribution boundaries
 
-Official WordPress.org plugin guidance: https://developer.wordpress.org/plugins/wordpress-org/detailed-plugin-guidelines/
+Do not deploy to production or submit to WordPress.org automatically. No tracking of anonymous visitors; optional admin-activity monitoring is OFF by default. WordPress native sessions remain owned by WordPress. Store only short-lived plugin-only activity metadata when monitoring is enabled, and preserve explicit opt-in through legacy settings import.
+
+See [SessiVue migration notes](SESSIVUE-MIGRATION.md) and [official WordPress.org plugin guidelines](https://developer.wordpress.org/plugins/wordpress-org/detailed-plugin-guidelines/).
