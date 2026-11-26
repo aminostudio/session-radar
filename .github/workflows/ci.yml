@@ -314,3 +314,66 @@ jobs:
           wp option update WPLANG es_ES --path="$WP_ROOT"
           ORBIT_MIN_TEST_LOCALE=es_ES wp eval-file "$GITHUB_WORKSPACE/tests/minimum-locale.php" --path="$WP_ROOT"
           wp option update WPLANG en_US --path="$WP_ROOT"
+
+
+  wordpress-multisite:
+    name: Real WordPress Multisite two-blog privacy (PHP 8.2)
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: sessivue_ms
+          MYSQL_USER: sessivue_ms
+          MYSQL_PASSWORD: sessivue_ms_password
+          MYSQL_ROOT_PASSWORD: sessivue_ms_root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent -h 127.0.0.1 -uroot -psessivue_ms_root"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+    env:
+      WP_ROOT: /tmp/sessivue-multisite
+    steps:
+      - uses: actions/checkout@v5
+      - name: Set up PHP with WordPress CLI
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mysqli
+          coverage: none
+          tools: wp-cli
+      - name: Ensure WP-CLI exists
+        run: |
+          set -euo pipefail
+          if ! command -v wp >/dev/null 2>&1; then
+            mkdir -p "$HOME/.local/bin"
+            curl --fail --location --silent --show-error --retry 4 \
+              https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
+              -o "$HOME/.local/bin/wp-cli.phar"
+            printf '#!/bin/sh\nexec php "%s/.local/bin/wp-cli.phar" "$@"\n' "$HOME" > "$HOME/.local/bin/wp"
+            chmod +x "$HOME/.local/bin/wp"
+            echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+            export PATH="$HOME/.local/bin:$PATH"
+          fi
+          wp --info
+      - name: Install isolated two-blog Multisite and network-activate SessiVue
+        run: |
+          set -euo pipefail
+          wp core download --path="$WP_ROOT" --skip-content --quiet
+          wp config create --path="$WP_ROOT" --dbname=sessivue_ms --dbuser=sessivue_ms \
+            --dbpass=sessivue_ms_password --dbhost=127.0.0.1 --skip-check
+          wp core multisite-install --path="$WP_ROOT" --url=http://sessivue.test \
+            --title="SessiVue Multisite CI" --admin_user=orbit_ci_admin \
+            --admin_password="temporary-ci-password-not-reused" \
+            --admin_email=admin@sessivue.invalid --skip-email
+          wp site create --path="$WP_ROOT" --slug=second --title="Second Blog"
+          mkdir -p "$WP_ROOT/wp-content/plugins/sessivue"
+          cp sessivue.php uninstall.php readme.txt README.md LICENSE "$WP_ROOT/wp-content/plugins/sessivue/"
+          cp -R assets includes "$WP_ROOT/wp-content/plugins/sessivue/"
+          wp plugin activate sessivue --network --path="$WP_ROOT"
+          wp site list --path="$WP_ROOT"
+      - name: Test real cross-blog presence and GDPR isolation
+        run: wp eval-file "$GITHUB_WORKSPACE/tests/multisite-wordpress.php" --path="$WP_ROOT"
