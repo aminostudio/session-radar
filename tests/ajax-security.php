@@ -6,6 +6,7 @@
  * No WordPress installation or accounts are created by this test.
  */
 define( 'ABSPATH', '/tmp/' );
+function get_current_blog_id() { return 1; }
 define( 'DAY_IN_SECONDS', 86400 );
 define( 'MINUTE_IN_SECONDS', 60 );
 
