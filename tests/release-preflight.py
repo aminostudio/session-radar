@@ -75,6 +75,15 @@ def check_sources():
             "Previous settings migrate into separately owned SessiVue keys")
     require("activity_enabled' => 0" in (ROOT / "includes/class-amino-orbit.php").read_text(encoding="utf-8"),
             "Activity collection default is OFF")
+    require("self::META . '_site_' . (int) get_current_blog_id()" in core,
+            "Site-specific presence metadata key uses current blog ID")
+    require("purge_unscoped_legacy_presence" in core and
+            "self::UNSCOPED_MIGRATION" in core and
+            "'blog_id' => 0" in core,
+            "Unattributable legacy presence is purged once and never reassigned to a site")
+    require("self::presence_meta_key()" in core and
+            "delete_metadata( 'user', 0, self::META, '', true )" in core,
+            "Site-scoped presence everywhere except one-time global legacy purge")
     return version
 
 
