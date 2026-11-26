@@ -1,10 +1,13 @@
 <?php
 /** Isolated regression tests for daily cleanup. No live WordPress required. */
 define( 'ABSPATH', '/tmp/' );
+function get_current_blog_id() { return 1; }
 define( 'DAY_IN_SECONDS', 86400 );
 $GLOBALS['state'] = array( 'meta' => array(), 'updates' => 0, 'deletes' => 0 );
+function get_option( $name, $default = array() ) { return array( 'activity_enabled' => 1 ); }
+function wp_parse_args( $args, $defaults ) { return array_merge( $defaults, $args ); }
 function get_users( $args ) {
-    assert( $args['meta_key'] === '_sessivue_presence' );
+    assert( $args['meta_key'] === '_sessivue_presence_site_1' );
     assert( $args['fields'] === 'ID' );
     return array_slice( array_keys( $GLOBALS['state']['meta'] ), 0, $args['number'] );
 }
@@ -46,6 +49,6 @@ Amino_Orbit::cleanup_presence();
 verify( $GLOBALS['state']['updates'] === 1 && $GLOBALS['state']['deletes'] === 1, 'Repeated cleanup performs no writes on unchanged records' );
 $previous = $GLOBALS['state']['meta'][1];
 $GLOBALS['state']['meta'][1]['new_ping'] = $now;
-verify( false === update_user_meta( 1, '_sessivue_presence', array( 'old' => $now ), $previous ), 'Conditional update does not overwrite newer pings' );
+verify( false === update_user_meta( 1, '_sessivue_presence_site_1', array( 'old' => $now ), $previous ), 'Conditional update does not overwrite newer pings' );
 verify( isset( $GLOBALS['state']['meta'][1]['new_ping'] ), 'New ping is preserved' );
 echo "All daily cleanup tests passed.\n";

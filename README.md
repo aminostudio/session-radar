@@ -47,8 +47,9 @@ This is site-owner authorization, **not a declaration of consent or legal compli
 ## Privacy and security
 
 - Reads WordPress native `WP_Session_Tokens` data. It does **not** store raw authentication tokens.
-- Last observed admin interaction is stored in short-lived user metadata keyed by an HMAC-derived session fingerprint.
-- Presence records expire logically after 24 hours and are pruned via WP-Cron and subsequent interactions.
+- Last observed admin interaction is stored in short-lived user metadata keyed by an HMAC-derived session fingerprint, under a **blog-ID-specific metadata key** on Multisite.
+- Presence records expire logically after 24 hours and are pruned via per-blog WP-Cron and subsequent interactions. The dashboard, export/erasure and opt-out never read or delete another blog’s activity.
+- Pre-fix unscoped activity cannot be attributed to a blog: a one-time network-wide upgrade migration **discards** those ambiguous old records (without touching native WordPress sessions). It does not migrate or display them.
 - Native WordPress session IP information is hidden unless an administrator opts in.
 - Only administrators can modify settings; authorized roles can receive read-only widget access.
 - Nonces and server-side capability checks protect authenticated AJAX routes.
@@ -88,6 +89,7 @@ English (`en_US`) is the source language and needs no pack. French (`fr_FR`) and
 ## Changelog
 
 ### 1.0.0 (stable candidate, awaiting final acceptance)
+- Reviewer follow-up (November 26, 2026): fixed shared-usermeta activity leakage across WordPress Multisite sites, including privacy, cleanup and legacy data.
 - Initial 1.0.0 build submitted for review on November 16, 2026; the WordPress.org Plugin Review Team requested corrections on November 20, 2026.
 - Do not submit publicly until an explicit approval after all release gates pass.
 

@@ -4,6 +4,7 @@
  * No external account, database or WordPress installation is touched.
  */
 define( 'ABSPATH', '/tmp/' );
+function get_current_blog_id() { return 1; }
 $GLOBALS['orbit_privacy'] = array(
     'settings' => array(),
     'deletions' => array(),
@@ -78,7 +79,7 @@ check( 0 === $invalid['activity_enabled'], 'Unexpected values cannot silently op
 Amino_Orbit::clear_presence_on_disable( array( 'activity_enabled' => 1 ), array( 'activity_enabled' => 0 ) );
 check( 1 === count( $GLOBALS['orbit_privacy']['deletions'] ), 'Turning monitoring off triggers one purge' );
 check(
-    array( 'user', 0, '_sessivue_presence', '', true ) === $GLOBALS['orbit_privacy']['deletions'][0],
+    array( 'user', 0, '_sessivue_presence_site_1', '', true ) === $GLOBALS['orbit_privacy']['deletions'][0],
     'Purge deletes only all Orbit activity records, never WordPress login tokens'
 );
 Amino_Orbit::clear_presence_on_disable( array( 'activity_enabled' => 0 ), array( 'activity_enabled' => 1 ) );

@@ -34,7 +34,7 @@ if ( 'setup' === $mode ) {
             'activity_enabled' => 1,
         )
     );
-    delete_user_meta( $admin->ID, '_sessivue_presence' );
+    delete_user_meta( $admin->ID, '_sessivue_presence_site_' . get_current_blog_id() );
     WP_CLI::success( 'Disposable browser setup complete, with admin-only widget.' );
  } elseif ( 'allow-editor' === $mode ) {
     update_option(
@@ -63,14 +63,14 @@ if ( 'setup' === $mode ) {
     }
     WP_CLI::success( 'Disposable administrator locale set to ' . ( $locale ?: 'default' ) . '.' );
 } elseif ( 'monitoring-off' === $mode ) {
-    $before = get_user_meta( $admin->ID, '_sessivue_presence', true );
+    $before = get_user_meta( $admin->ID, '_sessivue_presence_site_' . get_current_blog_id(), true );
     if ( ! is_array( $before ) || ! $before ) {
         WP_CLI::error( 'Expected real browser presence before opting out.' );
     }
     $options = get_option( 'sessivue_settings', array() );
     $options['activity_enabled'] = 0;
     update_option( 'sessivue_settings', $options );
-    $after = get_user_meta( $admin->ID, '_sessivue_presence', true );
+    $after = get_user_meta( $admin->ID, '_sessivue_presence_site_' . get_current_blog_id(), true );
     if ( $after ) {
         WP_CLI::error( 'Disabling monitoring did not remove existing activity.' );
     }
@@ -92,7 +92,7 @@ if ( 'setup' === $mode ) {
     if ( ! $presence ) {
         WP_CLI::error( 'No real native session found for idle fixture.' );
     }
-    update_user_meta( $admin->ID, '_sessivue_presence', $presence );
+    update_user_meta( $admin->ID, '_sessivue_presence_site_' . get_current_blog_id(), $presence );
     WP_CLI::success( 'All native admin sessions marked inactive in disposable CI.' );
 } else {
     WP_CLI::error( 'Unknown browser fixture mode.' );
