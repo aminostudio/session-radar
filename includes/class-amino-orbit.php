@@ -59,6 +59,7 @@ final class Amino_Orbit {
 	public static function init(): void {
 		add_action( 'init', array( __CLASS__, 'purge_unscoped_legacy_presence' ), -1 );
 		add_action( 'init', array( __CLASS__, 'migrate_legacy_privacy' ), 0 );
+		add_action( 'init', array( __CLASS__, 'ensure_cleanup_scheduled' ), 5 );
 		add_action( 'wp_dashboard_setup', array( __CLASS__, 'register_widget' ) );
 		add_action( 'admin_menu', array( __CLASS__, 'register_settings_page' ) );
 		add_action( 'admin_init', array( __CLASS__, 'register_settings' ) );
@@ -129,8 +130,23 @@ final class Amino_Orbit {
 		}
 	}
 
-	/** Stop the scheduled cleanup on deactivation. */
-	public static function deactivate(): void {
+	/** Ensure each blog visited after network activation gets its own cleanup cron. */
+	public static function ensure_cleanup_scheduled(): void {
+		if ( ! wp_next_scheduled( self::CLEANUP_HOOK ) ) {
+			wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', self::CLEANUP_HOOK );
+		}
+	}
+
+	/** Remove cron events for all blogs when a network-wide deactivation is requested. */
+	public static function deactivate( bool $network_wide = false ): void {
+		if ( $network_wide && is_multisite() ) {
+			foreach ( get_sites( array( 'fields' => 'ids', 'number' => 0 ) ) as $blog_id ) {
+				switch_to_blog( (int) $blog_id );
+				wp_clear_scheduled_hook( self::CLEANUP_HOOK );
+				restore_current_blog();
+			}
+			return;
+		}
 		wp_clear_scheduled_hook( self::CLEANUP_HOOK );
 	}
 
