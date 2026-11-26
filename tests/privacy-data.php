@@ -4,6 +4,7 @@
  * No WordPress installation or site data is touched.
  */
 define( 'ABSPATH', '/tmp/' );
+function get_current_blog_id() { return 1; }
 define( 'DAY_IN_SECONDS', 86400 );
 
 class WP_User {
@@ -24,7 +25,7 @@ $GLOBALS['orbit_personal_data'] = array(
     ),
     'metadata' => array(
         5 => array(
-            '_sessivue_presence' => array(
+            '_sessivue_presence_site_1' => array(
                 'hmac-not-a-real-session-token-1' => $now - 10,
                 'hmac-not-a-real-session-token-2' => $now - 60,
                 'expired' => $now - 90000,
@@ -33,7 +34,7 @@ $GLOBALS['orbit_personal_data'] = array(
             ),
             'session_tokens' => array( 'native-token-verifier' => array( 'expiration' => $now + 3600 ) ),
         ),
-        9 => array( '_sessivue_presence' => array( 'another-user' => $now - 20 ) ),
+        9 => array( '_sessivue_presence_site_1' => array( 'another-user' => $now - 20 ) ),
     ),
     'delete_failure' => false,
     'hooks' => array(),
@@ -127,9 +128,9 @@ $result = Amino_Orbit::erase_personal_data( 'admin@example.test' );
 check( $result['items_removed'] && ! $result['items_retained'] && $result['done'],
     'Eraser reports successful metadata removal' );
 check(
-    ! isset( $GLOBALS['orbit_personal_data']['metadata'][5]['_sessivue_presence'] ) &&
+    ! isset( $GLOBALS['orbit_personal_data']['metadata'][5]['_sessivue_presence_site_1'] ) &&
     isset( $GLOBALS['orbit_personal_data']['metadata'][5]['session_tokens'] ) &&
-    isset( $GLOBALS['orbit_personal_data']['metadata'][9]['_sessivue_presence'] ),
+    isset( $GLOBALS['orbit_personal_data']['metadata'][9]['_sessivue_presence_site_1'] ),
     'Eraser preserves native login sessions and other users activity'
 );
 $result = Amino_Orbit::erase_personal_data( 'admin@example.test' );
