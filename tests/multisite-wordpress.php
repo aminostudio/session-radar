@@ -46,6 +46,7 @@ sessivue_ms_assert( array() === Amino_Orbit::export_personal_data( $user->user_e
 	'Blog B does not export blog A activity' );
 // Native user sessions are network-wide; blog B must not treat blog A's ping as a recent interaction.
 $session_method = ( new ReflectionClass( 'Amino_Orbit' ) )->getMethod( 'sessions' );
+$session_method->setAccessible( true );
 $truncated = false;
 $rows = $session_method->invokeArgs( null, array( &$truncated ) );
 $matches = array_values( array_filter( $rows, static fn( $row ) => $row['user']->ID === $user_id ) );
