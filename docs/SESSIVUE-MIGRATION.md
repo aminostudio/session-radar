@@ -1,10 +1,10 @@
 # SessiVue | Upgrade from Session Radar and Amino Orbit
 
-**Name:** SessiVue. **Candidate slug:** `sessivue`. **Version:** 1.0.0 (review candidate). **GitHub repository during testing:** `aminostudio/session-radar`.
+**Name:** SessiVue. **Candidate slug:** `sessivue`. **Version:** 1.0.0 (review candidate). **GitHub repository:** `aminostudio/sessivue`.
 
 ## WordPress.org: existing application, not a new submission
 
-The developer submitted the initial 1.0.0 application as `session-radar` on November 16, 2026. On November 20, the review team requested corrections. The approved new identity is **SessiVue**, but the directory slug is **not reserved or approved** yet. The maintainer should request `sessivue` in the same review thread and upload only a tested ZIP to the *existing* application when the assigned slug matches. Do not open a second plugin application. GitHub CI is not WordPress.org approval.
+The developer submitted the initial 1.0.0 application as `session-radar` on November 16, 2026. On November 20, the review team requested corrections. The approved new identity is **SessiVue**, but the directory slug is **not reserved or approved** yet. The maintainer must explicitly request `sessivue` in the existing review thread. Per the reviewers’ November 20 instructions, a corrected ZIP may be uploaded to the *existing* application before their slug reservation is confirmed. Do not open a second plugin application. GitHub CI is not WordPress.org approval.
 
 ## Manual migration on LAB or an installed site
 
@@ -18,11 +18,12 @@ The developer submitted the initial 1.0.0 application as `session-radar` on Nove
 
 ## Storage ownership and privacy
 
-- SessiVue: `sessivue_settings`, `_sessivue_presence`, `sessivue_daily_cleanup`.
-- Legacy sources: `session_radar_settings` and `amino_orbit_settings` are read once on new activation when new settings do not exist. SessiVue does not delete old settings or observations.
+- SessiVue: per-blog option `sessivue_settings`, usermeta `_sessivue_presence_site_<blog_id>` and per-blog `sessivue_daily_cleanup`.
+- Pre-fix unscoped `_sessivue_presence` has no reliable blog attribution. The post-review update discards it **once network-wide** and records a network-level migration flag. A failed deletion is retried; no old timestamps are imported or shown. Site-specific disable, erasure and cron cleanup never delete it or another blog’s data.
+- Legacy sources: `session_radar_settings` and `amino_orbit_settings` are read once on new activation when new settings do not exist. SessiVue does not delete legacy settings from Session Radar/Amino Orbit; it removes only its own unsafe unscoped observations during the one-time privacy repair.
 - WordPress alone owns native authentication sessions. IP display and activity monitoring remain opt-in/off by default unless explicitly enabled in migrated settings. Activity is limited to authenticated wp-admin interaction and expires after 24 hours.
 - Technical class `Amino_Orbit`, legacy AJAX action names and DOM/CSS selectors remain internal identifiers for the 1.0.0 review cycle. They are not public plugin branding; altering them requires independent compatibility QA.
 
 ## Release gate
 
-Require successful minimum WordPress 6.4 and current WordPress CI, PHP 8.0+, security, i18n, privacy and manual browser tests. The reviewer ZIP must contain a single `sessivue/` root, no gettext PO/MO/POT files, and a matching `sessivue` text domain. No automatic merge into main, production change, LAB deployment, WordPress.org upload, or reviewer email.
+Require successful minimum WordPress 6.4 and current WordPress CI, PHP 8.0+, security, i18n, privacy and manual browser tests. The reviewer ZIP must contain a single `sessivue/` root, no gettext PO/MO/POT files, and a matching `sessivue` text domain. No automatic merge into main, production change, LAB deployment, WordPress.org upload, or reviewer email. Confirm the added Multisite test and all prior checks before a corrected ZIP is uploaded.
