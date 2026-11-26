@@ -16,14 +16,48 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class Amino_Orbit {
 	private const OPTION = 'sessivue_settings';
 	private const META = '_sessivue_presence';
+	private const UNSCOPED_MIGRATION = 'sessivue_unscoped_legacy_purged_v1';
 	private const NONCE = 'amino_orbit_ajax';
 	private const CLEANUP_HOOK = 'sessivue_daily_cleanup';
 	private const MAX_USERS = 200;
 	private const MAX_SCANNED_SESSIONS = 500;
 	private const MAX_ROWS = 40;
 
+	/** WordPress usermeta is shared between all sites on a Multisite network. */
+	private static function presence_meta_key(): string {
+		return self::META . '_site_' . (int) get_current_blog_id();
+	}
+
+	/**
+	 * Old presence rows have no site identifier and cannot be attributed safely.
+	 * Discard them ONCE network-wide on upgrade, never import or display them.
+	 * Per-site opt-out, erasure, cleanup, and uninstall only use scoped keys.
+	 */
+	public static function purge_unscoped_legacy_presence(): void {
+		if ( get_site_option( self::UNSCOPED_MIGRATION, false ) ) {
+			return;
+		}
+		if ( ! delete_metadata( 'user', 0, self::META, '', true ) ) {
+			global $wpdb;
+			$remaining = get_users(
+				array(
+					'blog_id' => 0,
+					'meta_key' => self::META,
+					'fields' => 'ID',
+					'number' => 1,
+					'count_total' => false,
+				)
+			);
+			if ( ! empty( $remaining ) || $wpdb->last_error ) {
+				return; // Retry on the next request when deletion fails.
+			}
+		}
+		update_site_option( self::UNSCOPED_MIGRATION, 1 );
+	}
+
 	/** Register WordPress hooks. */
 	public static function init(): void {
+		add_action( 'init', array( __CLASS__, 'purge_unscoped_legacy_presence' ), -1 );
 		add_action( 'init', array( __CLASS__, 'migrate_legacy_privacy' ), 0 );
 		add_action( 'wp_dashboard_setup', array( __CLASS__, 'register_widget' ) );
 		add_action( 'admin_menu', array( __CLASS__, 'register_settings_page' ) );
@@ -53,13 +87,14 @@ final class Amino_Orbit {
 		}
 		// A failed deletion must not permanently mark the migration complete.
 		// WordPress also returns false when there are simply no rows to delete.
-		if ( ! delete_metadata( 'user', 0, self::META, '', true ) ) {
+		if ( ! delete_metadata( 'user', 0, self::presence_meta_key(), '', true ) ) {
 			// A failed deletion can also mean that no matching metadata exists.
 			// Check only one user through WordPress's standard query API.
 			global $wpdb;
 			$remaining = get_users(
 				array(
-					'meta_key' => self::META,
+					'meta_key' => self::presence_meta_key(),
+					'blog_id' => 0,
 					'fields' => 'ID',
 					'number' => 1,
 					'count_total' => false,
@@ -181,7 +216,7 @@ final class Amino_Orbit {
 	 */
 	public static function clear_presence_on_disable( $old, $new ): void {
 		if ( is_array( $old ) && is_array( $new ) && ! empty( $old['activity_enabled'] ) && empty( $new['activity_enabled'] ) ) {
-			delete_metadata( 'user', 0, self::META, '', true );
+			delete_metadata( 'user', 0, self::presence_meta_key(), '', true );
 		}
 	}
 
@@ -238,7 +273,7 @@ final class Amino_Orbit {
 		if ( ! $user instanceof WP_User ) {
 			return $result;
 		}
-		$presence = get_user_meta( $user->ID, self::META, true );
+		$presence = get_user_meta( $user->ID, self::presence_meta_key(), true );
 		if ( ! is_array( $presence ) ) {
 			return $result;
 		}
@@ -285,11 +320,11 @@ final class Amino_Orbit {
 			return $result;
 		}
 		// Asking for all values also detects an empty or malformed metadata row.
-		$existing = get_user_meta( $user->ID, self::META, false );
+		$existing = get_user_meta( $user->ID, self::presence_meta_key(), false );
 		if ( ! $existing ) {
 			return $result;
 		}
-		$result['items_removed'] = (bool) delete_user_meta( $user->ID, self::META );
+		$result['items_removed'] = (bool) delete_user_meta( $user->ID, self::presence_meta_key() );
 		if ( ! $result['items_removed'] ) {
 			$result['items_retained'] = true;
 			$result['messages'][] = __( 'Could not remove SessiVue activity data.', 'sessivue' );
@@ -407,7 +442,7 @@ final class Amino_Orbit {
 				$key = self::verifier_fingerprint( $verifier );
 			}
 		}
-		$presence = get_user_meta( $user_id, self::META, true );
+		$presence = get_user_meta( $user_id, self::presence_meta_key(), true );
 		$presence = is_array( $presence ) ? $presence : array();
 		$presence = array_filter(
 			$presence,
@@ -418,7 +453,7 @@ final class Amino_Orbit {
 		if ( ! isset( $presence[ $key ] ) || (int) $presence[ $key ] < $now - 45 ) {
 			$presence[ $key ] = $now;
 			arsort( $presence, SORT_NUMERIC );
-			update_user_meta( $user_id, self::META, array_slice( $presence, 0, 32, true ) );
+			update_user_meta( $user_id, self::presence_meta_key(), array_slice( $presence, 0, 32, true ) );
 		}
 		wp_send_json_success( array( 'tracked' => true ) );
 	}
@@ -472,6 +507,7 @@ final class Amino_Orbit {
 		$users = get_users(
 			array(
 				'meta_key' => 'session_tokens',
+				'blog_id' => get_current_blog_id(),
 				'fields' => 'all',
 				'count_total' => false,
 				'number' => self::MAX_USERS + 1,
@@ -488,7 +524,7 @@ final class Amino_Orbit {
 				continue;
 			}
 			// Do not disclose previously recorded activity after monitoring is off.
-			$presence = ! empty( $options['activity_enabled'] ) ? get_user_meta( $user->ID, self::META, true ) : array();
+			$presence = ! empty( $options['activity_enabled'] ) ? get_user_meta( $user->ID, self::presence_meta_key(), true ) : array();
 			$presence = is_array( $presence ) ? $presence : array();
 			$manager = WP_Session_Tokens::get_instance( $user->ID );
 			$sessions = array();
@@ -742,29 +778,35 @@ final class Amino_Orbit {
 
 	/** Prune expired presence metadata with a stable user list. */
 	public static function cleanup_presence(): void {
+		// An earlier failed opt-out deletion must be retried without touching other sites.
+		if ( empty( self::options()['activity_enabled'] ) ) {
+			delete_metadata( 'user', 0, self::presence_meta_key(), '', true );
+			return;
+		}
 		$now = time();
 		// Snapshot IDs first: deleting a meta row during offset pagination would
 		// otherwise skip accounts later in the result set.
 		$ids = get_users(
 			array(
-				'meta_key' => self::META,
+				'meta_key' => self::presence_meta_key(),
+				'blog_id' => 0, // Include departed users whose site-scoped records still need expiry.
 				'fields' => 'ID',
 				'number' => 5000,
 				'orderby' => 'ID',
 			)
 		);
 		foreach ( $ids as $user_id ) {
-			$original = get_user_meta( (int) $user_id, self::META, true );
+			$original = get_user_meta( (int) $user_id, self::presence_meta_key(), true );
 			$original = is_array( $original ) ? $original : array();
 			$presence = array_filter(
 				$original,
 				static fn( $seen ): bool => is_numeric( $seen ) && (int) $seen >= $now - DAY_IN_SECONDS
 			);
 			if ( ! $presence ) {
-				delete_user_meta( (int) $user_id, self::META, $original );
+				delete_user_meta( (int) $user_id, self::presence_meta_key(), $original );
 			} elseif ( $presence !== $original ) {
 				// Avoid redundant daily writes and avoid overwriting a newer ping.
-				update_user_meta( (int) $user_id, self::META, $presence, $original );
+				update_user_meta( (int) $user_id, self::presence_meta_key(), $presence, $original );
 			}
 		}
 	}
