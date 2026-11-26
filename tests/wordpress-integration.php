@@ -116,7 +116,7 @@ orbit_integration_assert(
     $fingerprint !== $second_fingerprint,
     'Different WordPress token verifiers have distinct Orbit presence IDs'
 );
-update_user_meta( $admin_id, '_sessivue_presence', array( $fingerprint => time() ) );
+update_user_meta( $admin_id, '_sessivue_presence_site_' . get_current_blog_id(), array( $fingerprint => time() ) );
 $activity_html = orbit_integration_render();
 orbit_integration_assert(
     1 === substr_count( $activity_html, 'amino-orbit__status--active' ) &&
@@ -214,7 +214,7 @@ orbit_integration_assert(
 $erased = call_user_func( $erasers['sessivue']['callback'], 'admin@orbit-ci.invalid', 1 );
 orbit_integration_assert(
     $erased['items_removed'] && ! $erased['items_retained'] &&
-    ! get_user_meta( $admin_id, '_sessivue_presence', true ),
+    ! get_user_meta( $admin_id, '_sessivue_presence_site_' . get_current_blog_id(), true ),
     'Core privacy eraser deletes plugin-specific user activity'
 );
 orbit_integration_assert(
@@ -234,7 +234,7 @@ $before['activity_enabled'] = 0;
 update_option( 'sessivue_settings', $before );
 unset( $before['activity_enabled'] );
 update_option( 'sessivue_settings', $before );
-update_user_meta( $admin_id, '_sessivue_presence', array( 'legacy-stale' => time() - 20 ) );
+update_user_meta( $admin_id, '_sessivue_presence_site_' . get_current_blog_id(), array( 'legacy-stale' => time() - 20 ) );
 Amino_Orbit::migrate_legacy_privacy();
 $after = get_option( 'sessivue_settings', array() );
 orbit_integration_assert(
@@ -244,16 +244,16 @@ orbit_integration_assert(
     'Legacy privacy migration records OFF while preserving settings'
 );
 orbit_integration_assert(
-    ! get_user_meta( $admin_id, '_sessivue_presence', true ) &&
+    ! get_user_meta( $admin_id, '_sessivue_presence_site_' . get_current_blog_id(), true ) &&
     is_array( $admin_manager->get( $token_one ) ),
     'Legacy activity purged without ending native WordPress login session'
 );
-update_user_meta( $admin_id, '_sessivue_presence', array( 'fresh-mark' => time() ) );
+update_user_meta( $admin_id, '_sessivue_presence_site_' . get_current_blog_id(), array( 'fresh-mark' => time() ) );
 Amino_Orbit::migrate_legacy_privacy();
 orbit_integration_assert(
-    (bool) get_user_meta( $admin_id, '_sessivue_presence', true ),
+    (bool) get_user_meta( $admin_id, '_sessivue_presence_site_' . get_current_blog_id(), true ),
     'Migration is idempotent and does not erase data on each request'
 );
-delete_user_meta( $admin_id, '_sessivue_presence' );
+delete_user_meta( $admin_id, '_sessivue_presence_site_' . get_current_blog_id() );
 
 WP_CLI::success( 'Real WordPress integration checks passed; all data is confined to CI.' );
