@@ -151,6 +151,7 @@ function ping(): array {
 function rows(): array {
 	$truncated = false;
 	$method = ( new ReflectionClass( 'Amino_Orbit' ) )->getMethod( 'sessions' );
+	$method->setAccessible( true );
 	return $method->invokeArgs( null, array( &$truncated ) );
 }
 
