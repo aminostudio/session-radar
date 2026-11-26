@@ -23,6 +23,7 @@ function current_user_can($cap){return $GLOBALS['state']['admin'];}
 function is_user_logged_in(){return true;}
 function wp_get_current_user(){return new WP_User(1,'Amino Studio',$GLOBALS['state']['roles']);}
 function get_current_user_id(){return 1;}
+function get_current_blog_id(){return 1;}
 function get_users($args){return $args['fields']==='ID'?array_keys($GLOBALS['state']['meta']):array_slice($GLOBALS['state']['users'],0,$args['number']??PHP_INT_MAX);}
 function get_user_meta($id,$key,$single){return $GLOBALS['state']['meta'][$id]??[];}
 function update_user_meta($id,$key,$value){$GLOBALS['state']['meta'][$id]=$value;}
