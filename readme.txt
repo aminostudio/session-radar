@@ -37,6 +37,8 @@ English (en_US) is the source language and works without a translation pack. Fre
 
 SessiVue reads the existing WordPress session manager. The only plugin-specific user metadata is an HMAC-derived session fingerprint with the last observed admin interaction timestamp; it never stores raw session tokens. Activity pings are batched and limited. Data is logically expired after 24 hours and is pruned during the user's next interaction and through a daily WP-Cron event. Actual cleanup time depends on WP-Cron execution. All plugin-specific data is removed on uninstall.
 
+On WordPress Multisite, each blog stores activity in a separate usermeta key derived from its blog ID. The dashboard, privacy export/erase, opt-out and scheduled cleanup use only that blog key. Old unscoped activity cannot be reliably attributed to a blog; it is discarded once network-wide during the upgrade and never displayed or exported.
+
 Activity signals are OFF by default until a site administrator explicitly enables them. Native WordPress authentication sessions remain visible to authorized viewers without activity tracking. When monitoring is enabled, only authenticated wp-admin sessions send updates. Disabling monitoring removes plugin-specific activity metadata and blocks further writes, without destroying WordPress authentication sessions. Site owners are responsible for informing affected users and determining an appropriate legal basis. WordPress's Privacy Policy Guide provides editable suggested disclosure text.
 
 Nothing is sent to external providers. Viewer permissions are checked server-side on every data refresh.
@@ -90,6 +92,7 @@ The minimums are WordPress 6.4 and PHP 8.0. English is available by default. Fre
 == Changelog ==
 
 = 1.0.0 =
+* Isolates Multisite activity per blog, including GDPR tools and scheduled cleanup. Ambiguous unscoped legacy records are discarded once instead of being migrated between sites.
 * Prepared the initial SessiVue submission candidate for WordPress.org review.
 * Adds a documented FAQ and strict integrity and version checks to the private build process.
 * Carries forward all session controls, default-off activity monitoring and native WordPress privacy tools from 0.9.0.
