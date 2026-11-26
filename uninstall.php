@@ -9,7 +9,7 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
 
-$delete_site_data = static function (): void {
+$sessivue_delete_site_data = static function (): void {
 	delete_option( 'sessivue_settings' );
 	delete_metadata( 'user', 0, '_sessivue_presence_site_' . (int) get_current_blog_id(), '', true );
 	wp_clear_scheduled_hook( 'sessivue_daily_cleanup' );
@@ -18,11 +18,11 @@ $delete_site_data = static function (): void {
 if ( is_multisite() ) {
 	foreach ( get_sites( array( 'fields' => 'ids', 'number' => 0 ) ) as $blog_id ) {
 		switch_to_blog( (int) $blog_id );
-		$delete_site_data();
+		$sessivue_delete_site_data();
 		restore_current_blog();
 	}
 } else {
-	$delete_site_data();
+	$sessivue_delete_site_data();
 }
 
 // Only ambiguous pre-site-scoping observations are shared; never map them to a blog.
